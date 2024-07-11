@@ -1,0 +1,59 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Screens/HomePage.dart';
+import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  MyApp({Key? key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isLoggedIn = false;
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    checkLocalStorage();
+    return GetMaterialApp(
+      title: 'Volunteer App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.black,
+          secondary: Colors.white,
+          primary: Colors.black,
+        ),
+        useMaterial3: true,
+      ),
+      home: isLoggedIn ? HomePage() : LoginPage(),
+    );
+  }
+
+  Future<void> checkLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+    if (uid != null) {
+      setState(() {
+        isLoggedIn = true;
+      });
+    } else {
+      // UID is not present in local storage
+      // Do something else
+    }
+  }
+}

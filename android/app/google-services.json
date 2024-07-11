@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "815070948383",
+    "project_id": "volunteering-9e75b",
+    "storage_bucket": "volunteering-9e75b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815070948383:android:749845d1c6ed882272b92a",
+        "android_client_info": {
+          "package_name": "com.maizelabs.volunterring"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGbdwmUAMhURhEyHTFH6Hb4o5s7CenVbw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
