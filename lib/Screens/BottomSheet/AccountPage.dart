@@ -47,7 +47,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 child: Column(
                   children: [
                     Text(
-                      'Manage Your Acoount',
+                      'Manage Your Acoount ',
                       style: TextStyle(
                         fontSize: height * 0.035,
                         color: headingBlue,

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthMethod {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,6 +15,7 @@ class AuthMethod {
 
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
+  final Uuid _uuid = Uuid();
 
   // Sign Up User
   Future<String> signupUser({
@@ -123,7 +126,8 @@ class AuthMethod {
     }
     return res;
   }
-   // Upload Profile Picture
+
+  // Upload Profile Picture
   Future<String> uploadProfilePicture() async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
@@ -138,10 +142,8 @@ class AuthMethod {
         String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;
 
         // Upload to Firebase Storage
-        TaskSnapshot snapshot = await _storage
-            .ref()
-            .child("profilePictures/$uid")
-            .putFile(file);
+        TaskSnapshot snapshot =
+            await _storage.ref().child("profilePictures/$uid").putFile(file);
 
         // Get download URL
         String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -161,7 +163,8 @@ class AuthMethod {
 
     return res;
   }
-    // Change Password
+
+  // Change Password
   Future<String> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -179,15 +182,86 @@ class AuthMethod {
 
       if (newPassword != confirmNewPassword) {
         res = "New passwords do not match";
+        Get.snackbar('Error', '${res}');
       } else {
         // Update password
         await user.updatePassword(newPassword);
         res = "Password updated successfully";
+        Get.snackbar('Hurray', '${res}');
       }
     } catch (e) {
       res = e.toString();
     }
     return res;
+  }
+
+  //Events CRUD
+  Future<String> addEvent({
+    required String title,
+    required String description,
+    required DateTime date,
+    required String location,
+    required String occurrence,
+    required String group,
+  }) async {
+    String res = "Some error occurred";
+    final SharedPreferences prefs = await _prefs;
+
+    try {
+      // Get user id
+      String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;
+
+      // Generate UUID for the event
+      String eventId = _uuid.v4();
+
+      // Add event to Firestore
+      await _firestore
+          .collection("users")
+          .doc(uid)
+          .collection("events")
+          .doc(eventId)
+          .set({
+        'id': eventId,
+        'title': title,
+        'description': description,
+        'date': date,
+        'location': location,
+        'occurrence': occurrence,
+        'group': group,
+      });
+
+      res = "Event added successfully";
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
+
+  //Fetch Events
+  Future<List<Map<String, dynamic>>> fetchEvents() async {
+    final SharedPreferences prefs = await _prefs;
+    List<Map<String, dynamic>> events = [];
+
+    try {
+      // Get user id
+      String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;
+
+      // Fetch events from Firestore
+      QuerySnapshot querySnapshot = await _firestore
+          .collection("users")
+          .doc(uid)
+          .collection("events")
+          .get();
+
+      events = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print("Error fetching events: $e");
+    }
+
+    return events;
   }
 
 }

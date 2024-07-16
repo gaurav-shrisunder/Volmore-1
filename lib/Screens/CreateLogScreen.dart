@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:volunterring/Screens/Event/CreateEventPage.dart';
 import 'package:volunterring/Screens/VolunteeringIdeas.dart';
 import 'package:volunterring/Utils/Colors.dart';
-
 
 class CreateLogScreen extends StatelessWidget {
   const CreateLogScreen({super.key});
@@ -74,18 +74,23 @@ class CreateLogScreen extends StatelessWidget {
           SizedBox(
             height: Get.height * 0.04,
           ),
-          Container(
-            width: Get.width * 0.8,
-            height: Get.height * 0.08,
-            decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10)),
-            child: Center(
-                child: Text(
-              "Create New Event",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: Get.height * 0.022),
-            )),
+          GestureDetector(
+            onTap: () {
+              Get.to(CreateEventScreen());
+            },
+            child: Container(
+              width: Get.width * 0.8,
+              height: Get.height * 0.08,
+              decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10)),
+              child: Center(
+                  child: Text(
+                "Create New Event",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: Get.height * 0.022),
+              )),
+            ),
           ),
           SizedBox(
             height: Get.height * 0.04,

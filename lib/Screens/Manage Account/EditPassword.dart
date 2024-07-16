@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/button.dart';
@@ -13,6 +14,7 @@ class EditPassword extends StatefulWidget {
 class _EditPasswordState extends State<EditPassword> {
   var oldPasscontroller = TextEditingController();
   var newPasscontroller = TextEditingController();
+  var ConfirmPasscontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -46,7 +48,20 @@ class _EditPasswordState extends State<EditPassword> {
               hintText: 'New Password',
               textInputType: TextInputType.text,
             ),
-            MyButtons(onTap: () {}, text: "Save Changes")
+            TextFieldInput(
+              textEditingController: ConfirmPasscontroller,
+              label: 'Confirm Password',
+              hintText: 'Confirm Password',
+              textInputType: TextInputType.text,
+            ),
+            MyButtons(
+                onTap: () {
+                  AuthMethod().changePassword(
+                      oldPassword: oldPasscontroller.text,
+                      newPassword: newPasscontroller.text,
+                      confirmNewPassword: ConfirmPasscontroller.text);
+                },
+                text: "Save Changes")
           ],
         )),
       ),
