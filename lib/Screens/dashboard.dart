@@ -1,0 +1,303 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
+import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
+import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
+import 'package:volunterring/Screens/Event/EventsPAge.dart';
+import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Screens/TermsScreen.dart';
+
+import '../Utils/Colors.dart';
+
+
+
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> with SingleTickerProviderStateMixin{
+
+ int _selectedIndex = 0;
+  late AnimationController _controller;
+  late Animation<Offset> _animation;
+  
+
+  static  List<Widget> _widgetOptions = <Widget>[
+   EventPage(),
+    Text('Leaderboard Screen'),
+    Text('Transcript Screen'),
+    UserProfilePage(),
+  ];
+
+     @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+   
+    _animation = Tween<Offset>(
+      begin: Offset(1.0, 0.0),
+      end: Offset(0.0, 0.0),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _controller.reset();
+      _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+     
+    super.dispose();
+  }
+
+   
+
+  @override
+  Widget build(BuildContext context) {
+    return  Scaffold(
+      backgroundColor: Colors.white,
+         appBar: AppBar(
+        
+        title: const Text(
+          'VOLMORE',
+          style: TextStyle(
+              fontSize: 32, fontWeight: FontWeight.bold, color: headingBlue),
+        ),
+        centerTitle: false,
+        elevation: 1,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.settings_outlined,
+              size: 32,
+            ),
+            onPressed: () {
+              Get.bottomSheet(
+                  Container(
+                      decoration: const BoxDecoration(
+                          borderRadius:
+                              BorderRadius.only(topLeft: Radius.circular(30))),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                tileColor: const Color(0xFFECECEC),
+                                title: const Text(
+                                  'Support - I need help',
+                                  style: TextStyle(
+                                      color: headingBlue,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: headingBlue,
+                                ),
+                                onTap: () {
+                                  Get.to(SupportPage());
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                tileColor: const Color(0xFFECECEC),
+                                title: const Text(
+                                  'Frequently Asked Questions',
+                                  style: TextStyle(
+                                      color: headingBlue,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: headingBlue,
+                                ),
+                                onTap: () {
+                                  Get.to(const FAQPage());
+                                
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                tileColor: const Color(0xFFECECEC),
+                                title: const Text(
+                                  'Privacy Policy',
+                                  style: TextStyle(
+                                      color: headingBlue,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: headingBlue,
+                                ),
+                                onTap: () {
+                                  Get.back();
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                tileColor: const Color(0xFFECECEC),
+                                title: const Text(
+                                  'Terms and Conditions',
+                                  style: TextStyle(
+                                      color: headingBlue,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: headingBlue,
+                                ),
+                                onTap: () {
+                                  Get.to(const TermsScreen());
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                tileColor: const Color(0xFFECECEC),
+                                title: const Text(
+                                  'Manage your Account',
+                                  style: TextStyle(
+                                      color: headingBlue,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: headingBlue,
+                                ),
+                                onTap: () {
+                                  Get.to(const UserProfilePage());
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListTile(
+                                title: const Text(
+                                  'Log Out',
+                                  style: TextStyle(
+                                      color: headingBlue,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                tileColor: const Color(0xFFECECEC),
+                                onTap: () {
+                                  Logout();
+                                },
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: headingBlue,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                  backgroundColor: Colors.white,
+                  elevation: 1);
+            },
+          ),
+          SizedBox(
+            width: 10,
+          )
+        ],
+      ),
+      body: SlideTransition(
+        position: _animation,
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+       
+        elevation: 5,
+        items:  <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.leaderboard),
+            label: 'Leaderboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long),
+            label: 'Transcript',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+   Future<void> Logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('uid');
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+  }
+}
+

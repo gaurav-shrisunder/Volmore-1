@@ -5,6 +5,7 @@ import 'package:get/route_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/firebase_options.dart';
 
 void main() async {
@@ -34,13 +35,17 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
+          surface: Colors.white,
+         surfaceTint: Colors.white,
           seedColor: Colors.black,
           secondary: Colors.white,
           primary: Colors.black,
+          shadow: Colors.white,
+          surfaceContainer: Colors.white
         ),
         useMaterial3: true,
       ),
-      home: isLoggedIn ? HomePage() : LoginPage(),
+      home: isLoggedIn ? Dashboard() : LoginPage(),
     );
   }
 

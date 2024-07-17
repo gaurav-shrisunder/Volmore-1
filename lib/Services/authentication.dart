@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:volunterring/Models/event_data_model.dart';
 
 class AuthMethod {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -239,9 +240,9 @@ class AuthMethod {
   }
 
   //Fetch Events
-  Future<List<Map<String, dynamic>>> fetchEvents() async {
+  Future<List<EventDataModel>> fetchEvents() async {
     final SharedPreferences prefs = await _prefs;
-    List<Map<String, dynamic>> events = [];
+     List<EventDataModel> events = [];
 
     try {
       // Get user id
@@ -255,8 +256,8 @@ class AuthMethod {
           .get();
 
       events = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
+      .map((doc) => EventDataModel.fromJson(doc.data() as Map<String, dynamic>))
+      .toList();
     } catch (e) {
       print("Error fetching events: $e");
     }

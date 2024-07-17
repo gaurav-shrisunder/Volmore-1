@@ -305,7 +305,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.red[200],
+                  //  primary: Colors.red[200],
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
