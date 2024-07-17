@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:intl/intl.dart';
 import 'package:volunterring/Services/authentication.dart';
@@ -20,10 +21,22 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, Color> colorMap = {
+      'Green': Colors.green,
+      'Pink': Colors.pink,
+      'Orange': Colors.orange,
+      'Red': Colors.red,
+      'Yellow': Colors.yellow,
+      'Blue': Colors.blue,
+      'Purple': Colors.purple,
+      'Brown': Colors.brown,
+      'Grey': Colors.grey,
+    };
     return Scaffold(
       appBar: AppBar(
         title: Text('Events'),
       ),
+      backgroundColor: Colors.white,
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _eventsFuture,
         builder: (context, snapshot) {
@@ -39,20 +52,62 @@ class _EventPageState extends State<EventPage> {
               itemCount: events.length,
               itemBuilder: (context, index) {
                 Map<String, dynamic> event = events[index];
+                Color eventColor =
+                    colorMap[event['group_color']] ?? Colors.black;
                 return Card(
+                  color: Colors.white,
+                  borderOnForeground: true,
+                  surfaceTintColor: Colors.white,
+                  shadowColor: Colors.grey,
                   margin: EdgeInsets.all(10),
-                  child: ListTile(
-                    title: Text(event['title']),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Description: ${event['description']}'),
-                        Text(
-                            'Date: ${DateFormat.yMMMd().format(event['date'].toDate())}'),
-                        Text('Location: ${event['location']}'),
-                        Text('Occurrence: ${event['occurrence']}'),
-                        Text('Group: ${event['group']}'),
-                      ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      tileColor: Colors.white,
+                      title: Text(
+                        event['group'].toString().capitalize!,
+                        style: TextStyle(
+                            color: eventColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(color: Colors.grey),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 2),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        height: 6,
+                                        width: 6,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                          'Date: ${DateFormat.yMd().format(event['date'].toDate())}'),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Text('${event['description']}'),
+                        ],
+                      ),
                     ),
                   ),
                 );

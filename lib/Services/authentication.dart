@@ -202,7 +202,8 @@ class AuthMethod {
     required DateTime date,
     required String location,
     required String occurrence,
-    required String group,
+    String group = "General",
+    String groupColor = "Green",
   }) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
@@ -228,6 +229,7 @@ class AuthMethod {
         'location': location,
         'occurrence': occurrence,
         'group': group,
+        'group_color': groupColor,
       });
 
       res = "Event added successfully";
@@ -263,5 +265,4 @@ class AuthMethod {
 
     return events;
   }
-
 }

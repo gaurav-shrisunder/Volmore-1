@@ -22,15 +22,24 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   TextEditingController locationController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   final _nameController = TextEditingController();
-  final _colorController = TextEditingController();
+  String _selectedColor = 'Green'; // Initial color value
   DateTime selectedDate = DateTime.now();
   final _authMethod = AuthMethod();
 
   String selectedOccurrence =
       'No occurrence'; // Initial value set to prevent null issues
   List<String> _groupNames = [];
+  Map<String, String> _groupColors = {};
   String? _selectedGroup;
   final Uuid _uuid = Uuid();
+
+  final Map<String, Color> colorMap = {
+    'Green': Colors.green,
+    'Pink': Colors.pink,
+    'Orange': Colors.orange,
+    'Red': Colors.red,
+    'Yellow': Colors.yellow,
+  };
 
   @override
   void initState() {
@@ -43,8 +52,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();
       print("querySnapshot.docs: ${querySnapshot.docs}");
-      List<String> groupNames =
-          querySnapshot.docs.map((doc) => doc['name'] as String).toList();
+      List<String> groupNames = querySnapshot.docs.map((doc) {
+        _groupColors[doc['name']] =
+            doc['color']; // Save the color for each group
+        return doc['name'] as String;
+      }).toList();
       setState(() {
         _groupNames = groupNames;
       });
@@ -73,7 +85,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     descriptionController.dispose();
     locationController.dispose();
     dateController.dispose();
-
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -90,9 +102,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 controller: _nameController,
                 decoration: InputDecoration(labelText: 'Group Name'),
               ),
-              TextField(
-                controller: _colorController,
+              DropdownButtonFormField<String>(
+                value: _selectedColor,
                 decoration: InputDecoration(labelText: 'Group Color'),
+                items: colorMap.keys.map((String colorName) {
+                  return DropdownMenuItem<String>(
+                    value: colorName,
+                    child: Text(colorName),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedColor = newValue!;
+                  });
+                },
               ),
             ],
           ),
@@ -106,11 +129,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
             ElevatedButton(
               onPressed: () {
                 String name = _nameController.text;
-                String color = _colorController.text;
-                if (name.isNotEmpty && color.isNotEmpty) {
-                  _addGroup(name, color);
+                if (name.isNotEmpty && _selectedColor.isNotEmpty) {
+                  _addGroup(name, _selectedColor);
                   _nameController.clear();
-                  _colorController.clear();
+                  setState(() {
+                    _selectedColor = 'Green'; // Reset to default value
+                  });
                   Navigator.of(context).pop();
                 }
               },
@@ -234,17 +258,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 const SizedBox(height: 10),
                 TextField(
                   controller: dateController,
-
                   onTap: () => _selectDate(context),
                   readOnly: true,
-
                   // Prevent keyboard from appearing
                   decoration: InputDecoration(
                     hintText: 'Select Date',
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     filled: true,
-                    // labelText: 'Select Date',
                     fillColor: lightBlue,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -318,13 +339,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         locationController.text.isNotEmpty &&
                         _selectedGroup != "" &&
                         selectedOccurrence.isNotEmpty) {
+                      String groupColor = _groupColors[_selectedGroup] ??
+                          'Green'; // Default color if not found
                       String res = await _authMethod.addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
-                        date: selectedDate!,
+                        date: selectedDate,
                         location: locationController.text,
                         occurrence: selectedOccurrence,
                         group: _selectedGroup!,
+                        groupColor: groupColor, // Save group color
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
