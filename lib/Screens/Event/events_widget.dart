@@ -6,12 +6,25 @@ import '../../Models/event_data_model.dart';
 
 class EventWidget extends StatelessWidget {
   final EventDataModel event;
+  final Color color;
 
-  const EventWidget(this.event, {super.key});
+  const EventWidget(this.event, this.color, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -21,12 +34,7 @@ class EventWidget extends StatelessWidget {
             Text(
               event.title ?? "",
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: event.title == 'Trash Cleanup'
-                    ? Colors.orange
-                    : Colors.pink,
-              ),
+                  fontSize: 20, fontWeight: FontWeight.bold, color: color),
             ),
             SizedBox(height: 8),
             Row(
@@ -37,7 +45,10 @@ class EventWidget extends StatelessWidget {
                 SizedBox(width: 16),
                 Icon(Icons.person, size: 16, color: Colors.blue),
                 SizedBox(width: 4),
-                Text('Host by: ${event.host ?? "You"}'),
+                Text(
+                  'Host by: ${event.host ?? "You"}',
+                  softWrap: true,
+                ),
               ],
             ),
             SizedBox(height: 8),

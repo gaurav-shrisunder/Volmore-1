@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
 import 'package:intl/intl.dart';
+import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/CreateEventPage.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Services/authentication.dart';
@@ -33,6 +34,19 @@ class _EventPageState extends State<EventPage>
     _tabController.dispose();
     super.dispose();
   }
+
+  final Map<String, Color> colorMap = {
+    'Green': Colors.green,
+    'Pink': Colors.pink,
+    'Orange': Colors.orange,
+    'Red': Colors.red,
+    'Yellow': Colors.yellow,
+    'Grey': Colors.grey,
+    'Blue': Colors.blue,
+    'Purple': Colors.purple,
+    'Brown': Colors.brown,
+    'Cyan': Colors.cyan,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +92,7 @@ class _EventPageState extends State<EventPage>
                                       fontSize: 14, color: Colors.white),
                                 ),
                                 onPressed: () {
-                                  Get.to(const CreateEventScreen());
+                                  Get.to(const CreateLogScreen());
                                 },
                                 child: const Text(
                                   'Start Logging',
@@ -108,7 +122,18 @@ class _EventPageState extends State<EventPage>
                                 itemCount: snapshot.data?.length,
                                 itemBuilder: (context, index) {
                                   EventDataModel event = snapshot.data![index];
-                                  return EventWidget(event);
+                                  Color color =
+                                      colorMap[event.groupColor] ?? Colors.pink;
+                                  print(
+                                      "event Date: ${event.date.toString().split(' ')[0]}");
+                                  print(
+                                      DateTime.now().toString().split(' ')[0]);
+                                  return event.date.toString().split(' ')[0] ==
+                                          DateTime.now()
+                                              .toString()
+                                              .split(' ')[0]
+                                      ? EventWidget(event, color)
+                                      : Container();
                                 },
                               ),
                             );
@@ -117,12 +142,117 @@ class _EventPageState extends State<EventPage>
                       ),
                     ],
                   ),
-                  const Center(
-                      child: Text("Upcoming Event Content",
-                          style: TextStyle(fontSize: 24))),
-                  const Center(
-                      child: Text("Past Event Content",
-                          style: TextStyle(fontSize: 24))),
+                  Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Upcoming Events",
+                              style: TextStyle(
+                                  color: headingBlue,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      FutureBuilder<List<EventDataModel>>(
+                        future: _eventsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(child: Text('No events found'));
+                          } else {
+                            // List<EventDataModel> events = snapshot.data!;
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount: snapshot.data?.length,
+                                itemBuilder: (context, index) {
+                                  EventDataModel event = snapshot.data![index];
+                                  Color color =
+                                      colorMap[event.groupColor] ?? Colors.pink;
+                                  DateTime eventDate =
+                                      DateTime.parse(event.date.toString());
+                                  DateTime today = DateTime.now();
+                                  if (eventDate.isAfter(today)) {
+                                    return EventWidget(event, color);
+                                  } else {
+                                    return Container(); // Or SizedBox.shrink() if you want to hide the item
+                                  }
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Past Events",
+                              style: TextStyle(
+                                  color: headingBlue,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      FutureBuilder<List<EventDataModel>>(
+                        future: _eventsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(child: Text('No events found'));
+                          } else {
+                            // List<EventDataModel> events = snapshot.data!;
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount: snapshot.data?.length,
+                                itemBuilder: (context, index) {
+                                  EventDataModel event = snapshot.data![index];
+                                  Color color =
+                                      colorMap[event.groupColor] ?? Colors.pink;
+                                  DateTime eventDate =
+                                      DateTime.parse(event.date.toString());
+                                  DateTime today = DateTime.now()
+                                      .subtract(Duration(days: 1));
+                                  if (eventDate.isBefore(today)) {
+                                    return EventWidget(event, color);
+                                  } else {
+                                    return Container(); // Or SizedBox.shrink() if you want to hide the item
+                                  }
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             )

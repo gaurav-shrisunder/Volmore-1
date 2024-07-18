@@ -16,13 +16,25 @@ class CreateLogScreen extends StatelessWidget {
           SizedBox(
             height: Get.height * 0.04,
           ),
-          Text(
-            "Create an Event",
-            style: TextStyle(
-                decorationColor: headingBlue,
-                color: headingBlue,
-                fontSize: Get.height * 0.045,
-                fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  icon: Icon(Icons.arrow_back_ios)),
+              SizedBox(
+                width: Get.width * 0.05,
+              ),
+              Text(
+                "Create an Event",
+                style: TextStyle(
+                    decorationColor: headingBlue,
+                    color: headingBlue,
+                    fontSize: Get.height * 0.045,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
           SizedBox(
             height: Get.height * 0.04,
