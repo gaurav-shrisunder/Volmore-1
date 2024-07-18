@@ -7,12 +7,14 @@ class InputFeildWidget extends StatefulWidget {
   final int maxlines;
   final String hintText;
   final Icon? prefixicon;
-  const InputFeildWidget(
+  bool isPassword;
+  InputFeildWidget(
       {super.key,
       required this.title,
       required this.controller,
       this.hintText = '',
       this.prefixicon,
+      this.isPassword = false,
       this.maxlines = 1});
 
   @override
@@ -52,6 +54,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
           child: TextField(
             controller: widget.controller,
             maxLines: widget.maxlines,
+            obscureText: widget.isPassword,
             decoration: InputDecoration(
               filled: true,
               hintText: widget.hintText,

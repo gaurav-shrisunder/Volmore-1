@@ -1,12 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
+import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:volunterring/widgets/button.dart';
 import 'package:volunterring/widgets/snackbar.dart';
-
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -17,6 +18,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmpasswordController =
       TextEditingController();
@@ -33,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
         email: emailController.text,
         password: passwordController.text,
         confirmPassword: confirmpasswordController.text,
-        name: emailController.text,
+        name: nameController.text,
         phone: numberController.text);
 
     if (res == "success") {
@@ -44,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
       //navigate to the home screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const Dashboard(),
         ),
       );
     } else {
@@ -65,103 +67,126 @@ class _SignUpPageState extends State<SignUpPage> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  Text(
-                    'Create an Account ',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        height: 1.1,
-                        letterSpacing: 1.3,
-                        fontSize: height * 0.067,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  Text(
-                    'Sign in to continue',
-                    style: TextStyle(
-                        fontSize: height * 0.023,
-                        fontWeight: FontWeight.normal),
-                  ),
-                  SizedBox(
-                    height: height * 0.0,
-                  ),
-                  TextFieldInput(
-                      textEditingController: emailController,
-                      label: "Email*",
-                      hintText: 'Enter your email',
-                      textInputType: TextInputType.text),
-                  TextFieldInput(
-                    textEditingController: passwordController,
-                    hintText: 'Enter your passord',
-                    label: "Password*",
-                    textInputType: TextInputType.text,
-                    isPass: true,
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFieldInput(
-                    textEditingController: confirmpasswordController,
-                    hintText: 'Re-Enter your passord',
-                    label: "Re-Enter Password*",
-                    textInputType: TextInputType.text,
-                    isPass: true,
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFieldInput(
-                    textEditingController: numberController,
-                    hintText: 'Phone Number',
-                    label: "Phone Number*",
-                    textInputType: TextInputType.text,
-                    isPass: true,
-                  ),
-                  SizedBox(
-                    height: height * 0.003,
-                  ),
-                  MyButtons(onTap: signUp, text: "Sign Up"),
-                  SizedBox(
-                    height: height * 0.0,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(right: width * 0.05),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            ' Existing User?',
-                            style: TextStyle(
-                                fontSize: height * 0.023,
-                                fontWeight: FontWeight.normal),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage())),
-                            child: Text(
-                              ' Log in',
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Image.asset(
+                      "assets/icons/signup.png",
+                      height: height * 0.08,
+                    ),
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    Text(
+                      'Create an Account ',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          height: 1,
+                          color: headingBlue,
+                          letterSpacing: 1.3,
+                          fontSize: height * 0.04,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    Text(
+                      'Sign in to continue',
+                      style: TextStyle(
+                          fontSize: height * 0.023,
+                          color: greyColor,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    SizedBox(
+                      height: height * 0.007,
+                    ),
+                    InputFeildWidget(
+                      title: 'Name',
+                      controller: nameController,
+                      maxlines: 1,
+                      hintText: "Enter Your name",
+                    ),
+                    SizedBox(
+                      height: height * 0.009,
+                    ),
+                    InputFeildWidget(
+                      title: 'Email*',
+                      controller: emailController,
+                      maxlines: 1,
+                      hintText: "Enter Your email",
+                    ),
+                    SizedBox(
+                      height: height * 0.009,
+                    ),
+                    InputFeildWidget(
+                      title: 'Password*',
+                      controller: passwordController,
+                      maxlines: 1,
+                      hintText: "Enter Your Password",
+                    ),
+                    SizedBox(
+                      height: height * 0.009,
+                    ),
+                    InputFeildWidget(
+                      title: 'Re-Enter Password*',
+                      controller: confirmpasswordController,
+                      maxlines: 1,
+                      hintText: "Re-enter Your Password",
+                    ),
+                    SizedBox(
+                      height: height * 0.009,
+                    ),
+                    InputFeildWidget(
+                      title: 'Phone number*',
+                      controller: numberController,
+                      maxlines: 1,
+                      hintText: "Enter Your email",
+                    ),
+                    SizedBox(
+                      height: height * 0.04,
+                    ),
+                    MyButtons(onTap: signUp, text: "Sign Up"),
+                    SizedBox(
+                      height: height * 0.01,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: width * 0.05),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              ' Existing User?',
                               style: TextStyle(
                                   fontSize: height * 0.023,
-                                  color: Colors.blue,
                                   fontWeight: FontWeight.normal),
                             ),
-                          ),
-                        ],
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage())),
+                              child: Text(
+                                ' Log in',
+                                style: TextStyle(
+                                    fontSize: height * 0.023,
+                                    color: Colors.lightBlue[500],
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
