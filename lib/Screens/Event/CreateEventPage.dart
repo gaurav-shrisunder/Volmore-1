@@ -21,16 +21,21 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+  TextEditingController endTimeController = TextEditingController();
+
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   final _authMethod = AuthMethod();
+  TimeOfDay? picked = TimeOfDay.now();
 
   String selectedOccurrence =
       'No occurrence'; // Initial value set to prevent null issues
   List<String> _groupNames = [];
   String? _selectedGroup;
-  final Uuid _uuid = Uuid();
+  final Uuid _uuid = const Uuid();
 
   @override
   void initState() {
@@ -82,17 +87,17 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add New Group'),
+          title: const Text('Add New Group'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Group Name'),
+                decoration: const InputDecoration(labelText: 'Group Name'),
               ),
               TextField(
                 controller: _colorController,
-                decoration: InputDecoration(labelText: 'Group Color'),
+                decoration: const InputDecoration(labelText: 'Group Color'),
               ),
             ],
           ),
@@ -101,7 +106,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -114,7 +119,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text('Add Group'),
+              child: const Text('Add Group'),
             ),
           ],
         );
@@ -122,7 +127,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  _selectDate(BuildContext context) async {
+  _selectDate(BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate, // Refer step 1
@@ -132,13 +137,24 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        dateController.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+        controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
       });
     // showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 
+  _selectTime(BuildContext context, TextEditingController controller) async {
+    picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    setState(() {
+      controller.text = picked!.format(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('')),
@@ -190,7 +206,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   title: 'Location',
                   controller: locationController,
                   maxlines: 1,
-                  prefixicon: Icon(
+                  prefixicon: const Icon(
                     Icons.location_on,
                     color: Colors.grey,
                   ),
@@ -214,7 +230,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         spreadRadius: 0.4,
 
                         blurRadius: 10,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
                     ],
                   ),
@@ -226,12 +243,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           color: Colors.grey[400],
                           fontSize: 19,
                           fontWeight: FontWeight.w400),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
+                        borderSide: const BorderSide(
                           color: Color.fromARGB(255, 213, 215, 215),
                           width: 1.0,
                         ),
@@ -280,53 +297,249 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 0.4,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 0.4,
 
-                        blurRadius: 10,
-                        offset: Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: dateController,
-
-                    onTap: () => _selectDate(context),
-                    readOnly: true,
-
-                    // Prevent keyboard from appearing
-                    decoration: InputDecoration(
-                      filled: true,
-                      hintText: 'Select Date',
-                      hintStyle: TextStyle(
-                          color: Colors.grey[900],
-                          fontSize: 19,
-                          fontWeight: FontWeight.w400),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      fillColor: Colors.white,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color.fromARGB(255, 213, 215, 215),
-                          width: 1.0,
+                              blurRadius: 10,
+                              offset: const Offset(
+                                  0, 3), // changes position of shadow
+                            ),
+                          ],
                         ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors
-                              .grey[400]!, // Change this to your desired color
-                          width: 2.0,
+                        child: TextField(
+                          controller: dateController,
+
+                          onTap: () => _selectDate(context, dateController),
+                          readOnly: true,
+
+                          // Prevent keyboard from appearing
+                          decoration: InputDecoration(
+                            suffixIcon: const Icon(
+                              Icons.calendar_today,
+                              color: greyColor,
+                            ),
+                            filled: true,
+                            hintText: 'Select Date',
+                            hintStyle: TextStyle(
+                                color: Colors.grey[900],
+                                fontSize: 19,
+                                fontWeight: FontWeight.w400),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 213, 215, 215),
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[
+                                    400]!, // Change this to your desired color
+                                width: 2.0,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Container(
+                      width: width * 0.25,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 0.4,
+
+                            blurRadius: 10,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: timeController,
+
+                        onTap: () => _selectTime(context, timeController),
+                        readOnly: true,
+
+                        // Prevent keyboard from appearing
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: 'Time',
+                          hintStyle: TextStyle(
+                              color: Colors.grey[900],
+                              fontSize: 19,
+                              fontWeight: FontWeight.w400),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color.fromARGB(255, 213, 215, 215),
+                              width: 1.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.grey[
+                                  400]!, // Change this to your desired color
+                              width: 2.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
+                selectedOccurrence != 'No occurrence'
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          const Text(
+                            'End Date',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: headingBlue,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 0.4,
+
+                                        blurRadius: 10,
+                                        offset: const Offset(
+                                            0, 3), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: TextField(
+                                    controller: endDateController,
+
+                                    onTap: () =>
+                                        _selectDate(context, endDateController),
+                                    readOnly: true,
+
+                                    // Prevent keyboard from appearing
+                                    decoration: InputDecoration(
+                                      suffixIcon: const Icon(
+                                        Icons.calendar_today,
+                                        color: greyColor,
+                                      ),
+                                      filled: true,
+                                      hintText: 'Select End Date',
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey[900],
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.w400),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 20),
+                                      fillColor: Colors.white,
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                          color: Color.fromARGB(
+                                              255, 213, 215, 215),
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey[
+                                              400]!, // Change this to your desired color
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Container(
+                                width: width * 0.25,
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      spreadRadius: 0.4,
+
+                                      blurRadius: 10,
+                                      offset: const Offset(
+                                          0, 3), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: TextField(
+                                  controller: endTimeController,
+
+                                  onTap: () =>
+                                      _selectTime(context, endTimeController),
+                                  readOnly: true,
+
+                                  // Prevent keyboard from appearing
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    hintText: 'Time',
+                                    hintStyle: TextStyle(
+                                        color: Colors.grey[900],
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w400),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 20),
+                                    fillColor: Colors.white,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: const BorderSide(
+                                        color:
+                                            Color.fromARGB(255, 213, 215, 215),
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[
+                                            400]!, // Change this to your desired color
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      )
+                    : const SizedBox(),
                 const SizedBox(height: 20),
                 const Text(
                   'Grouping',
@@ -338,7 +551,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 const SizedBox(height: 10),
                 _groupNames.isEmpty
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : Container(
                         decoration: BoxDecoration(
                           boxShadow: [
@@ -347,13 +560,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               spreadRadius: 0.4,
 
                               blurRadius: 10,
-                              offset:
-                                  Offset(0, 3), // changes position of shadow
+                              offset: const Offset(
+                                  0, 3), // changes position of shadow
                             ),
                           ],
                         ),
                         child: DropdownButtonFormField<String>(
-                          hint: Text('Select a Group'),
+                          hint: const Text('Select a Group'),
                           value: _selectedGroup,
                           decoration: InputDecoration(
                             filled: true,
@@ -361,12 +574,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 color: Colors.grey[400],
                                 fontSize: 19,
                                 fontWeight: FontWeight.w400),
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 20),
                             fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                 color: Color.fromARGB(255, 213, 215, 215),
                                 width: 1.0,
                               ),
@@ -397,14 +610,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 child: Text(value),
                               );
                             }).toList(),
-                            DropdownMenuItem<String>(
+                            const DropdownMenuItem<String>(
                               value: 'add_new',
                               child: Text('Add New Group'),
                             ),
                           ],
                         ),
                       ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 GestureDetector(
@@ -418,10 +631,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       String res = await _authMethod.addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
-                        date: selectedDate!,
+                        date: selectedDate,
                         location: locationController.text,
                         occurrence: selectedOccurrence,
                         group: _selectedGroup!,
+                        time: timeController.text,
+                        endDate: selectedOccurrence == 'No occurrence'
+                            ? selectedDate
+                            : selectedDate,
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -442,18 +659,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Please fill in all fields")),
+                        const SnackBar(
+                            content: Text("Please fill in all fields")),
                       );
                     }
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.lightBlue[500],
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'Submit Event',
                         style: TextStyle(fontSize: 20, color: Colors.white),
@@ -461,7 +680,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
               ],
