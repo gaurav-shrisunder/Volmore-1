@@ -140,6 +140,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('')),
       body: SafeArea(
         child: Padding(
@@ -148,13 +149,25 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(child: Image.asset("assets/icons/l.png")),
+                const SizedBox(height: 10),
                 const Center(
                   child: Text(
                     'Schedule New Job',
                     style: TextStyle(
-                      fontSize: 38,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: headingBlue,
+                      color: Color(0xff0c4a6f),
+                    ),
+                  ),
+                ),
+                const Center(
+                  child: Text(
+                    'Enter Detail about the new job',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff0c4a6f),
                     ),
                   ),
                 ),
@@ -163,92 +176,154 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   title: 'Title',
                   controller: titleController,
                   maxlines: 1,
+                  hintText: "Trash Clean Up",
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
-                  title: 'Description',
+                  title: 'Job Description',
                   controller: descriptionController,
                   maxlines: 5,
+                  hintText: 'Job Description',
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
                   title: 'Location',
                   controller: locationController,
                   maxlines: 1,
+                  prefixicon: Icon(
+                    Icons.location_on,
+                    color: Colors.grey,
+                  ),
+                  hintText: '123 Main St New York, NY 10001',
                 ),
                 const SizedBox(height: 10),
                 const Text(
                   'Occurrence',
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4484D2),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: selectedOccurrence,
-                  decoration: InputDecoration(
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 20),
-                    fillColor: lightBlue,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 0.4,
+
+                        blurRadius: 10,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
                   ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'No occurrence',
-                      child: Text('No occurrence'),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedOccurrence,
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintStyle: TextStyle(
+                          color: Colors.grey[400],
+                          fontSize: 19,
+                          fontWeight: FontWeight.w400),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 213, 215, 215),
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .grey[400]!, // Change this to your desired color
+                          width: 2.0,
+                        ),
+                      ),
                     ),
-                    DropdownMenuItem(
-                      value: 'Daily',
-                      child: Text('Daily'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Weekly',
-                      child: Text('Weekly'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Custom',
-                      child: Text('Custom'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedOccurrence = value!;
-                    });
-                  },
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'No occurrence',
+                        child: Text('No occurrence'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Daily',
+                        child: Text('Daily'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Weekly',
+                        child: Text('Weekly'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Custom',
+                        child: Text('Custom'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOccurrence = value!;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(height: 20),
                 const Text(
                   'Date',
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4484D2),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: dateController,
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 0.4,
 
-                  onTap: () => _selectDate(context),
-                  readOnly: true,
+                        blurRadius: 10,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: dateController,
 
-                  // Prevent keyboard from appearing
-                  decoration: InputDecoration(
-                    hintText: 'Select Date',
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    filled: true,
-                    // labelText: 'Select Date',
-                    fillColor: lightBlue,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
+                    onTap: () => _selectDate(context),
+                    readOnly: true,
+
+                    // Prevent keyboard from appearing
+                    decoration: InputDecoration(
+                      filled: true,
+                      hintText: 'Select Date',
+                      hintStyle: TextStyle(
+                          color: Colors.grey[900],
+                          fontSize: 19,
+                          fontWeight: FontWeight.w400),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 213, 215, 215),
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .grey[400]!, // Change this to your desired color
+                          width: 2.0,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -256,62 +331,84 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 const Text(
                   'Grouping',
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4484D2),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 10),
                 _groupNames.isEmpty
                     ? CircularProgressIndicator()
-                    : DropdownButtonFormField<String>(
-                        hint: Text('Select a Group'),
-                        value: _selectedGroup,
-                        decoration: InputDecoration(
-                          filled: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 20),
-                          fillColor: lightBlue,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: BorderSide.none,
-                          ),
+                    : Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 0.4,
+
+                              blurRadius: 10,
+                              offset:
+                                  Offset(0, 3), // changes position of shadow
+                            ),
+                          ],
                         ),
-                        onChanged: (String? newValue) {
-                          if (newValue == 'add_new') {
-                            _showAddGroupDialog();
-                          } else {
-                            setState(() {
-                              _selectedGroup = newValue;
-                            });
-                          }
-                        },
-                        items: [
-                          ..._groupNames
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          DropdownMenuItem<String>(
-                            value: 'add_new',
-                            child: Text('Add New Group'),
+                        child: DropdownButtonFormField<String>(
+                          hint: Text('Select a Group'),
+                          value: _selectedGroup,
+                          decoration: InputDecoration(
+                            filled: true,
+                            hintStyle: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 19,
+                                fontWeight: FontWeight.w400),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(255, 213, 215, 215),
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[
+                                    400]!, // Change this to your desired color
+                                width: 2.0,
+                              ),
+                            ),
                           ),
-                        ],
+                          onChanged: (String? newValue) {
+                            if (newValue == 'add_new') {
+                              _showAddGroupDialog();
+                            } else {
+                              setState(() {
+                                _selectedGroup = newValue;
+                              });
+                            }
+                          },
+                          items: [
+                            ..._groupNames
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            DropdownMenuItem<String>(
+                              value: 'add_new',
+                              child: Text('Add New Group'),
+                            ),
+                          ],
+                        ),
                       ),
                 SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                  //  primary: Colors.red[200],
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  onPressed: () async {
+                GestureDetector(
+                  onTap: () async {
                     if (selectedDate != null &&
                         titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
@@ -349,10 +446,23 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       );
                     }
                   },
-                  child: Text(
-                    'Add Event',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlue[500],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Submit Event',
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
                   ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
               ],
             ),

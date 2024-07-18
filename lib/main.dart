@@ -36,12 +36,12 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           surface: Colors.white,
-         surfaceTint: Colors.white,
+          surfaceTint: Colors.white,
           seedColor: Colors.black,
           secondary: Colors.white,
           primary: Colors.black,
           shadow: Colors.white,
-          surfaceContainer: Colors.white
+          // surfaceContainer: Colors.white
         ),
         useMaterial3: true,
       ),

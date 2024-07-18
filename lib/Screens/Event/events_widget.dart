@@ -4,11 +4,10 @@ import 'package:volunterring/Utils/Colors.dart';
 
 import '../../Models/event_data_model.dart';
 
-
 class EventWidget extends StatelessWidget {
   final EventDataModel event;
 
-  const EventWidget(this.event,{super.key});
+  const EventWidget(this.event, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,9 @@ class EventWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: event.title == 'Trash Cleanup' ? Colors.orange : Colors.pink,
+                color: event.title == 'Trash Cleanup'
+                    ? Colors.orange
+                    : Colors.pink,
               ),
             ),
             SizedBox(height: 8),
@@ -61,8 +62,17 @@ class EventWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                ActionChip(label: Text('Log Now'),onPressed: () {},)
-              
+                ActionChip(
+                  backgroundColor: Colors.lightBlue,
+                  side: BorderSide.none,
+                  label: Text(
+                    'Log Now',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {},
+                  labelPadding:
+                      EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                )
               ],
             ),
           ],

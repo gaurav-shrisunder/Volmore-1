@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 
 import 'package:intl/intl.dart';
+import 'package:volunterring/Screens/Event/CreateEventPage.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
@@ -21,10 +23,8 @@ class _EventPageState extends State<EventPage>
   @override
   void initState() {
     super.initState();
-     _eventsFuture = _authMethod.fetchEvents();
+    _eventsFuture = _authMethod.fetchEvents();
     _tabController = TabController(length: 3, vsync: this);
-   
-   
   }
 
   @override
@@ -59,18 +59,32 @@ class _EventPageState extends State<EventPage>
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child:  Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Today's Events", style: TextStyle(color: headingBlue, fontSize: 22, fontWeight: FontWeight.bold),),
+                            const Text(
+                              "Today's Events",
+                              style: TextStyle(
+                                  color: headingBlue,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             ElevatedButton(
-                              style: ElevatedButton.styleFrom(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.orange, // Background color
 
-             backgroundColor: Colors.orange, // Background color
-        
-            textStyle: TextStyle(fontSize: 14, color: Colors.white),
-          ),
-                              onPressed: (){}, child: Text('Start Logging', style: TextStyle(fontSize: 14, color: Colors.white),))
+                                  textStyle: const TextStyle(
+                                      fontSize: 14, color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  Get.to(const CreateEventScreen());
+                                },
+                                child: const Text(
+                                  'Start Logging',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white),
+                                ))
                           ],
                         ),
                       ),
@@ -79,7 +93,8 @@ class _EventPageState extends State<EventPage>
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                            return const Center(
+                                child: CircularProgressIndicator());
                           } else if (snapshot.hasError) {
                             return Center(
                                 child: Text('Error: ${snapshot.error}'));
