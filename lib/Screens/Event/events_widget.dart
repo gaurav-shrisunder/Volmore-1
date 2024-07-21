@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:volunterring/Screens/Event/log_now_page.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
 import '../../Models/event_data_model.dart';
@@ -69,7 +71,9 @@ class EventWidget extends StatelessWidget {
                     'Log Now',
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                  Get.to( LogNowPage(event.title!));
+                  },
                   labelPadding:
                       EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                 )

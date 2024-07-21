@@ -23,7 +23,7 @@ class _EventPageState extends State<EventPage>
   @override
   void initState() {
     super.initState();
-    _eventsFuture = _authMethod.fetchEvents();
+     _eventsFuture = _authMethod.fetchEvents();
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -70,13 +70,13 @@ class _EventPageState extends State<EventPage>
                                   fontWeight: FontWeight.bold),
                             ),
                             ElevatedButton(
-                                style: ElevatedButton.styleFrom(
+                              style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       Colors.orange, // Background color
-
+        
                                   textStyle: const TextStyle(
                                       fontSize: 14, color: Colors.white),
-                                ),
+          ),
                                 onPressed: () {
                                   Get.to(const CreateEventScreen());
                                 },
