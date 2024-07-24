@@ -4,8 +4,8 @@ import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
 import 'package:volunterring/Screens/CreateLogScreen.dart';
-import 'package:volunterring/Screens/Event/CreateEventPage.dart';
-import 'package:volunterring/Screens/Event/EventsPAge.dart';
+import 'package:volunterring/Screens/Event/create_event_page.dart';
+import 'package:volunterring/Screens/Event/events_page.dart';
 
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';

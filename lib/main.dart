@@ -1,19 +1,22 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/firebase_options.dart';
+import 'package:volunterring/provider/time_logger_provider.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
+  await Firebase.initializeApp();
+  runApp(ChangeNotifierProvider(
+    create: (_) => TimerProvider(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {

@@ -1,9 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
@@ -134,11 +133,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2025),
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
         controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
       });
+    }
     // showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 

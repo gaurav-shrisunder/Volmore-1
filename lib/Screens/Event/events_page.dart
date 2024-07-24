@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:intl/intl.dart';
+
 import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Services/authentication.dart';
@@ -8,7 +8,10 @@ import 'package:volunterring/Utils/Colors.dart';
 import '../../Models/event_data_model.dart';
 
 class EventPage extends StatefulWidget {
+  const EventPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _EventPageState createState() => _EventPageState();
 }
 
@@ -66,7 +69,8 @@ class _EventPageState extends State<EventPage>
         children: [
           buildEventList("Today's Events", (event) {
             return event.date.toString().split(' ')[0] ==
-                DateTime.now().toString().split(' ')[0];
+                    DateTime.now().toString().split(' ')[0] ||
+                event.occurence == "Daily";
           }),
           buildEventList("Upcoming Events", (event) {
             DateTime eventDate = DateTime.parse(event.date.toString());
@@ -75,7 +79,7 @@ class _EventPageState extends State<EventPage>
           }),
           buildEventList("Past Events", (event) {
             DateTime eventDate = DateTime.parse(event.date.toString());
-            DateTime today = DateTime.now().subtract(Duration(days: 1));
+            DateTime today = DateTime.now().subtract(const Duration(days: 1));
             return eventDate.isBefore(today);
           }),
         ],
@@ -86,6 +90,7 @@ class _EventPageState extends State<EventPage>
   Widget buildEventList(String title, bool Function(EventDataModel) filter) {
     return Column(
       children: [
+        const SizedBox(height: 15),
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
@@ -102,16 +107,21 @@ class _EventPageState extends State<EventPage>
               if (title == "Today's Events")
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: const Color(0xFFfa6513),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
                     textStyle:
-                        const TextStyle(fontSize: 14, color: Colors.white),
+                        const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   onPressed: () {
                     Get.to(const CreateLogScreen());
                   },
                   child: const Text(
                     'Start Logging',
-                    style: TextStyle(fontSize: 14, color: Colors.white),
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
             ],
@@ -133,8 +143,14 @@ class _EventPageState extends State<EventPage>
                   itemBuilder: (context, index) {
                     EventDataModel event = snapshot.data![index];
                     Color color = colorMap[event.groupColor] ?? Colors.pink;
+                    bool isEnabled = event.date.toString().split(' ')[0] ==
+                        DateTime.now().toString().split(' ')[0];
+                    String buttonText = isEnabled ? "Log Now" : "Verify";
                     return filter(event)
-                        ? EventWidget(event, color)
+                        ? EventWidget(event, color,
+                            isEnabled: isEnabled,
+                            onPressed: () {},
+                            buttonText: buttonText)
                         : Container();
                   },
                 ),

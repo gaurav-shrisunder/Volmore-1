@@ -9,10 +9,9 @@ import 'package:provider/provider.dart';
 
 import '../../provider/time_logger_provider.dart';
 
-
 class LogNowPage extends StatefulWidget {
-    final String taskName;
-  const LogNowPage(this.taskName,{super.key});
+  final String taskName;
+  const LogNowPage(this.taskName, {super.key});
 
   @override
   State<LogNowPage> createState() => _LogNowPageState();
@@ -40,27 +39,32 @@ class _LogNowPageState extends State<LogNowPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(onPressed: (){
-                        Navigator.pop(context);
-                      }, icon: const Icon(CupertinoIcons.back, size: 40,)),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(
+                            CupertinoIcons.back,
+                            size: 40,
+                          )),
                       Align(
                         alignment: Alignment.topRight,
                         child: GestureDetector(
-                          onTap: () {
-                            if (!timerProvider.locationTracking) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Lottie.asset(
-                                        "assets/images/loader_lottie.json");
-                                  });
-                            }
+                            onTap: () {
+                              if (!timerProvider.locationTracking) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Lottie.asset(
+                                          "assets/images/loader_lottie.json");
+                                    });
+                              }
 
-                            timerProvider.toggleLocationTracking(context);
-                          },
-                          child: Icon(Icons.location_on)
-                          //locationIcon(timerProvider.locationTracking),
-                        ),
+                              timerProvider.toggleLocationTracking(context);
+                            },
+                            child: Icon(Icons.location_on)
+                            //locationIcon(timerProvider.locationTracking),
+                            ),
                       ),
                     ],
                   ),
@@ -185,8 +189,6 @@ class _LogNowPageState extends State<LogNowPage> {
                               width: screenWidth * 0.24,
                               color: Colors.blueGrey,
                             )),
-
-                            
                 ],
               );
             },
@@ -196,5 +198,3 @@ class _LogNowPageState extends State<LogNowPage> {
     );
   }
 }
-
-
