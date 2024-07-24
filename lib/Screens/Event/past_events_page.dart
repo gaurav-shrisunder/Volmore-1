@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 
@@ -21,7 +23,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _authMethod = AuthMethod();
+  final _logMethod = LogServices();
   TimeOfDay? picked = TimeOfDay.now();
   List<String> _groupNames = [];
   String? _selectedGroup;
@@ -165,6 +167,63 @@ class _PastEventsPageState extends State<PastEventsPage> {
     setState(() {
       controller.text = picked!.format(context);
     });
+  }
+
+  Duration calculateDuration(String startTimeStr, String endTimeStr) {
+    // Define time format
+    DateFormat timeFormat = DateFormat('h:mm a');
+
+    // Parse times
+    DateTime startTime = timeFormat.parse(startTimeStr);
+    DateTime endTime = timeFormat.parse(endTimeStr);
+
+    // Calculate duration
+    Duration duration;
+
+    if (endTime.isBefore(startTime)) {
+      // Add 24 hours to end time if it's before start time
+      duration = endTime.add(const Duration(hours: 24)).difference(startTime);
+    } else {
+      duration = endTime.difference(startTime);
+    }
+
+    return duration;
+  }
+
+  void submitData() async {
+    List<Map<String, String>> dateTimes = [];
+    for (int i = 0; i < dateControllers.length; i++) {
+      String startTime = timeControllers[i].text;
+      String endTime = endTimeControllers[i].text;
+      Duration duration = calculateDuration(startTime, endTime);
+
+      // Formatting duration as hours and minutes
+      String durationString = '${duration.inHours}:${duration.inMinutes % 60}';
+
+      dateTimes.add({
+        'date': dateControllers[i].text,
+        'startTime': startTime,
+        'endTime': endTime,
+        'duration': durationString,
+      });
+    }
+
+    print("dateTimes: $dateTimes");
+
+    // Creating the data map
+    Map<String, dynamic> eventData = {
+      'title': titleController.text,
+      'description': descriptionController.text,
+      'address': locationController.text,
+      'dateTimes': dateTimes,
+      'group': _selectedGroup,
+      'location': null,
+    };
+    var res = await _logMethod.createPastLog(eventData);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(res)),
+    );
+    Get.back();
   }
 
   @override
@@ -502,18 +561,23 @@ class _PastEventsPageState extends State<PastEventsPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlue[500],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Submit Event',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                GestureDetector(
+                  onTap: () {
+                    submitData();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlue[500],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Submit Event',
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
