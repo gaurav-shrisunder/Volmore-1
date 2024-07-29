@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:volunterring/Models/UserModel.dart';
@@ -18,7 +19,7 @@ class AuthMethod {
 
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
-  final Uuid _uuid = Uuid();
+  final Uuid _uuid = const Uuid();
 
   // Sign Up User
   Future<String> signupUser({
@@ -185,12 +186,12 @@ class AuthMethod {
 
       if (newPassword != confirmNewPassword) {
         res = "New passwords do not match";
-        Get.snackbar('Error', '${res}');
+        Get.snackbar('Error', res);
       } else {
         // Update password
         await user.updatePassword(newPassword);
         res = "Password updated successfully";
-        Get.snackbar('Hurray', '${res}');
+        Get.snackbar('Hurray', res);
       }
     } catch (e) {
       res = e.toString();
@@ -209,6 +210,7 @@ class AuthMethod {
     DateTime? endDate,
     required String time,
     TimeOfDay? endTime,
+    required List<DateTime> dates,
   }) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
@@ -240,7 +242,9 @@ class AuthMethod {
         'host': user!.name,
         'host_id': uid,
         'time': time,
-        'end_date': endDate != null ? endDate : date,
+        'end_date': endDate ?? date,
+        'dates':
+            dates.map((date) => DateFormat('dd/MM/yyyy').format(date)).toList(),
       });
 
       res = "Event added successfully";
@@ -259,7 +263,6 @@ class AuthMethod {
 
       // Check if uid is not null
       if (uid == null) {
-        print('UID is null');
         return null;
       }
 
@@ -269,7 +272,7 @@ class AuthMethod {
 
       // Check if document exists
       if (!doc.exists) {
-        print('Document does not exist');
+        Get.snackbar("Error", "No user Found");
         return null;
       }
 
@@ -277,7 +280,7 @@ class AuthMethod {
       return UserModel.fromMap(doc.data() as Map<String, dynamic>);
     } catch (e) {
       // Handle any errors that occur
-      print('Error fetching user data: $e');
+
       return null;
     }
   }

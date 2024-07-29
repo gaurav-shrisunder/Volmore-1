@@ -15,12 +15,14 @@ Future<void> main() async {
   await Firebase.initializeApp();
   runApp(ChangeNotifierProvider(
     create: (_) => TimerProvider(),
-    child: MyApp(),
+    child: const MyApp(),
   ));
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key});
+  const MyApp({
+    super.key,
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -48,7 +50,7 @@ class _MyAppState extends State<MyApp> {
         ),
         useMaterial3: true,
       ),
-      home: isLoggedIn ? Dashboard() : LoginPage(),
+      home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }
 

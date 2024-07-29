@@ -3,8 +3,7 @@ import 'package:get/get.dart';
 import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
-import 'package:volunterring/Screens/CreateLogScreen.dart';
-import 'package:volunterring/Screens/Event/create_event_page.dart';
+
 import 'package:volunterring/Screens/Event/events_page.dart';
 
 import 'package:volunterring/Screens/LoginPage.dart';
@@ -19,231 +18,14 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    // Center(
-    //   child: Column(
-    //     children: [
-    //       Container(
-    //         child: const Text(
-    //           'Welcome to Home Page ',
-    //           style: TextStyle(fontSize: 24),
-    //         ),
-    //       ),
-    //       SizedBox(
-    //         height: 190,
-    //       ),
-    //       SizedBox(
-    //         width: 200,
-    //         height: 60,
-    //         child: ElevatedButton(
-    //           onPressed: () {
-    //             Get.to(CreateLogScreen());
-    //           },
-    //           child: const Text(
-    //             'Create Log',
-    //             style: TextStyle(fontSize: 24),
-    //           ),
-    //         ),
-    //       ),
-    //       SizedBox(
-    //         height: 190,
-    //       ),
-    //       SizedBox(
-    //         width: 200,
-    //         height: 60,
-    //         child: ElevatedButton(
-    //           onPressed: () async {},
-    //           child: const Text(
-    //             'Log Out ',
-    //             style: TextStyle(fontSize: 24),
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // ),
-
-    const CreateLogScreen(),
-    EventPage(),
-    Center(
-      child: Column(
-        children: [
-          const Text(
-            'Settings Page',
-            style: TextStyle(fontSize: 24),
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.settings,
-              size: 32,
-            ),
-            onPressed: () {
-              Get.bottomSheet(
-                  Container(
-                      decoration: const BoxDecoration(
-                          borderRadius:
-                              BorderRadius.only(topLeft: Radius.circular(30))),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Support - I need help',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(SupportPage());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Frequently Asked Questions',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(const FAQPage());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Privacy Policy',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.back();
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Terms and Conditions',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(const TermsScreen());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Manage your Account',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(const UserProfilePage());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                title: const Text(
-                                  'Log Out',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                onTap: () {},
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                  backgroundColor: Colors.white,
-                  elevation: 1);
-            },
-          ),
-        ],
-      ),
-    ),
+    const EventPage(),
+    const Text('Leaderboard Screen'),
+    const Text('Transcript Screen'),
     const UserProfilePage(),
   ];
 
@@ -256,9 +38,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'VOLMORE ',
+          'VOLMORE',
           style: TextStyle(
               fontSize: 32, fontWeight: FontWeight.bold, color: headingBlue),
         ),
@@ -268,192 +51,28 @@ class _HomePageState extends State<HomePage> {
         shadowColor: Colors.black,
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.settings_outlined,
-              size: 32,
-            ),
-            onPressed: () {
-              Get.bottomSheet(
-                  Container(
-                      decoration: const BoxDecoration(
-                          borderRadius:
-                              BorderRadius.only(topLeft: Radius.circular(30))),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Support - I need help',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(SupportPage());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Frequently Asked Questions',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(const FAQPage());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Privacy Policy',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.back();
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Terms and Conditions',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(const TermsScreen());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                title: const Text(
-                                  'Manage your Account',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                                onTap: () {
-                                  Get.to(const UserProfilePage());
-                                },
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ListTile(
-                                title: const Text(
-                                  'Log Out',
-                                  style: TextStyle(
-                                      color: headingBlue,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                tileColor: const Color(0xFFECECEC),
-                                onTap: () {
-                                  Logout();
-                                },
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: headingBlue,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
-                  backgroundColor: Colors.white,
-                  elevation: 1);
-            },
+            icon: const Icon(Icons.settings_outlined, size: 32),
+            onPressed: _showSettingsBottomSheet,
           ),
-          SizedBox(
-            width: 10,
-          )
+          const SizedBox(width: 10),
         ],
       ),
-      body: _pages[_selectedIndex],
+      body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        elevation: 5,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.leaderboard),
+            label: 'Leaderboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long),
+            label: 'Transcript',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -461,9 +80,67 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: headingBlue,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  void _showSettingsBottomSheet() {
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(30)),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              _buildSettingsTile(
+                  'Support - I need help',
+                  Icons.arrow_forward_ios_outlined,
+                  () => Get.to(SupportPage())),
+              _buildSettingsTile(
+                  'Frequently Asked Questions',
+                  Icons.arrow_forward_ios_outlined,
+                  () => Get.to(const FAQPage())),
+              _buildSettingsTile('Privacy Policy',
+                  Icons.arrow_forward_ios_outlined, () => Get.back()),
+              _buildSettingsTile(
+                  'Terms and Conditions',
+                  Icons.arrow_forward_ios_outlined,
+                  () => Get.to(const TermsScreen())),
+              _buildSettingsTile(
+                  'Manage your Account',
+                  Icons.arrow_forward_ios_outlined,
+                  () => Get.to(const UserProfilePage())),
+              _buildSettingsTile(
+                  'Log Out', Icons.arrow_forward_ios_outlined, Logout),
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 1,
+    );
+  }
+
+  Widget _buildSettingsTile(String title, IconData icon, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        tileColor: const Color(0xFFECECEC),
+        title: Text(
+          title,
+          style: const TextStyle(
+              color: headingBlue, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        trailing: Icon(icon, color: headingBlue),
+        onTap: onTap,
       ),
     );
   }

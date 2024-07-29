@@ -1,23 +1,30 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Models/event_data_model.dart';
 
 class TimerProvider with ChangeNotifier {
   int _elapsedTime = 0;
   bool _isLogging = false;
+  final int _points = 0;
   bool _locationTracking = false;
   loc.LocationData? _locationData;
   String _address = "";
   late DateTime _startTime;
   final loc.Location _location = loc.Location();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   int get elapsedTime => _elapsedTime;
+
+  int get points => _points;
 
   bool get isLogging => _isLogging;
 
@@ -29,48 +36,83 @@ class TimerProvider with ChangeNotifier {
 
   DateTime get startTime => _startTime;
 
-  Future<void> toggleLogging(BuildContext context) async {
+  Future<void> toggleLogging() async {
     if (_isLogging) {
       _isLogging = false;
-      showDialog(
-          context: context,
-          builder: (context) {
-            return Lottie.asset("assets/images/loader_lottie.json");
-          });
-
-      CollectionReference logs = FirebaseFirestore.instance.collection('logs');
-      await logs.add({
-        'elapsedTime(hh:mm:ss)':
-            "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600) ~/ 60}:${_elapsedTime % 60}",
-        'location': _locationData != null
-            ? GeoPoint(_locationData!.latitude!, _locationData!.longitude!)
-            : null,
-        'startTime': _startTime,
-        'address': _address,
-        'endTime': DateTime.now(),
-      }).then((onValue) {
-        Navigator.of(context).pop();
-      });
-      showDialog(context: context, builder: (_){
-        return SimpleDialog();
-
-      });
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(
-      //       builder: (context) => SavedLogsScreen(
-      //             elapsedTime: _elapsedTime,
-      //             locationData: _locationData,
-      //             startTime: _startTime,
-      //             endTime: DateTime.now(),
-      //             address: _address,
-      //           )),
-      // );
     } else {
+      if (elapsedTime == 0) {
+        _startTime = DateTime.now();
+      }
       _isLogging = true;
-      _startTime = DateTime.now();
+
       _startTimer();
     }
+    notifyListeners();
+  }
+
+  Future<void> endLogging(BuildContext context, EventDataModel event) async {
+    final SharedPreferences prefs = await _prefs;
+    String uid = prefs.getString("uid") ?? "";
+    _isLogging = false;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Lottie.asset("assets/images/loader_lottie.json");
+        });
+
+    CollectionReference logs = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection("logs");
+    await logs.add({
+      'elapsedTime(hh:mm:ss)':
+          "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600) ~/ 60}:${_elapsedTime % 60}",
+      'location': _locationData != null
+          ? GeoPoint(_locationData!.latitude!, _locationData!.longitude!)
+          : null,
+      'startTime': _startTime,
+      'address': _address,
+      'title': event.title,
+      'description': event.description,
+      'group': event.group,
+      'dateTime': [
+        {
+          'date': event.date,
+          'startTime': _startTime,
+          'endTime': DateTime.now(),
+          'duration': "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600)}",
+        }
+      ]
+    }).then((onValue) {
+      Navigator.of(context).pop();
+    });
+    showDialog(
+        context: context,
+        builder: (_) {
+          return SimpleDialog(
+            title: Lottie.asset("assets/images/hurrah_lotttie.json"),
+            children: [
+              const Center(
+                child: Text(
+                  "Log Saved Succesfully",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Center(
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("OK")),
+              ),
+              const SizedBox(
+                height: 20,
+              )
+            ],
+          );
+        });
+
+    _elapsedTime = 0;
     notifyListeners();
   }
 
@@ -99,13 +141,11 @@ class TimerProvider with ChangeNotifier {
 
       loc.PermissionStatus permissionGranted = await _location.hasPermission();
       if (permissionGranted == loc.PermissionStatus.denied) {
-
         permissionGranted = await _location.requestPermission();
         if (permissionGranted != loc.PermissionStatus.granted) {
           Navigator.pop(context);
           return;
         }
-
       }
 
       _locationData = await _location.getLocation();

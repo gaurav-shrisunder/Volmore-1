@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
@@ -40,6 +41,28 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   void initState() {
     super.initState();
     _fetchGroupNames();
+  }
+
+  List<DateTime> generateDates(
+      DateTime startDate, DateTime endDate, String occurrence) {
+    List<DateTime> dates = [];
+    DateTime currentDate = startDate;
+
+    if (occurrence == 'Weekly') {
+      while (currentDate.isBefore(endDate) ||
+          currentDate.isAtSameMomentAs(endDate)) {
+        dates.add(currentDate);
+        currentDate = currentDate.add(const Duration(days: 7));
+      }
+    } else {
+      while (currentDate.isBefore(endDate) ||
+          currentDate.isAtSameMomentAs(endDate)) {
+        dates.add(currentDate);
+        currentDate = currentDate.add(const Duration(days: 1));
+      }
+    }
+
+    return dates;
   }
 
   Future<void> _fetchGroupNames() async {
@@ -126,20 +149,25 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller,
+      {bool isEndDate = false}) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate, // Refer step 1
+      initialDate: selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2025),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
-        selectedDate = picked;
-        controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+        if (isEndDate) {
+          controller.text = DateFormat('dd/MM/yyyy').format(picked);
+        } else {
+          selectedDate = picked;
+          controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+        }
       });
     }
-    // showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 
   _selectTime(BuildContext context, TextEditingController controller) async {
@@ -441,8 +469,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                   child: TextField(
                                     controller: endDateController,
 
-                                    onTap: () =>
-                                        _selectDate(context, endDateController),
+                                    onTap: () => _selectDate(
+                                        context, endDateController,
+                                        isEndDate: true),
+
                                     readOnly: true,
 
                                     // Prevent keyboard from appearing
@@ -622,12 +652,17 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    if (selectedDate != null &&
-                        titleController.text.isNotEmpty &&
+                    if (titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&
-                        _selectedGroup != "" &&
                         selectedOccurrence.isNotEmpty) {
+                      DateTime endDate = selectedOccurrence == 'No occurrence'
+                          ? selectedDate
+                          : DateFormat('dd/MM/yyyy')
+                              .parse(endDateController.text);
+                      List<DateTime> allDates = generateDates(
+                          selectedDate, endDate, selectedOccurrence);
+
                       String res = await _authMethod.addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
@@ -636,9 +671,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         occurrence: selectedOccurrence,
                         group: _selectedGroup!,
                         time: timeController.text,
-                        endDate: selectedOccurrence == 'No occurrence'
-                            ? selectedDate
-                            : selectedDate,
+                        endDate: endDate,
+                        dates: allDates,
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -652,10 +686,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         locationController.clear();
                         setState(() {
                           dateController.clear();
+                          endDateController.clear();
                           selectedDate = DateTime.now();
                           selectedOccurrence = 'No occurrence';
                           _selectedGroup = null;
                         });
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Dashboard()),
+                            (route) => false);
                       }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
