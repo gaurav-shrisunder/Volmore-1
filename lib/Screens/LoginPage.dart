@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       //navigate to the home screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const Dashboard(),
+          builder: (context) => const HomePage(),
         ),
       );
     } else {
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-        backgroundColor: Color(0xFF7Fd8de),
+        backgroundColor: const Color(0xFF7Fd8de),
         body: SafeArea(
           child: Column(
             children: [
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: height * 0.583,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
@@ -135,7 +135,8 @@ class _LoginPageState extends State<LoginPage> {
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ForgotPassword())),
+                                  builder: (context) =>
+                                      const ForgotPassword())),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -146,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.lightBlue[500],
                                     fontWeight: FontWeight.normal),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               )
                             ],
@@ -176,7 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => SignUpPage())),
+                                          builder: (context) =>
+                                              const SignUpPage())),
                                   child: Text(
                                     ' Create Acoount',
                                     style: TextStyle(

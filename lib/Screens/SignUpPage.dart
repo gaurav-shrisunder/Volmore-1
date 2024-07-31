@@ -46,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
       //navigate to the home screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const Dashboard(),
+          builder: (context) => const HomePage(),
         ),
       );
     } else {
@@ -172,7 +172,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LoginPage())),
+                                      builder: (context) => const LoginPage())),
                               child: Text(
                                 ' Log in',
                                 style: TextStyle(
