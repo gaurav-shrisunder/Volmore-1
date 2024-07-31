@@ -10,6 +10,7 @@ import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Screens/Event/verification_screen.dart';
 
 class TimerProvider with ChangeNotifier {
   int _elapsedTime = 0;
@@ -101,7 +102,12 @@ class TimerProvider with ChangeNotifier {
               Center(
                 child: TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VerificationPage(
+                                    event: event,
+                                  )));
                     },
                     child: const Text("OK")),
               ),

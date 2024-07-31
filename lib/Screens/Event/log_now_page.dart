@@ -156,7 +156,7 @@ class _LogNowPageState extends State<LogNowPage> {
                                       height: 10,
                                     ),
                                     const Text(
-                                      "Stop",
+                                      "Pause",
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontSize: 18,

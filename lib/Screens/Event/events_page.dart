@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:intl/intl.dart';
 
 import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
@@ -73,6 +74,7 @@ class _EventPageState extends State<EventPage>
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             String title = "Today's Events";
+            print("Data ${snapshot.data}");
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -113,9 +115,9 @@ class _EventPageState extends State<EventPage>
               controller: _tabController,
               children: [
                 buildEventList("Today's Events", (event) {
-                  return event.date.toString().split(' ')[0] ==
-                          DateTime.now().toString().split(' ')[0] ||
-                      event.occurence == "Daily";
+                  print(event.occurence);
+                  return event.dates!.contains(
+                      DateFormat('dd/MM/yyyy').format(DateTime.now()));
                 }, snapshot.data!),
                 buildEventList("Upcoming Events", (event) {
                   DateTime eventDate = DateTime.parse(event.date.toString());
@@ -170,7 +172,7 @@ class _EventPageState extends State<EventPage>
                     Get.to(const CreateLogScreen());
                   },
                   child: const Text(
-                    'Start Logging',
+                    'Create Event',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
@@ -183,8 +185,9 @@ class _EventPageState extends State<EventPage>
             itemBuilder: (context, index) {
               EventDataModel event = events[index];
               Color color = colorMap[event.groupColor] ?? Colors.pink;
-              bool isEnabled = event.date.toString().split(' ')[0] ==
-                  DateTime.now().toString().split(' ')[0];
+              bool isEnabled = event.dates!.contains(
+                      DateFormat('dd/MM/yyyy').format(DateTime.now())) &&
+                  title == "Today's Events";
               String buttonText = isEnabled ? "Log Now" : "Verify";
               return filter(event)
                   ? EventWidget(

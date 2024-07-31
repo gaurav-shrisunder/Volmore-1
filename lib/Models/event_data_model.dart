@@ -10,7 +10,10 @@ class EventDataModel {
   String? location;
   String? occurence;
   String? title;
-   String? host;
+  String? host;
+  String? time;
+  dynamic endDate;
+  List<dynamic>? dates;
 
   EventDataModel(
       {this.date,
@@ -21,8 +24,10 @@ class EventDataModel {
       this.location,
       this.occurence,
       this.title,
-      this.host
-  });
+      this.time,
+      this.endDate,
+      this.dates,
+      this.host});
 
   EventDataModel.fromJson(Map<String, dynamic> json) {
     date = json['date'] != null ? (json['date'] as Timestamp).toDate() : null;
@@ -31,22 +36,29 @@ class EventDataModel {
     groupColor = json['group_color'];
     id = json['id'];
     location = json['location'];
-    occurence = json['occurence'];
+    occurence = json['occurrence'];
     title = json['title'];
     host = json['host'];
+    time = json['time'];
+    dates = json['dates'];
+    endDate = json['end_date'] != null
+        ? (json['end_date'] as Timestamp).toDate()
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['date'] = this.date;
-    data['description'] = this.description;
-    data['group'] = this.group;
-    data['group_color'] = this.groupColor;
-    data['id'] = this.id;
-    data['location'] = this.location;
-    data['occurence'] = this.occurence;
-    data['title'] = this.title;
-     data['host'] = this.host;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['date'] = date;
+    data['description'] = description;
+    data['group'] = group;
+    data['group_color'] = groupColor;
+    data['id'] = id;
+    data['location'] = location;
+    data['occurrence'] = occurence;
+    data['title'] = title;
+    data['host'] = host;
+    data['time'] = time;
+    data['end_date'] = endDate;
     return data;
   }
 }
