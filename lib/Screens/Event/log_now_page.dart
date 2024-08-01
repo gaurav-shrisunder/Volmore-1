@@ -95,35 +95,44 @@ class _LogNowPageState extends State<LogNowPage> {
                   //     ),
                   //   ),
                   // ),
-                  CircularPercentIndicator(
-                    radius: MediaQuery.of(context).size.width / 2.7,
-                    lineWidth: 15.0,
-                    percent: timerProvider.elapsedTime.toDouble() / (600 * 60),
-                    center: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Log Now",
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.09,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.1,
+                      ),
+                      Text(
+                        "Shift Hours",
+                        style:
+                            TextStyle(fontSize: 24, color: Colors.orange[400]),
+                      ),
+                      Text(
+                        '${(timerProvider.elapsedTime ~/ 3600).toString().padLeft(2, '0')}:${((timerProvider.elapsedTime % 3600) ~/ 60).toString().padLeft(2, '0')}:${(timerProvider.elapsedTime % 60).toString().padLeft(2, '0')}',
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      if (timerProvider.locationTracking &&
+                          timerProvider.locationData != null)
+                        const Icon(Icons.location_on),
+                      if (timerProvider.locationTracking &&
+                          timerProvider.locationData != null)
                         Text(
-                          '${(timerProvider.elapsedTime ~/ 3600).toString().padLeft(2, '0')}:${((timerProvider.elapsedTime % 3600) ~/ 60).toString().padLeft(2, '0')}:${(timerProvider.elapsedTime % 60).toString().padLeft(2, '0')}',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.10,
-                              fontWeight: FontWeight.bold),
+                          timerProvider.address,
+                          maxLines: 3,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: screenWidth * 0.03),
                         ),
-                        if (timerProvider.locationTracking &&
-                            timerProvider.locationData != null)
-                          const Icon(Icons.location_on),
-                        if (timerProvider.locationTracking &&
-                            timerProvider.locationData != null)
-                          Text(
-                            timerProvider.address,
-                            maxLines: 3,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: screenWidth * 0.03),
-                          ),
-                      ],
-                    ),
-                    progressColor: Colors.blue,
+                    ],
                   ),
+
                   SizedBox(height: screenHeight * 0.05),
                   Text(
                     widget.taskName,

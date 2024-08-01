@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
@@ -47,6 +48,27 @@ class _EventPageState extends State<EventPage>
     'Brown': Colors.brown,
     'Cyan': Colors.cyan,
   };
+
+  bool containsToday(List<dynamic> dates) {
+    DateTime today = DateTime.now();
+    bool found = false;
+
+    for (var dateMap in dates) {
+      Timestamp timestamp = dateMap['date'];
+      DateTime date = timestamp.toDate();
+      print("Date year $date");
+      print("today $today");
+      // Check if the date is the same as today's date
+      if (date.year == today.year &&
+          date.month == today.month &&
+          date.day == today.day) {
+        found = true;
+        break;
+      }
+    }
+
+    return found;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +137,9 @@ class _EventPageState extends State<EventPage>
               controller: _tabController,
               children: [
                 buildEventList("Today's Events", (event) {
-                  print(event.occurence);
-                  return event.dates!.contains(
-                      DateFormat('dd/MM/yyyy').format(DateTime.now()));
+                  print(event.dates);
+                  print(containsToday(event.dates!));
+                  return containsToday(event.dates!);
                 }, snapshot.data!),
                 buildEventList("Upcoming Events", (event) {
                   DateTime eventDate = DateTime.parse(event.date.toString());
@@ -185,9 +207,8 @@ class _EventPageState extends State<EventPage>
             itemBuilder: (context, index) {
               EventDataModel event = events[index];
               Color color = colorMap[event.groupColor] ?? Colors.pink;
-              bool isEnabled = event.dates!.contains(
-                      DateFormat('dd/MM/yyyy').format(DateTime.now())) &&
-                  title == "Today's Events";
+              bool isEnabled =
+                  containsToday(event.dates!) && title == "Today's Events";
               String buttonText = isEnabled ? "Log Now" : "Verify";
               return filter(event)
                   ? EventWidget(
