@@ -95,7 +95,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
               ),
               Text(
                 DateFormat.yMMMMEEEEd().format(widget.event.date),
-                style: const TextStyle(fontSize: 17, color: greyColor),
+                style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
@@ -129,7 +129,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                   ),
                   Text(
                     widget.event.time ?? "",
-                    style: const TextStyle(fontSize: 17, color: greyColor),
+                    style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
               ),
@@ -138,7 +138,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
               ),
               const Text(
                 "Signature",
-                style: TextStyle(fontSize: 17, color: headingBlue),
+                style: TextStyle(fontSize: 18, color: headingBlue),
               ),
               SizedBox(
                 height: screenHeight * 0.007,
@@ -162,7 +162,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
               ),
               const Text(
                 "Volunteer Seeker's Phone Number",
-                style: TextStyle(fontSize: 17, color: headingBlue),
+                style: TextStyle(fontSize: 18, color: headingBlue),
               ),
               SizedBox(
                 height: screenHeight * 0.007,
@@ -228,7 +228,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
               ),
               const Text(
                 "Sign for all previous events too",
-                style: TextStyle(fontSize: 17, color: Colors.black),
+                style: TextStyle(fontSize: 18, color: Colors.black),
               ),
               FutureBuilder<List<EventDataModel>>(
                   future: _eventsFuture,
@@ -295,7 +295,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                               children: [
                                 Text(event.title.toString().capitalize ?? "",
                                     style:
-                                        TextStyle(color: color, fontSize: 22)),
+                                        TextStyle(color: color, fontSize: 18)),
                                 const SizedBox(
                                   height: 2,
                                 ),
@@ -311,7 +311,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                                     Text(
                                       event.time ?? "",
                                       style: const TextStyle(
-                                          fontSize: 17, color: greyColor),
+                                          fontSize: 16, color: greyColor),
                                     ),
                                   ],
                                 ),
@@ -321,7 +321,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                               Icon(
                                 Icons.location_on_outlined,
                                 color: greyColor,
-                                size: 35,
+                                size: 30,
                               ),
                               SizedBox(
                                 width: 5,
@@ -329,7 +329,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                               Icon(
                                 Icons.document_scanner_outlined,
                                 color: greyColor,
-                                size: 35,
+                                size: 30,
                               ),
                               SizedBox(
                                 width: 5,
@@ -337,7 +337,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                               Icon(
                                 Icons.timer,
                                 color: greyColor,
-                                size: 35,
+                                size: 30,
                               )
                             ],
                           )
@@ -348,19 +348,24 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
             },
           ),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-              vertical: 15, horizontal: 15),
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: Colors.lightBlue[500],
-              borderRadius: BorderRadius.circular(10)),
-          child: const Center(
-              child: Text(
-            "Submit Event",
-            style: TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-          )),
+        GestureDetector(
+          onTap: (){
+
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+                vertical: 15, horizontal: 15),
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.lightBlue[500],
+                borderRadius: BorderRadius.circular(10)),
+            child: const Center(
+                child: Text(
+              "Submit Event",
+              style: TextStyle(
+                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            )),
+          ),
         )
       ],
     );
