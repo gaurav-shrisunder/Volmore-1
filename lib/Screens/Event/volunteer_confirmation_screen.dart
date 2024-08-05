@@ -9,6 +9,8 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
+import '../../Services/logService.dart';
+
 class VolunteerConfirmationScreen extends StatefulWidget {
   final EventDataModel event;
   const VolunteerConfirmationScreen({super.key, required this.event});
@@ -21,6 +23,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
   final _authMethod = AuthMethod();
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
+  final LogServices _logMethod = LogServices();
 
   @override
   void initState() {
@@ -350,7 +353,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
         ),
         GestureDetector(
           onTap: (){
-
+            submitEvent();
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
@@ -369,5 +372,39 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
         )
       ],
     );
+  }
+
+
+  void submitEvent() async {
+    List<Map<String, String>> dateTimes = [];
+
+      String startTime = widget.event.startTime;
+      String endTime = widget.event.endTime;
+     // Duration duration = widget.event.duration;
+
+      // Formatting duration as hours and minutes
+    //  String durationString = '${duration.inHours}:${duration.inMinutes % 60}';
+
+      dateTimes.add({
+        'date': DateFormat.yMMMMEEEEd().format(widget.event.date),
+        'startTime': startTime,
+        'endTime': endTime,
+        'duration': widget.event.duration!,
+      });
+
+    // Creating the data map
+    EventDataModel eventData = EventDataModel();
+    eventData.address = widget.event.address;
+    eventData.title =  widget.event.title;
+    eventData.description =  widget.event.description;
+    eventData.group =  widget.event.group;
+    eventData.location =  widget.event.location;
+    eventData.date =  dateTimes;
+
+    var res = await _logMethod.createSingleLog(eventData);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(res)),
+    );
+    Get.back();
   }
 }
