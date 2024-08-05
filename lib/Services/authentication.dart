@@ -210,7 +210,7 @@ class AuthMethod {
     DateTime? endDate,
     required String time,
     TimeOfDay? endTime,
-    required List<DateTime> dates,
+    required List<dynamic> dates,
   }) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
@@ -243,8 +243,7 @@ class AuthMethod {
         'host_id': uid,
         'time': time,
         'end_date': endDate ?? date,
-        'dates':
-            dates.map((date) => DateFormat('dd/MM/yyyy').format(date)).toList(),
+        'dates': dates,
       });
 
       res = "Event added successfully";

@@ -10,12 +10,14 @@ class EventWidget extends StatelessWidget {
   final bool isEnabled;
   final VoidCallback? onPressed;
   final String buttonText;
+  final DateTime date;
 
   const EventWidget(this.event, this.color,
       {super.key,
       required this.isEnabled,
       this.onPressed,
-      required this.buttonText});
+      required this.buttonText,
+      required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +75,7 @@ class EventWidget extends StatelessWidget {
                             const Icon(Icons.date_range,
                                 size: 16, color: Colors.green),
                             const SizedBox(width: 4),
-                            Text(
-                                'Date: ${DateFormat.yMMMd().format(event.date)}'),
+                            Text('Date: ${DateFormat.yMMMd().format(date)}'),
                           ],
                         ),
                       ),

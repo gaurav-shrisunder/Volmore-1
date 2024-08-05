@@ -45,21 +45,31 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     _fetchGroupNames();
   }
 
-  List<DateTime> generateDates(
+  List<dynamic> generateDates(
       DateTime startDate, DateTime endDate, String occurrence) {
-    List<DateTime> dates = [];
+    List<dynamic> dates = [];
     DateTime currentDate = startDate;
 
     if (occurrence == 'Weekly') {
       while (currentDate.isBefore(endDate) ||
           currentDate.isAtSameMomentAs(endDate)) {
-        dates.add(currentDate);
+        dates.add({
+          "date": currentDate,
+          "isVerified": false,
+          "isLocation": false,
+          "duration": "00:00"
+        });
         currentDate = currentDate.add(const Duration(days: 7));
       }
     } else {
       while (currentDate.isBefore(endDate) ||
           currentDate.isAtSameMomentAs(endDate)) {
-        dates.add(currentDate);
+        dates.add({
+          "date": currentDate,
+          "isVerified": false,
+          "isLocation": false,
+          "duration": "00:00"
+        });
         currentDate = currentDate.add(const Duration(days: 1));
       }
     }
@@ -665,7 +675,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           ? selectedDate
                           : DateFormat('dd/MM/yyyy')
                               .parse(endDateController.text);
-                      List<DateTime> allDates = generateDates(
+                      List<dynamic> allDates = generateDates(
                           selectedDate, endDate, selectedOccurrence);
 
                       String res = await _authMethod.addEvent(

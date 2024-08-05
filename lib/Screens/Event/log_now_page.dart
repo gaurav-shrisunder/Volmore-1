@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
+
 import 'package:volunterring/Models/event_data_model.dart';
-import '../../Utils/Colors.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -53,77 +52,45 @@ class _LogNowPageState extends State<LogNowPage> {
                           )),
                     ],
                   ),
-                  // Container(
-                  //   padding: const EdgeInsets.all(15),
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     shape: BoxShape.circle,
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.blueGrey.withOpacity(0.5),
-                  //         spreadRadius: 9,
-                  //         blurRadius: 15,
-                  //         offset: const Offset(0, 3),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   child: CircleAvatar(
-                  //     backgroundColor: Colors.white,
-                  //     radius: MediaQuery.of(context).size.width / 3,
-                  //     child: Column(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: [
-                  //         Text(
-                  //           '${(timerProvider.elapsedTime ~/ 3600).toString().padLeft(2, '0')}:${((timerProvider.elapsedTime % 3600) ~/ 60).toString().padLeft(2, '0')}:${(timerProvider.elapsedTime % 60).toString().padLeft(2, '0')}',
-                  //           style: TextStyle(
-                  //               fontSize: screenWidth * 0.10,
-                  //               fontWeight: FontWeight.bold),
-                  //         ),
-                  //         if (timerProvider.locationTracking &&
-                  //             timerProvider.locationData != null)
-                  //           const Icon(Icons.location_on),
-                  //         if (timerProvider.locationTracking &&
-                  //             timerProvider.locationData != null)
-                  //           Text(
-                  //             timerProvider.address,
-                  //             maxLines: 3,
-                  //             textAlign: TextAlign.center,
-                  //             overflow: TextOverflow.ellipsis,
-                  //             style: TextStyle(fontSize: screenWidth * 0.03),
-                  //           ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  CircularPercentIndicator(
-                    radius: MediaQuery.of(context).size.width / 2.7,
-                    lineWidth: 15.0,
-                    percent: timerProvider.elapsedTime.toDouble() / (600 * 60),
-                    center: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Log Now",
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.09,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.1,
+                      ),
+                      Text(
+                        "Shift Hours",
+                        style:
+                            TextStyle(fontSize: 24, color: Colors.orange[400]),
+                      ),
+                      Text(
+                        '${(timerProvider.elapsedTime ~/ 3600).toString().padLeft(2, '0')}:${((timerProvider.elapsedTime % 3600) ~/ 60).toString().padLeft(2, '0')}:${(timerProvider.elapsedTime % 60).toString().padLeft(2, '0')}',
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      if (timerProvider.locationTracking &&
+                          timerProvider.locationData != null)
+                        const Icon(Icons.location_on),
+                      if (timerProvider.locationTracking &&
+                          timerProvider.locationData != null)
                         Text(
-                          '${(timerProvider.elapsedTime ~/ 3600).toString().padLeft(2, '0')}:${((timerProvider.elapsedTime % 3600) ~/ 60).toString().padLeft(2, '0')}:${(timerProvider.elapsedTime % 60).toString().padLeft(2, '0')}',
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.10,
-                              fontWeight: FontWeight.bold),
+                          timerProvider.address,
+                          maxLines: 3,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: screenWidth * 0.03),
                         ),
-                        if (timerProvider.locationTracking &&
-                            timerProvider.locationData != null)
-                          const Icon(Icons.location_on),
-                        if (timerProvider.locationTracking &&
-                            timerProvider.locationData != null)
-                          Text(
-                            timerProvider.address,
-                            maxLines: 3,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: screenWidth * 0.03),
-                          ),
-                      ],
-                    ),
-                    progressColor: Colors.blue,
+                    ],
                   ),
+
                   SizedBox(height: screenHeight * 0.05),
                   Text(
                     widget.taskName,
