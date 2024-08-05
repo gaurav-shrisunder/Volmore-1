@@ -39,14 +39,14 @@ class _LogScreenState extends State<LogScreen> {
         stopwatch.stop();
         endTime = formatTime(DateTime.now());
       });
-      var res = await LogServices().createLog(
+      var res = await LogServices().createLogs(
           startTime: startTime,
           endTime: endTime,
           duration: returnFormattedText());
       if (res == "Log Updated SuccessFully") {
         showSnackBar(context, res.toString());
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
         print("Some error occurred");
         showSnackBar(context, res.toString());
@@ -113,7 +113,7 @@ class _LogScreenState extends State<LogScreen> {
                         ),
                       ),
                       Text(
-                        startTime.isNotEmpty ? "$startTime" : "--:--",
+                        startTime.isNotEmpty ? startTime : "--:--",
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,

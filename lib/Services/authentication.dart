@@ -3,10 +3,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:volunterring/Models/UserModel.dart';
+import 'package:volunterring/Models/event_data_model.dart';
 
 class AuthMethod {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,7 +19,7 @@ class AuthMethod {
 
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
-  final Uuid _uuid = Uuid();
+  final Uuid _uuid = const Uuid();
 
   // Sign Up User
   Future<String> signupUser({
@@ -182,12 +186,12 @@ class AuthMethod {
 
       if (newPassword != confirmNewPassword) {
         res = "New passwords do not match";
-        Get.snackbar('Error', '${res}');
+        Get.snackbar('Error', res);
       } else {
         // Update password
         await user.updatePassword(newPassword);
         res = "Password updated successfully";
-        Get.snackbar('Hurray', '${res}');
+        Get.snackbar('Hurray', res);
       }
     } catch (e) {
       res = e.toString();
@@ -203,7 +207,10 @@ class AuthMethod {
     required String location,
     required String occurrence,
     String group = "General",
-    String groupColor = "Green",
+    DateTime? endDate,
+    required String time,
+    TimeOfDay? endTime,
+    required List<dynamic> dates,
   }) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
@@ -211,9 +218,12 @@ class AuthMethod {
     try {
       // Get user id
       String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;
+      UserModel? user = await fetchUserData();
 
       // Generate UUID for the event
       String eventId = _uuid.v4();
+
+      print("user: ${user.toString()}");
 
       // Add event to Firestore
       await _firestore
@@ -229,7 +239,11 @@ class AuthMethod {
         'location': location,
         'occurrence': occurrence,
         'group': group,
-        'group_color': groupColor,
+        'host': user!.name,
+        'host_id': uid,
+        'time': time,
+        'end_date': endDate ?? date,
+        'dates': dates,
       });
 
       res = "Event added successfully";
@@ -240,10 +254,40 @@ class AuthMethod {
     return res;
   }
 
+  Future<UserModel?> fetchUserData() async {
+    try {
+      // Retrieve uid from SharedPreferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? uid = prefs.getString('uid');
+
+      // Check if uid is not null
+      if (uid == null) {
+        return null;
+      }
+
+      // Retrieve user document from Firestore
+      DocumentSnapshot doc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      // Check if document exists
+      if (!doc.exists) {
+        Get.snackbar("Error", "No user Found");
+        return null;
+      }
+
+      // Convert document data to UserModel
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+    } catch (e) {
+      // Handle any errors that occur
+
+      return null;
+    }
+  }
+
   //Fetch Events
-  Future<List<Map<String, dynamic>>> fetchEvents() async {
+  Future<List<EventDataModel>> fetchEvents() async {
     final SharedPreferences prefs = await _prefs;
-    List<Map<String, dynamic>> events = [];
+    List<EventDataModel> events = [];
 
     try {
       // Get user id
@@ -257,7 +301,8 @@ class AuthMethod {
           .get();
 
       events = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
+          .map((doc) =>
+              EventDataModel.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
     } catch (e) {
       print("Error fetching events: $e");

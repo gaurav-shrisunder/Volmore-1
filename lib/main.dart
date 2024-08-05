@@ -1,29 +1,48 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/firebase_options.dart';
+import 'package:volunterring/provider/time_logger_provider.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
+  await Firebase.initializeApp();
+  runApp(ChangeNotifierProvider(
+    create: (_) => TimerProvider(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key});
+  const MyApp({
+    super.key,
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   // This widget is the root of your application.
   @override
@@ -34,13 +53,37 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
+          surface: Colors.white,
+          surfaceTint: Colors.white,
           seedColor: Colors.black,
           secondary: Colors.white,
           primary: Colors.black,
+          shadow: Colors.white,
+          onPrimaryContainer: Colors.white,
+          primaryContainer: Colors.white,
+          surfaceContainer: Colors.white,
+
+
+          // surfaceContainer: Colors.white
         ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+        ),
+        datePickerTheme:
+            const DatePickerThemeData(backgroundColor: Colors.white),
+        dialogBackgroundColor: Colors.white,
+        timePickerTheme: TimePickerThemeData(
+            backgroundColor: Colors.white,
+            dayPeriodColor: Colors.blue.shade50,
+            dialBackgroundColor: Colors.blue.shade50,
+        hourMinuteTextColor: Colors.black,
+        hourMinuteColor: Colors.blue.shade50
+        ),
+
+        fontFamily: "Plus Jakarta Sans",
         useMaterial3: true,
       ),
-      home: isLoggedIn ? HomePage() : LoginPage(),
+      home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }
 

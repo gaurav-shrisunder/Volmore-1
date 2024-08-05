@@ -1,38 +1,65 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
-
 import 'package:volunterring/Screens/Event/events_page.dart';
-
 import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/TermsScreen.dart';
-import 'package:volunterring/Utils/Colors.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+import '../Utils/Colors.dart';
+
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
-class _HomePageState extends State<HomePage>
+class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
+  late AnimationController _controller;
+  late Animation<Offset> _animation;
 
-  final List<Widget> _pages = [
+  static final List<Widget> _widgetOptions = <Widget>[
     const EventPage(),
     const Text('Leaderboard Screen'),
     const Text('Transcript Screen'),
     const UserProfilePage(),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _animation = Tween<Offset>(
+      begin: const Offset(1.0, 0.0),
+      end: const Offset(0.0, 0.0),
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    ));
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _controller.reset();
+      _controller.forward();
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,11 +70,10 @@ class _HomePageState extends State<HomePage>
         title: const Text(
           'VOLMORE',
           style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.bold, color: headingBlue,),
+              fontSize: 32, fontWeight: FontWeight.bold, color: headingBlue),
         ),
         centerTitle: false,
         elevation: 1,
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         shadowColor: Colors.black,
         actions: [
@@ -58,7 +84,12 @@ class _HomePageState extends State<HomePage>
           const SizedBox(width: 10),
         ],
       ),
-      body: Center(child: _pages[_selectedIndex]),
+      body: SlideTransition(
+        position: _animation,
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         elevation: 5,
@@ -150,6 +181,8 @@ class _HomePageState extends State<HomePage>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('uid');
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 }
