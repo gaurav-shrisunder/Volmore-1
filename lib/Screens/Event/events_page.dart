@@ -51,23 +51,46 @@ class _EventPageState extends State<EventPage>
 
   bool containsToday(List<dynamic> dates) {
     DateTime today = DateTime.now();
-    bool found = false;
-
     for (var dateMap in dates) {
       Timestamp timestamp = dateMap['date'];
       DateTime date = timestamp.toDate();
-      print("Date year $date");
-      print("today $today");
-      // Check if the date is the same as today's date
       if (date.year == today.year &&
           date.month == today.month &&
           date.day == today.day) {
-        found = true;
-        break;
+        return true;
       }
     }
+    return false;
+  }
 
-    return found;
+  List<EventDataModel> getUpcomingEvents(List<EventDataModel> events) {
+    DateTime today = DateTime.now();
+    List<EventDataModel> upcomingEvents = [];
+    for (var event in events) {
+      for (var dateMap in event.dates!) {
+        Timestamp timestamp = dateMap['date'];
+        DateTime date = timestamp.toDate();
+        if (date.isAfter(today)) {
+          upcomingEvents.add(event);
+        }
+      }
+    }
+    return upcomingEvents;
+  }
+
+  List<EventDataModel> getPastEvents(List<EventDataModel> events) {
+    DateTime today = DateTime.now();
+    List<EventDataModel> pastEvents = [];
+    for (var event in events) {
+      for (var dateMap in event.dates!) {
+        Timestamp timestamp = dateMap['date'];
+        DateTime date = timestamp.toDate();
+        if (date.isBefore(today)) {
+          pastEvents.add(event);
+        }
+      }
+    }
+    return pastEvents;
   }
 
   @override
@@ -95,63 +118,25 @@ class _EventPageState extends State<EventPage>
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            String title = "Today's Events";
-            print("Data ${snapshot.data}");
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      if (title == "Today's Events")
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFfa6513),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            textStyle: const TextStyle(
-                                fontSize: 18, color: Colors.white),
-                          ),
-                          onPressed: () {
-                            Get.to(const CreateLogScreen());
-                          },
-                          child: const Text(
-                            'Start Logging',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Center(child: Text('No events found')),
-                ],
-              ),
-            );
+            return const Center(child: Text('No events found'));
           } else {
+            List<EventDataModel> todaysEvents = [];
+            List<EventDataModel> upcomingEvents =
+                getUpcomingEvents(snapshot.data!);
+            List<EventDataModel> pastEvents = getPastEvents(snapshot.data!);
+
+            for (var event in snapshot.data!) {
+              if (containsToday(event.dates!)) {
+                todaysEvents.add(event);
+              }
+            }
+
             return TabBarView(
               controller: _tabController,
               children: [
-                buildEventList("Today's Events", (event) {
-                  print(event.dates);
-                  print(containsToday(event.dates!));
-                  return containsToday(event.dates!);
-                }, snapshot.data!),
-                buildEventList("Upcoming Events", (event) {
-                  DateTime eventDate = DateTime.parse(event.date.toString());
-                  DateTime today = DateTime.now();
-                  return eventDate.isAfter(today);
-                }, snapshot.data!),
-                buildEventList("Past Events", (event) {
-                  DateTime eventDate = DateTime.parse(event.date.toString());
-                  DateTime today =
-                      DateTime.now().subtract(const Duration(days: 1));
-                  return eventDate.isBefore(today);
-                }, snapshot.data!),
+                buildEventList("Today's Events", todaysEvents),
+                buildEventList("Upcoming Events", upcomingEvents),
+                buildEventList("Past Events", pastEvents),
               ],
             );
           }
@@ -160,8 +145,7 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  Widget buildEventList(String title, bool Function(EventDataModel) filter,
-      List<EventDataModel> events) {
+  Widget buildEventList(String title, List<EventDataModel> events) {
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -201,35 +185,44 @@ class _EventPageState extends State<EventPage>
             ],
           ),
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: events.length,
-            itemBuilder: (context, index) {
-              EventDataModel event = events[index];
-              Color color = colorMap[event.groupColor] ?? Colors.pink;
-              bool isEnabled =
-                  containsToday(event.dates!) && title == "Today's Events";
-              String buttonText = isEnabled ? "Log Now" : "Verify";
-              return filter(event)
-                  ? EventWidget(
+        events.isEmpty
+            ? const Expanded(
+                child: Center(
+                  child: Text(
+                    "No Events Found",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
+            : Expanded(
+                child: ListView.builder(
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    EventDataModel event = events[index];
+                    Color color = colorMap[event.groupColor] ?? Colors.pink;
+                    bool isEnabled = containsToday(event.dates!) &&
+                        title == "Today's Events";
+                    String buttonText = isEnabled ? "Log Now" : "Verify";
+                    return EventWidget(
                       event,
                       color,
                       isEnabled: isEnabled,
                       onPressed: isEnabled
                           ? () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          LogNowPage(event.title!, event)));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      LogNowPage(event.title!, event),
+                                ),
+                              );
                             }
                           : null,
                       buttonText: buttonText,
-                    )
-                  : Container();
-            },
-          ),
-        ),
+                    );
+                  },
+                ),
+              ),
       ],
     );
   }
