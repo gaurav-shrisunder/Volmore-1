@@ -111,13 +111,21 @@ class TimerProvider with ChangeNotifier {
             children: [
               const Center(
                 child: Text(
-                  "Log Saved Succesfully",
+                  "Log Saved Successfully",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               Center(
                 child: TextButton(
                     onPressed: () {
+
+                      event.startTime = _startTime;
+                      event.endTime = DateTime.now();
+                      event.address = _address;
+                      event.location = _location.toString();
+                      event.duration = "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600)}";
+
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
