@@ -43,10 +43,11 @@ class _HomePageState extends State<HomePage>
         title: const Text(
           'VOLMORE',
           style: TextStyle(
-              fontSize: 32, fontWeight: FontWeight.bold, color: headingBlue),
+              fontSize: 30, fontWeight: FontWeight.bold, color: headingBlue,),
         ),
         centerTitle: false,
         elevation: 1,
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         shadowColor: Colors.black,
         actions: [

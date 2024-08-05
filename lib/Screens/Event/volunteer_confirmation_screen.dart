@@ -4,21 +4,23 @@ import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
-class VerificationPage extends StatefulWidget {
+class VolunteerConfirmationScreen extends StatefulWidget {
   final EventDataModel event;
-  const VerificationPage({super.key, required this.event});
+  const VolunteerConfirmationScreen({super.key, required this.event});
 
   @override
-  State<VerificationPage> createState() => _VerificationPageState();
+  State<VolunteerConfirmationScreen> createState() => _VolunteerConfirmationScreenState();
 }
 
-class _VerificationPageState extends State<VerificationPage> {
+class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScreen> {
   final _authMethod = AuthMethod();
   late Future<List<EventDataModel>> _eventsFuture;
+  final TextEditingController _phoneNumberController = TextEditingController();
 
   @override
   void initState() {
@@ -35,18 +37,20 @@ class _VerificationPageState extends State<VerificationPage> {
       penStrokeWidth: 5,
       penColor: Colors.black,
       exportBackgroundColor: Colors.white,
+
     );
-    final TextEditingController phoneController = TextEditingController();
+
     String selectedCountryCode = '+1'; // Default country code
 
     final List<String> countryCodes = ['+1', '+91', '+44', '+61', '+81'];
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           "Volunteer Confirmation",
           style: TextStyle(
-              fontSize: 28, fontWeight: FontWeight.bold, color: headingBlue),
+              fontSize: 26, fontWeight: FontWeight.bold, color: headingBlue),
         ),
         automaticallyImplyLeading: false,
         // elevation: 4,
@@ -58,12 +62,17 @@ class _VerificationPageState extends State<VerificationPage> {
           ),
         ),
         actions: [
-          Text(
-            "Skip",
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                color: Colors.amber[900]),
+          GestureDetector(
+            onTap: (){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+            },
+            child: Text(
+              "Skip",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.amber[900]),
+            ),
           ),
           const SizedBox(
             width: 20,
@@ -86,7 +95,7 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               Text(
                 DateFormat.yMMMMEEEEd().format(widget.event.date),
-                style: const TextStyle(fontSize: 17, color: greyColor),
+                style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
@@ -102,7 +111,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                   Text(
                     widget.event.location ?? "",
-                    style: const TextStyle(fontSize: 17, color: greyColor),
+                    style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
               ),
@@ -120,7 +129,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                   Text(
                     widget.event.time ?? "",
-                    style: const TextStyle(fontSize: 17, color: greyColor),
+                    style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
               ),
@@ -129,7 +138,7 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               const Text(
                 "Signature",
-                style: TextStyle(fontSize: 17, color: headingBlue),
+                style: TextStyle(fontSize: 18, color: headingBlue),
               ),
               SizedBox(
                 height: screenHeight * 0.007,
@@ -140,6 +149,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(9),
                   child: Signature(
+
                     controller: controller,
                     height: screenHeight * 0.1,
                     backgroundColor: Colors.grey[200]!,
@@ -152,7 +162,7 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               const Text(
                 "Volunteer Seeker's Phone Number",
-                style: TextStyle(fontSize: 17, color: headingBlue),
+                style: TextStyle(fontSize: 18, color: headingBlue),
               ),
               SizedBox(
                 height: screenHeight * 0.007,
@@ -186,7 +196,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
-                      controller: phoneController,
+                      controller: _phoneNumberController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         labelText: 'Mobile Number',
@@ -218,7 +228,7 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               const Text(
                 "Sign for all previous events too",
-                style: TextStyle(fontSize: 17, color: Colors.black),
+                style: TextStyle(fontSize: 18, color: Colors.black),
               ),
               FutureBuilder<List<EventDataModel>>(
                   future: _eventsFuture,
@@ -285,7 +295,7 @@ class _VerificationPageState extends State<VerificationPage> {
                               children: [
                                 Text(event.title.toString().capitalize ?? "",
                                     style:
-                                        TextStyle(color: color, fontSize: 22)),
+                                        TextStyle(color: color, fontSize: 18)),
                                 const SizedBox(
                                   height: 2,
                                 ),
@@ -301,7 +311,7 @@ class _VerificationPageState extends State<VerificationPage> {
                                     Text(
                                       event.time ?? "",
                                       style: const TextStyle(
-                                          fontSize: 17, color: greyColor),
+                                          fontSize: 16, color: greyColor),
                                     ),
                                   ],
                                 ),
@@ -311,7 +321,7 @@ class _VerificationPageState extends State<VerificationPage> {
                               Icon(
                                 Icons.location_on_outlined,
                                 color: greyColor,
-                                size: 35,
+                                size: 30,
                               ),
                               SizedBox(
                                 width: 5,
@@ -319,7 +329,7 @@ class _VerificationPageState extends State<VerificationPage> {
                               Icon(
                                 Icons.document_scanner_outlined,
                                 color: greyColor,
-                                size: 35,
+                                size: 30,
                               ),
                               SizedBox(
                                 width: 5,
@@ -327,7 +337,7 @@ class _VerificationPageState extends State<VerificationPage> {
                               Icon(
                                 Icons.timer,
                                 color: greyColor,
-                                size: 35,
+                                size: 30,
                               )
                             ],
                           )
@@ -338,18 +348,24 @@ class _VerificationPageState extends State<VerificationPage> {
             },
           ),
         ),
-        Container(
-          height: 70,
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: Colors.lightBlue[300],
-              borderRadius: BorderRadius.circular(10)),
-          child: const Center(
-              child: Text(
-            "Submit Event",
-            style: TextStyle(
-                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          )),
+        GestureDetector(
+          onTap: (){
+
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+                vertical: 15, horizontal: 15),
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.lightBlue[500],
+                borderRadius: BorderRadius.circular(10)),
+            child: const Center(
+                child: Text(
+              "Submit Event",
+              style: TextStyle(
+                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            )),
+          ),
         )
       ],
     );

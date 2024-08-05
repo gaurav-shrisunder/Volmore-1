@@ -7,6 +7,7 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
+import 'package:volunterring/widgets/appbar_widget.dart';
 
 class PastEventsPage extends StatefulWidget {
   const PastEventsPage({super.key});
@@ -231,7 +232,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(),
+      appBar: simpleAppBar(context),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
@@ -245,9 +246,9 @@ class _PastEventsPageState extends State<PastEventsPage> {
                   child: Text(
                     'Log Past Job',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xff0c4a6f),
+                      color: headingBlue,
                     ),
                   ),
                 ),
@@ -284,13 +285,13 @@ class _PastEventsPageState extends State<PastEventsPage> {
                     Icons.location_on,
                     color: Colors.grey,
                   ),
-                  hintText: '123 Main St New York, NY 10001',
+                  hintText: '123 Main St., New York, NY 10001',
                 ),
                 const SizedBox(height: 20),
                 const Text(
                   'Date',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                     color: headingBlue,
                   ),
@@ -299,7 +300,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                   children: List.generate(dateControllers.length, (index) {
                     return Column(
                       children: [
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 5),
                         Row(
                           children: [
                             Expanded(
@@ -330,7 +331,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                                     hintText: 'Select Date',
                                     hintStyle: TextStyle(
                                         color: Colors.grey[900],
-                                        fontSize: 19,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 20),
@@ -387,7 +388,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                                     hintText: 'Start Time',
                                     hintStyle: TextStyle(
                                         color: Colors.grey[900],
-                                        fontSize: 19,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 20),
@@ -441,7 +442,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                                     hintText: 'End Time',
                                     hintStyle: TextStyle(
                                         color: Colors.grey[900],
-                                        fontSize: 19,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 20),
@@ -475,6 +476,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
+                  style:  ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue.shade50)),
                   onPressed: _addDateTimeController,
                   child: Text(
                     'Add Another Date',
@@ -485,12 +487,12 @@ class _PastEventsPageState extends State<PastEventsPage> {
                 const Text(
                   'Grouping',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                     color: headingBlue,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 _groupNames.isEmpty
                     ? const CircularProgressIndicator()
                     : Container(
@@ -509,7 +511,9 @@ class _PastEventsPageState extends State<PastEventsPage> {
                         child: DropdownButtonFormField<String>(
                           hint: const Text('Select a Group'),
                           value: _selectedGroup,
+                          dropdownColor: Colors.white,
                           decoration: InputDecoration(
+
                             filled: true,
                             hintStyle: TextStyle(
                                 color: Colors.grey[400],
@@ -576,7 +580,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                     child: const Center(
                       child: Text(
                         'Submit Event',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                   ),

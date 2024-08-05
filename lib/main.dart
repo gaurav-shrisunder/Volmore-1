@@ -28,8 +28,21 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   // This widget is the root of your application.
   @override
@@ -46,8 +59,28 @@ class _MyAppState extends State<MyApp> {
           secondary: Colors.white,
           primary: Colors.black,
           shadow: Colors.white,
+          onPrimaryContainer: Colors.white,
+          primaryContainer: Colors.white,
+          surfaceContainer: Colors.white,
+
+
           // surfaceContainer: Colors.white
         ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+        ),
+        datePickerTheme:
+            const DatePickerThemeData(backgroundColor: Colors.white),
+        dialogBackgroundColor: Colors.white,
+        timePickerTheme: TimePickerThemeData(
+            backgroundColor: Colors.white,
+            dayPeriodColor: Colors.blue.shade50,
+            dialBackgroundColor: Colors.blue.shade50,
+        hourMinuteTextColor: Colors.black,
+        hourMinuteColor: Colors.blue.shade50
+        ),
+
+        fontFamily: "Plus Jakarta Sans",
         useMaterial3: true,
       ),
       home: isLoggedIn ? const HomePage() : const LoginPage(),
