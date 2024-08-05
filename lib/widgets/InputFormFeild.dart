@@ -30,13 +30,13 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
       children: [
         Text(
           widget.title,
-          style: TextStyle(
-            fontSize: 20,
+          style: const TextStyle(
+            fontSize: 18,
             fontWeight: FontWeight.w400,
             color: headingBlue,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Container(
@@ -44,10 +44,9 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 0.4,
-
-                blurRadius: 10,
-                offset: Offset(0, 3), // changes position of shadow
+                spreadRadius: 0.2,
+                blurRadius: 5,
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
@@ -60,23 +59,24 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
               hintText: widget.hintText,
               hintStyle: TextStyle(
                   color: Colors.grey[400],
-                  fontSize: 19,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400),
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               fillColor: Colors.white,
-              prefix: widget.prefixicon != null ? widget.prefixicon : null,
+              prefixIcon:  widget.prefixicon,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Color.fromARGB(255, 213, 215, 215),
                   width: 1.0,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: Colors.blue, // Change this to your desired color
+                borderSide:  BorderSide(
+                  color: Colors.grey[
+                  400]!, // Change this to your desired color
                   width: 2.0,
                 ),
               ),

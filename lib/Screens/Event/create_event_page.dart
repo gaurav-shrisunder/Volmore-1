@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:volunterring/Screens/dashboard.dart';
@@ -8,6 +9,7 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:uuid/uuid.dart';
+import 'package:volunterring/widgets/appbar_widget.dart';
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -185,7 +187,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('')),
+      appBar: simpleAppBar(context),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
@@ -199,15 +201,15 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   child: Text(
                     'Schedule New Job',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xff0c4a6f),
+                      color: headingBlue,
                     ),
                   ),
                 ),
                 const Center(
                   child: Text(
-                    'Enter Detail about the new job',
+                    'Enter detail about the new job',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -217,7 +219,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
-                  title: 'Title',
+                  title: 'Job Title',
                   controller: titleController,
                   maxlines: 1,
                   hintText: "Trash Clean Up",
@@ -240,23 +242,22 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                   hintText: '123 Main St New York, NY 10001',
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 const Text(
                   'Occurrence',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                     color: headingBlue,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Container(
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.2),
                         spreadRadius: 0.4,
-
                         blurRadius: 10,
                         offset:
                             const Offset(0, 3), // changes position of shadow
@@ -265,15 +266,19 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                   child: DropdownButtonFormField<String>(
                     value: selectedOccurrence,
+                    icon: const Icon(CupertinoIcons.chevron_down, size: 20,),
                     decoration: InputDecoration(
                       filled: true,
+                      
                       hintStyle: TextStyle(
                           color: Colors.grey[400],
-                          fontSize: 19,
+                          fontSize: 16,
                           fontWeight: FontWeight.w400),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 20),
                       fillColor: Colors.white,
+                      focusColor: Colors.white,
+
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(
@@ -319,12 +324,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 const Text(
                   'Date',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                     color: headingBlue,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Row(
                   children: [
                     Expanded(
@@ -357,7 +362,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             hintText: 'Select Date',
                             hintStyle: TextStyle(
                                 color: Colors.grey[900],
-                                fontSize: 19,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w400),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 20),
@@ -382,7 +387,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       ),
                     ),
                     const SizedBox(
-                      width: 20,
+                      width: 10,
                     ),
                     Container(
                       width: width * 0.25,
@@ -410,7 +415,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           hintText: 'Time',
                           hintStyle: TextStyle(
                               color: Colors.grey[900],
-                              fontSize: 19,
+                              fontSize: 16,
                               fontWeight: FontWeight.w400),
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 20),
@@ -444,12 +449,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           const Text(
                             'End Date',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.w400,
                               color: headingBlue,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 5),
                           Row(
                             children: [
                               Expanded(
@@ -485,7 +490,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                       hintText: 'Select End Date',
                                       hintStyle: TextStyle(
                                           color: Colors.grey[900],
-                                          fontSize: 19,
+                                          fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       contentPadding:
                                           const EdgeInsets.symmetric(
@@ -512,7 +517,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 ),
                               ),
                               const SizedBox(
-                                width: 20,
+                                width: 10,
                               ),
                               Container(
                                 width: width * 0.25,
@@ -541,7 +546,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                     hintText: 'Time',
                                     hintStyle: TextStyle(
                                         color: Colors.grey[900],
-                                        fontSize: 19,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 20),
@@ -574,12 +579,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 const Text(
                   'Grouping',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                     color: headingBlue,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 _groupNames.isEmpty
                     ? const CircularProgressIndicator()
                     : Container(
@@ -598,6 +603,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         child: DropdownButtonFormField<String>(
                           hint: const Text('Select a Group'),
                           value: _selectedGroup,
+                          dropdownColor: Colors.white,
                           decoration: InputDecoration(
                             filled: true,
                             hintStyle: TextStyle(
@@ -715,7 +721,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     child: const Center(
                       child: Text(
                         'Submit Event',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                   ),
