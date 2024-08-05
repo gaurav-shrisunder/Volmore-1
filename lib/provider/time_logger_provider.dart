@@ -22,6 +22,8 @@ class TimerProvider with ChangeNotifier {
   late DateTime _startTime;
   final loc.Location _location = loc.Location();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  String _phoneNo = "";
+  bool _isSignatureVerified = false;
 
   int get elapsedTime => _elapsedTime;
 
@@ -36,6 +38,18 @@ class TimerProvider with ChangeNotifier {
   String get address => _address;
 
   DateTime get startTime => _startTime;
+  String get phoneNo => _phoneNo;
+  bool get isSignatureVerified => _isSignatureVerified;
+
+  set phoneNo(String value) {
+    _phoneNo = value;
+    notifyListeners();
+  }
+
+  set isSignatureVerified(bool value) {
+    _isSignatureVerified = value;
+    notifyListeners();
+  }
 
   Future<void> toggleLogging() async {
     if (_isLogging) {
@@ -64,6 +78,8 @@ class TimerProvider with ChangeNotifier {
     CollectionReference logs = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
+        .collection('events')
+        .doc(event.id)
         .collection("logs");
     await logs.add({
       'elapsedTime(hh:mm:ss)':
