@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:intl/intl.dart';
-
 import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
@@ -63,30 +61,30 @@ class _EventPageState extends State<EventPage>
     return false;
   }
 
-  List<EventDataModel> getUpcomingEvents(List<EventDataModel> events) {
+  List<Map<String, dynamic>> getUpcomingEvents(List<EventDataModel> events) {
     DateTime today = DateTime.now();
-    List<EventDataModel> upcomingEvents = [];
+    List<Map<String, dynamic>> upcomingEvents = [];
     for (var event in events) {
       for (var dateMap in event.dates!) {
         Timestamp timestamp = dateMap['date'];
         DateTime date = timestamp.toDate();
         if (date.isAfter(today)) {
-          upcomingEvents.add(event);
+          upcomingEvents.add({'event': event, 'date': date});
         }
       }
     }
     return upcomingEvents;
   }
 
-  List<EventDataModel> getPastEvents(List<EventDataModel> events) {
+  List<Map<String, dynamic>> getPastEvents(List<EventDataModel> events) {
     DateTime today = DateTime.now();
-    List<EventDataModel> pastEvents = [];
+    List<Map<String, dynamic>> pastEvents = [];
     for (var event in events) {
       for (var dateMap in event.dates!) {
         Timestamp timestamp = dateMap['date'];
         DateTime date = timestamp.toDate();
         if (date.isBefore(today)) {
-          pastEvents.add(event);
+          pastEvents.add({'event': event, 'date': date});
         }
       }
     }
@@ -120,14 +118,15 @@ class _EventPageState extends State<EventPage>
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No events found'));
           } else {
-            List<EventDataModel> todaysEvents = [];
-            List<EventDataModel> upcomingEvents =
+            List<Map<String, dynamic>> todaysEvents = [];
+            List<Map<String, dynamic>> upcomingEvents =
                 getUpcomingEvents(snapshot.data!);
-            List<EventDataModel> pastEvents = getPastEvents(snapshot.data!);
+            List<Map<String, dynamic>> pastEvents =
+                getPastEvents(snapshot.data!);
 
             for (var event in snapshot.data!) {
               if (containsToday(event.dates!)) {
-                todaysEvents.add(event);
+                todaysEvents.add({'event': event, 'date': DateTime.now()});
               }
             }
 
@@ -145,7 +144,7 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  Widget buildEventList(String title, List<EventDataModel> events) {
+  Widget buildEventList(String title, List<Map<String, dynamic>> events) {
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -198,7 +197,8 @@ class _EventPageState extends State<EventPage>
                 child: ListView.builder(
                   itemCount: events.length,
                   itemBuilder: (context, index) {
-                    EventDataModel event = events[index];
+                    EventDataModel event = events[index]['event'];
+                    DateTime date = events[index]['date'];
                     Color color = colorMap[event.groupColor] ?? Colors.pink;
                     bool isEnabled = containsToday(event.dates!) &&
                         title == "Today's Events";
@@ -206,6 +206,7 @@ class _EventPageState extends State<EventPage>
                     return EventWidget(
                       event,
                       color,
+                      date: date, // Pass the date to the EventWidget
                       isEnabled: isEnabled,
                       onPressed: isEnabled
                           ? () {
