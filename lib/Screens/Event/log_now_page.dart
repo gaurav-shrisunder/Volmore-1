@@ -11,9 +11,9 @@ import 'package:provider/provider.dart';
 import '../../provider/time_logger_provider.dart';
 
 class LogNowPage extends StatefulWidget {
-  final String taskName;
   final EventDataModel eventModel;
-  const LogNowPage(this.taskName, this.eventModel, {super.key});
+  final DateTime date;
+  const LogNowPage( this.eventModel, {super.key, required this.date});
 
   @override
   State<LogNowPage> createState() => _LogNowPageState();
@@ -24,6 +24,7 @@ class _LogNowPageState extends State<LogNowPage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    
 
     return Scaffold(
       body: Container(
@@ -52,7 +53,6 @@ class _LogNowPageState extends State<LogNowPage> {
                           )),
                     ],
                   ),
-                
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -90,10 +90,9 @@ class _LogNowPageState extends State<LogNowPage> {
                         ),
                     ],
                   ),
-
                   SizedBox(height: screenHeight * 0.05),
                   Text(
-                    widget.taskName,
+                    widget.eventModel.title!,
                     style: TextStyle(
                         fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
@@ -157,7 +156,7 @@ class _LogNowPageState extends State<LogNowPage> {
                       GestureDetector(
                           onTap: () {
                             timerProvider.endLogging(
-                                context, widget.eventModel);
+                                context, widget.eventModel,widget.date);
                           },
                           child: Column(
                             children: [

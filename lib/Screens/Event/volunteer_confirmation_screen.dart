@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
@@ -8,18 +13,23 @@ import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/provider/time_logger_provider.dart';
 
 import '../../Services/logService.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
   final EventDataModel event;
-  const VolunteerConfirmationScreen({super.key, required this.event});
+  final DateTime date;
+  const VolunteerConfirmationScreen(
+      {super.key, required this.event, required this.date});
 
   @override
-  State<VolunteerConfirmationScreen> createState() => _VolunteerConfirmationScreenState();
+  State<VolunteerConfirmationScreen> createState() =>
+      _VolunteerConfirmationScreenState();
 }
 
-class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScreen> {
+class _VolunteerConfirmationScreenState
+    extends State<VolunteerConfirmationScreen> {
   final _authMethod = AuthMethod();
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -31,17 +41,26 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
     _eventsFuture = _authMethod.fetchEvents();
   }
 
+  final SignatureController _signatureController = SignatureController(
+    penStrokeWidth: 5,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
+
+  Future<String> _exportSignatureAsString() async {
+    final Uint8List? data = await _signatureController.toPngBytes();
+    if (data != null) {
+      return base64Encode(data);
+    } else {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Color color = colorMap[widget.event.groupColor] ?? Colors.pink;
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    final SignatureController controller = SignatureController(
-      penStrokeWidth: 5,
-      penColor: Colors.black,
-      exportBackgroundColor: Colors.white,
-
-    );
 
     String selectedCountryCode = '+1'; // Default country code
 
@@ -66,8 +85,9 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
         ),
         actions: [
           GestureDetector(
-            onTap: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => const HomePage()));
             },
             child: Text(
               "Skip",
@@ -152,8 +172,7 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(9),
                   child: Signature(
-
-                    controller: controller,
+                    controller: _signatureController,
                     height: screenHeight * 0.1,
                     backgroundColor: Colors.grey[200]!,
                     dynamicPressureSupported: true,
@@ -352,12 +371,11 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
           ),
         ),
         GestureDetector(
-          onTap: (){
-            submitEvent();
+          onTap: () {
+            submitEvent(context, _phoneNumberController.text);
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-                vertical: 15, horizontal: 15),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             width: double.infinity,
             decoration: BoxDecoration(
                 color: Colors.lightBlue[500],
@@ -366,7 +384,9 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
                 child: Text(
               "Submit Event",
               style: TextStyle(
-                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             )),
           ),
         )
@@ -374,37 +394,50 @@ class _VolunteerConfirmationScreenState extends State<VolunteerConfirmationScree
     );
   }
 
+  void submitEvent(BuildContext context, String number) async {
+    final timerProvider = Provider.of<TimerProvider>(context, listen: false);
+    // Capture and convert signature image to Base64 string
+    String signatureString = await _exportSignatureAsString();
 
-  void submitEvent() async {
-    List<Map<String, String>> dateTimes = [];
+    // Handle empty signature case
+    if (signatureString.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please provide your signature.')),
+      );
+      return;
+    }
+    timerProvider.CreateSingleLog(
+        context, widget.event, widget.date, signatureString, number);
 
-      String startTime = widget.event.startTime;
-      String endTime = widget.event.endTime;
-     // Duration duration = widget.event.duration;
+    // List<Map<String, String>> dateTimes = [];
 
-      // Formatting duration as hours and minutes
-    //  String durationString = '${duration.inHours}:${duration.inMinutes % 60}';
+    // String startTime = widget.event.startTime;
+    // String endTime = widget.event.endTime;
+    // // Duration duration = widget.event.duration;
 
-      dateTimes.add({
-        'date': DateFormat.yMMMMEEEEd().format(widget.event.date),
-        'startTime': startTime,
-        'endTime': endTime,
-        'duration': widget.event.duration!,
-      });
+    // // Formatting duration as hours and minutes
+    // //  String durationString = '${duration.inHours}:${duration.inMinutes % 60}';
 
-    // Creating the data map
-    EventDataModel eventData = EventDataModel();
-    eventData.address = widget.event.address;
-    eventData.title =  widget.event.title;
-    eventData.description =  widget.event.description;
-    eventData.group =  widget.event.group;
-    eventData.location =  widget.event.location;
-    eventData.date =  dateTimes;
+    // dateTimes.add({
+    //   'date': DateFormat.yMMMMEEEEd().format(widget.event.date),
+    //   'startTime': startTime,
+    //   'endTime': endTime,
+    //   'duration': widget.event.duration!,
+    // });
 
-    var res = await _logMethod.createSingleLog(eventData);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(res)),
-    );
-    Get.back();
+    // // Creating the data map
+    // EventDataModel eventData = EventDataModel();
+    // eventData.address = widget.event.address;
+    // eventData.title = widget.event.title;
+    // eventData.description = widget.event.description;
+    // eventData.group = widget.event.group;
+    // eventData.location = widget.event.location;
+    // eventData.date = dateTimes;
+
+    // var res = await _logMethod.createSingleLog(eventData);
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(content: Text(res)),
+    // );
+    // Get.back();
   }
 }

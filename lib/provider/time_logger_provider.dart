@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/Event/volunteer_confirmation_screen.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 
 class TimerProvider with ChangeNotifier {
   int _elapsedTime = 0;
@@ -20,6 +21,7 @@ class TimerProvider with ChangeNotifier {
   loc.LocationData? _locationData;
   String _address = "";
   late DateTime _startTime;
+  late DateTime _endTime;
   final loc.Location _location = loc.Location();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   String _phoneNo = "";
@@ -65,7 +67,23 @@ class TimerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> endLogging(BuildContext context, EventDataModel event) async {
+  Future<void> endLogging(
+      BuildContext context, EventDataModel event, DateTime date) async {
+    _endTime = DateTime.now();
+    toggleLogging();
+
+    notifyListeners();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => VolunteerConfirmationScreen(
+                  event: event,
+                  date: date,
+                )));
+  }
+
+  Future<void> CreateSingleLog(BuildContext context, EventDataModel event,
+      DateTime date, String signature, String number) async {
     final SharedPreferences prefs = await _prefs;
     String uid = prefs.getString("uid") ?? "";
     _isLogging = false;
@@ -88,18 +106,14 @@ class TimerProvider with ChangeNotifier {
           ? GeoPoint(_locationData!.latitude!, _locationData!.longitude!)
           : null,
       'startTime': _startTime,
+      'endTime': _endTime,
       'address': _address,
-      'title': event.title,
-      'description': event.description,
-      'group': event.group,
-      'dateTime': [
-        {
-          'date': event.date,
-          'startTime': _startTime,
-          'endTime': DateTime.now(),
-          'duration': "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600)}",
-        }
-      ]
+      'signature': signature,
+      'phoneNumber': number,
+      'date': date,
+      'isLocationVerified': _locationData != null ? true : false,
+      'isSignatureVerified': signature.isNotEmpty ? true : false,
+      'isTimeVerified': _elapsedTime != 0 ? true : false,
     }).then((onValue) {
       Navigator.of(context).pop();
     });
@@ -118,20 +132,17 @@ class TimerProvider with ChangeNotifier {
               Center(
                 child: TextButton(
                     onPressed: () {
-
                       event.startTime = _startTime;
                       event.endTime = DateTime.now();
                       event.address = _address;
                       event.location = _location.toString();
-                      event.duration = "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600)}";
-
+                      event.duration =
+                          "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600)}";
 
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => VolunteerConfirmationScreen(
-                                    event: event,
-                                  )));
+                              builder: (context) => const HomePage()));
                     },
                     child: const Text("OK")),
               ),
@@ -141,8 +152,9 @@ class TimerProvider with ChangeNotifier {
             ],
           );
         });
+    toggleLogging();
 
-    _elapsedTime = 0;
+    // _elapsedTime = 0;
     notifyListeners();
   }
 

@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: height * 0.3911,
                 ),
                 Container(
-                  height: height * 0.583,
+                  height: height * 0.567,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: const BorderRadius.only(

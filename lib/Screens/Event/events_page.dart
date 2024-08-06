@@ -119,8 +119,10 @@ class _EventPageState extends State<EventPage>
             return const Center(child: Text('No events found'));
           } else {
             List<Map<String, dynamic>> todaysEvents = [];
-            List<Map<String, dynamic>> upcomingEvents = getUpcomingEvents(snapshot.data ?? []);
-            List<Map<String, dynamic>> pastEvents = getPastEvents(snapshot.data!);
+            List<Map<String, dynamic>> upcomingEvents =
+                getUpcomingEvents(snapshot.data ?? []);
+            List<Map<String, dynamic>> pastEvents =
+                getPastEvents(snapshot.data!);
 
             for (var event in snapshot.data!) {
               if (containsToday(event.dates!)) {
@@ -211,8 +213,10 @@ class _EventPageState extends State<EventPage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      LogNowPage(event.title!, event),
+                                  builder: (context) => LogNowPage(
+                                    event,
+                                    date: date,
+                                  ),
                                 ),
                               );
                             }
