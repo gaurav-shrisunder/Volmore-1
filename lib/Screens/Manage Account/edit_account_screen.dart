@@ -10,7 +10,7 @@ import 'package:volunterring/widgets/button.dart';
 class EditAccountScreen extends StatefulWidget {
   final String name;
   final String phone;
-  const EditAccountScreen(this.name,this.phone,{super.key});
+  const EditAccountScreen(this.name, this.phone, {super.key});
 
   @override
   State<EditAccountScreen> createState() => _EditAccountScreenState();
@@ -23,15 +23,13 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   var newPasswordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     nameController.text = widget.name;
-   phoneController.text = widget.phone;
+    phoneController.text = widget.phone;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -44,53 +42,57 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-          TextFieldInput(
-            textEditingController: nameController,
-            label: 'Name',
-            hintText: 'Enter your name here',
-            textInputType: TextInputType.name,
-          ),
-          TextFieldInput(
-            textEditingController: phoneController,
-            label: 'Phone',
-            hintText: 'Enter your phone number',
-            textInputType: TextInputType.phone,
-          ),
-          TextFieldInput(
-            textEditingController: oldPasswordController,
-            label: 'Old Password*',
-            hintText: 'Enter old password here',
-            textInputType: TextInputType.text,
-          ),
-          TextFieldInput(
-            textEditingController: newPasswordController,
-            label: 'New Password*',
-            hintText: 'Enter new password here',
-            textInputType: TextInputType.text,
-          ),
-          TextFieldInput(
-            textEditingController: confirmPasswordController,
-            label: 'Confirm Password*',
-            hintText: 'Re-enter new password',
-            textInputType: TextInputType.text,
-          ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-          
-          Padding(
-            padding: const EdgeInsets.only(left: 18.0),
-            child: ElevatedButton(
-                style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(headingBlue)),
-                onPressed: (){
-                  AuthMethod().changePassword(
-                      oldPassword: oldPasswordController.text,
-                      newPassword: newPasswordController.text,
-                      confirmNewPassword: confirmPasswordController.text);
-                }, child: Text("Change Password", style: TextStyle(color: Colors.white),)),
-          ),
-          /* Align(
+            children: [
+              TextFieldInput(
+                textEditingController: nameController,
+                label: 'Name',
+                hintText: 'Enter your name here',
+                textInputType: TextInputType.name,
+              ),
+              TextFieldInput(
+                textEditingController: phoneController,
+                label: 'Phone',
+                hintText: 'Enter your phone number',
+                textInputType: TextInputType.phone,
+              ),
+              TextFieldInput(
+                textEditingController: oldPasswordController,
+                label: 'Old Password*',
+                hintText: 'Enter old password here',
+                textInputType: TextInputType.text,
+              ),
+              TextFieldInput(
+                textEditingController: newPasswordController,
+                label: 'New Password*',
+                hintText: 'Enter new password here',
+                textInputType: TextInputType.text,
+              ),
+              TextFieldInput(
+                textEditingController: confirmPasswordController,
+                label: 'Confirm Password*',
+                hintText: 'Re-enter new password',
+                textInputType: TextInputType.text,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0),
+                child: ElevatedButton(
+                    style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(headingBlue)),
+                    onPressed: () {
+                      AuthMethod().changePassword(
+                          oldPassword: oldPasswordController.text,
+                          newPassword: newPasswordController.text,
+                          confirmNewPassword: confirmPasswordController.text);
+                    },
+                    child: const Text(
+                      "Change Password",
+                      style: TextStyle(color: Colors.white),
+                    )),
+              ),
+              /* Align(
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
                         onTap: () {
@@ -123,18 +125,23 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         ),
                       ),
                     ),*/
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 18.0),
-            child: ElevatedButton(
-                style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red)),
-                onPressed: (){
-                //  Get.to(const EditAccountScreen());
-                }, child: const Text("Delete Account", style: TextStyle(color: Colors.white),)),
-          ),
-                   /*   MyButtons(
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0),
+                child: ElevatedButton(
+                    style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(Colors.red)),
+                    onPressed: () {
+                      //  Get.to(const EditAccountScreen());
+                    },
+                    child: const Text(
+                      "Delete Account",
+                      style: TextStyle(color: Colors.white),
+                    )),
+              ),
+              /*   MyButtons(
               onTap: () {
                 AuthMethod().changePassword(
                     oldPassword: oldPasscontroller.text,
@@ -142,8 +149,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     confirmNewPassword: ConfirmPasscontroller.text);
               },
               text: "Save Changes")*/
-                    ],
-                  ),
+            ],
+          ),
         ),
       ),
     );
