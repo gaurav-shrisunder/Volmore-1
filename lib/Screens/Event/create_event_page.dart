@@ -197,7 +197,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: simpleAppBar(context),
+      appBar: simpleAppBar(context , ""),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),

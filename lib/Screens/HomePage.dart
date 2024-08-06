@@ -10,6 +10,7 @@ import 'package:volunterring/Screens/Event/events_page.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/TermsScreen.dart';
+import 'package:volunterring/Screens/leaderboard_screen.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
 import 'CreateLogScreen.dart';
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage>
 
   final List<Widget> _pages = [
     const EventPage(),
-    const Text('Leaderboard Screen'),
+    const LeaderboardScreen(),
     const Text('Transcript Screen'),
     const UserProfilePage(),
   ];
