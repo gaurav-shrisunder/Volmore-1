@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
@@ -10,6 +11,8 @@ import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/TermsScreen.dart';
 import 'package:volunterring/Utils/Colors.dart';
+
+import 'CreateLogScreen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -61,22 +64,23 @@ class _HomePageState extends State<HomePage>
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
+       showUnselectedLabels: true,
         elevation: 5,
-        items: const <BottomNavigationBarItem>[
+        items:  <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.event),
+            icon: SvgPicture.asset("assets/icons/bottom_events_icon_light.svg"),
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
+            icon: SvgPicture.asset("assets/icons/bottom_leadership_icon_light.svg"),
             label: 'Leaderboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long),
+            icon: SvgPicture.asset("assets/icons/bottom_transcript_light.svg"),
             label: 'Transcript',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon:SvgPicture.asset("assets/icons/bottom_profile_light.svg"),
             label: 'Profile',
           ),
         ],
@@ -98,6 +102,7 @@ class _HomePageState extends State<HomePage>
           child: Column(
             children: [
               const SizedBox(height: 20),
+              _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined, ()=>  Get.to(const CreateLogScreen())),
               _buildSettingsTile(
                   'Support - I need help',
                   Icons.arrow_forward_ios_outlined,
