@@ -75,13 +75,12 @@ class LogServices {
     return res;
   }
 
-
-
   Future<String> createPastLog(Map<String, dynamic> eventData) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
     var uid = prefs.getString("uid");
     String logId = _uuid.v4();
+    String eventId = _uuid.v4();
     try {
       if (eventData.isNotEmpty) {
         // Add log to your Firestore database
