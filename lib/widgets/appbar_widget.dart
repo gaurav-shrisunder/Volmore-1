@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 
 
 
-AppBar simpleAppBar(BuildContext context){
+AppBar simpleAppBar(BuildContext context, String title){
+
   return AppBar(
+   centerTitle: false,
+    title: title != "" ? Text(title): null,
     leading: IconButton(onPressed: (){
       Navigator.pop(context);
     }, icon: const Icon(CupertinoIcons.chevron_left)),

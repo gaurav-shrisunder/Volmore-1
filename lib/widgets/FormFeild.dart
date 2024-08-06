@@ -26,7 +26,7 @@ class TextFieldInput extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -35,7 +35,7 @@ class TextFieldInput extends StatelessWidget {
             height: 5,
           ),
           TextField(
-            style: const TextStyle(fontSize: 20),
+            style: const TextStyle(fontSize: 18),
             controller: textEditingController,
             decoration: InputDecoration(
               hintText: hintText,
@@ -50,7 +50,7 @@ class TextFieldInput extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black, width: 1),
-                borderRadius: BorderRadius.circular(0),
+                borderRadius: BorderRadius.circular(25),
               ),
               filled: true,
               fillColor: Colors.white,
