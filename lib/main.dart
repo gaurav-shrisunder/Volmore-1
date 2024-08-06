@@ -61,8 +61,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           shadow: Colors.white,
           onPrimaryContainer: Colors.white,
           primaryContainer: Colors.white,
-          surfaceContainer: Colors.white,
-
+          // surfaceContainer: Colors.white,
 
           // surfaceContainer: Colors.white
         ),
@@ -76,10 +75,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             backgroundColor: Colors.white,
             dayPeriodColor: Colors.blue.shade50,
             dialBackgroundColor: Colors.blue.shade50,
-        hourMinuteTextColor: Colors.black,
-        hourMinuteColor: Colors.blue.shade50
-        ),
-
+            hourMinuteTextColor: Colors.black,
+            hourMinuteColor: Colors.blue.shade50),
         fontFamily: "Plus Jakarta Sans",
         useMaterial3: true,
       ),

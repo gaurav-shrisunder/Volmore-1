@@ -476,7 +476,10 @@ class _PastEventsPageState extends State<PastEventsPage> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  style:  ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue.shade50)),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.blue.shade50),
+                  ),
                   onPressed: _addDateTimeController,
                   child: Text(
                     'Add Another Date',
@@ -513,7 +516,6 @@ class _PastEventsPageState extends State<PastEventsPage> {
                           value: _selectedGroup,
                           dropdownColor: Colors.white,
                           decoration: InputDecoration(
-
                             filled: true,
                             hintStyle: TextStyle(
                                 color: Colors.grey[400],
@@ -580,7 +582,10 @@ class _PastEventsPageState extends State<PastEventsPage> {
                     child: const Center(
                       child: Text(
                         'Submit Event',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                     ),
                   ),
