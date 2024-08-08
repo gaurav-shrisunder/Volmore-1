@@ -57,7 +57,7 @@ dependencies:
   flutter_svg:
   percent_indicator:
   signature:
-  fl_chart:
+  fl_chart: ^0.64.0
 
 dev_dependencies:
   flutter_test:
