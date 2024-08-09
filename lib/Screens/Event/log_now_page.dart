@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:volunterring/widgets/appbar_widget.dart';
 
 import '../../provider/time_logger_provider.dart';
 
@@ -27,7 +28,9 @@ class _LogNowPageState extends State<LogNowPage> {
     
 
     return Scaffold(
+      appBar: simpleAppBar(context, ""),
       body: Container(
+
         width: screenWidth,
         decoration: const BoxDecoration(color: Colors.white
             // gradient: backgroundGradient,
@@ -39,8 +42,8 @@ class _LogNowPageState extends State<LogNowPage> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: screenHeight * 0.03),
-                  Row(
+                  SizedBox(height: screenHeight * 0.01),
+                 /* Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
@@ -52,7 +55,7 @@ class _LogNowPageState extends State<LogNowPage> {
                             size: 40,
                           )),
                     ],
-                  ),
+                  ),*/
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -62,8 +65,8 @@ class _LogNowPageState extends State<LogNowPage> {
                             fontSize: screenWidth * 0.09,
                             fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
-                        height: screenHeight * 0.1,
+                      const SizedBox(
+                        height: 30,
                       ),
                       Text(
                         "Shift Hours",
@@ -73,7 +76,7 @@ class _LogNowPageState extends State<LogNowPage> {
                       Text(
                         '${(timerProvider.elapsedTime ~/ 3600).toString().padLeft(2, '0')}:${((timerProvider.elapsedTime % 3600) ~/ 60).toString().padLeft(2, '0')}:${(timerProvider.elapsedTime % 60).toString().padLeft(2, '0')}',
                         style: TextStyle(
-                            fontSize: screenWidth * 0.16,
+                            fontSize: screenWidth * 0.14,
                             fontWeight: FontWeight.bold),
                       ),
                       if (timerProvider.locationTracking &&
@@ -90,7 +93,9 @@ class _LogNowPageState extends State<LogNowPage> {
                         ),
                     ],
                   ),
-                  SizedBox(height: screenHeight * 0.05),
+                  const SizedBox(
+                    height: 30,
+                  ),
                   Text(
                     widget.eventModel.title!,
                     style: TextStyle(

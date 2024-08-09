@@ -4,6 +4,7 @@ import 'package:volunterring/Screens/Event/create_event_page.dart';
 import 'package:volunterring/Screens/Event/past_events_page.dart';
 import 'package:volunterring/Screens/VolunteeringIdeas.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/widgets/appbar_widget.dart';
 
 class CreateLogScreen extends StatelessWidget {
   const CreateLogScreen({super.key});
@@ -12,27 +13,16 @@ class CreateLogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
+      appBar: simpleAppBar(context, ""),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            SizedBox(
-              height: Get.height * 0.04,
-            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: Get.width * 0.03,
-                ),
-                IconButton(
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: const Icon(Icons.arrow_back_ios)),
-                SizedBox(
-                  width: Get.width * 0.03,
-                ),
                 Text(
                   "Create an Event",
                   style: TextStyle(
@@ -41,9 +31,6 @@ class CreateLogScreen extends StatelessWidget {
                       fontSize: Get.height * 0.03,
                       fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
-                  width: Get.width * 0.05,
-                ),
                 Image.asset(
                   "assets/images/HiImage.png",
                   height: 120,
@@ -51,82 +38,136 @@ class CreateLogScreen extends StatelessWidget {
                 )
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Text(
-                "Select if you have a past volunteer event or want to create new Event for your transcript.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: Get.height * 0.022),
-              ),
+            Text(
+              "Select if you have a past volunteer event or want to create new Event for your transcript.",
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontWeight: FontWeight.normal, fontSize: Get.height * 0.018),
             ),
             SizedBox(
               height: Get.height * 0.04,
             ),
-            GestureDetector(
-              onTap: () {
-                Get.to(const PastEventsPage());
-              },
-              child: Container(
-                width: Get.width * 0.92,
-                height: Get.height * 0.14,
-                decoration: BoxDecoration(
-                    color: const Color(0xFF7FD8DE),
-                    borderRadius: BorderRadius.circular(20)),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(8),
-                      width: Get.width * 0.28,
-                      height: Get.height * 0.14,
-                      decoration: BoxDecoration(
-                          color: const Color(0xFFE5FCF5),
-                          borderRadius: BorderRadius.circular(20)),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          "assets/images/pastEvents.jpg",
-                          fit: BoxFit.cover,
-                        ),
+            Card(
+              color: Colors.teal.shade100,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(8),
+                    width: Get.width * 0.28,
+                    height: Get.height * 0.14,
+                    decoration: BoxDecoration(
+                        color: const Color(0xFFE5FCF5),
+                        borderRadius: BorderRadius.circular(20)),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        "assets/images/pastEvents.jpg",
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Log Past Hours",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: Get.height * 0.022),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Wrap(
+                          children: [
+                            Text(
+                              "Select if you have a past\nvolunteer event that you want \nto add to your transcript.",
+                              textAlign: TextAlign.left,
+                              softWrap: true,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: Get.height * 0.016),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            /*   GestureDetector(
+          onTap: () {
+            Get.to(const PastEventsPage());
+          },
+          child: Container(
+            width: Get.width * 0.92,
+            height: Get.height * 0.14,
+            decoration: BoxDecoration(
+                color: const Color(0xFF7FD8DE),
+                borderRadius: BorderRadius.circular(20)),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(8),
+                  width: Get.width * 0.28,
+                  height: Get.height * 0.14,
+                  decoration: BoxDecoration(
+                      color: const Color(0xFFE5FCF5),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      "assets/images/pastEvents.jpg",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Log Past Hours",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: Get.height * 0.022),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Wrap(
                         children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
                           Text(
-                            "Log Past Hours",
+                            "Select if you have a past\nvolunteer event that you want \nto add to your transcript.",
                             textAlign: TextAlign.left,
+                            softWrap: true,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: Get.height * 0.022),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Wrap(
-                            children: [
-                              Text(
-                                "Select if you have a past\nvolunteer event that you want \nto add to your transcript.",
-                                textAlign: TextAlign.left,
-                                softWrap: true,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: Get.height * 0.016),
-                              ),
-                            ],
+                                fontSize: Get.height * 0.016),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
+          ),
+                      ),*/
             SizedBox(
               height: Get.height * 0.04,
             ),

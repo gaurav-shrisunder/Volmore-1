@@ -139,12 +139,12 @@ class EventWidget extends StatelessWidget {
                         side: BorderSide.none,
                         disabledColor: Colors.grey.withOpacity(0.6),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 7),
+                            horizontal: 7, vertical: 5),
                         label: Text(
                           buttonText,
                           style: TextStyle(
                               color: isEnabled ? Colors.white : Colors.black,
-                              fontSize: 18),
+                              fontSize: 16),
                         ),
                         onPressed: isEnabled ? onPressed : null,
                         labelPadding: const EdgeInsets.symmetric(

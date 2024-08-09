@@ -25,7 +25,7 @@ class _DashboardState extends State<Dashboard>
   late Animation<Offset> _animation;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const EventPage(),
+    const EventPage(initialSortOption: SortOption.az, ),
     const Text('Leaderboard Screen'),
     const Text('Transcript Screen'),
     const UserProfilePage(),

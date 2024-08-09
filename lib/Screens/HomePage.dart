@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
@@ -13,6 +14,7 @@ import 'package:volunterring/Screens/TermsScreen.dart';
 import 'package:volunterring/Screens/leaderboard_screen.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
+import '../provider/theme_manager_provider.dart';
 import 'CreateLogScreen.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,7 +29,7 @@ class _HomePageState extends State<HomePage>
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const EventPage(),
+    const EventPage(initialSortOption: SortOption.az, ),
     const LeaderboardScreen(),
     const Text('Transcript Screen'),
     const UserProfilePage(),
@@ -41,34 +43,59 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'VOLMORE',
           style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.bold, color: headingBlue,),
+              fontSize: 30, fontWeight: FontWeight.bold,),
         ),
         centerTitle: false,
         elevation: 1,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+     //   backgroundColor: Colors.white,
         shadowColor: Colors.black,
         actions: [
+
           IconButton(
             icon: const Icon(Icons.settings_outlined, size: 32),
             onPressed: _showSettingsBottomSheet,
           ),
           const SizedBox(width: 10),
+          IconButton(
+            icon: Icon(
+              themeManager.themeData.brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+              color: themeManager.themeData.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+            ),
+            onPressed: () {
+              setState(() {
+              });
+              themeManager.toggleTheme();
+            },
+            iconSize: 30.0,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            style: const ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+            splashRadius: 24.0,
+          )
         ],
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
+
         backgroundColor: Colors.white,
+       type: BottomNavigationBarType.shifting,
        showUnselectedLabels: true,
         elevation: 5,
         items:  <BottomNavigationBarItem>[
           BottomNavigationBarItem(
+
             icon: SvgPicture.asset("assets/icons/bottom_events_icon_light.svg"),
             label: 'Events',
           ),
