@@ -1,20 +1,19 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-
-
 class WeeklyStatsChart extends StatefulWidget {
   final List<String> xAxisList;
   final String xAxisName;
   final List<double> yAxisList;
   final String yAxisName;
   final double interval;
-  const WeeklyStatsChart({super.key,
-    required this.xAxisList,
-    required this.yAxisList,
-    required this.xAxisName,
-    required this.yAxisName,
-    required this.interval});
+  const WeeklyStatsChart(
+      {super.key,
+      required this.xAxisList,
+      required this.yAxisList,
+      required this.xAxisName,
+      required this.yAxisName,
+      required this.interval});
 
   @override
   State<WeeklyStatsChart> createState() => _WeeklyStatsChartState();
@@ -37,24 +36,19 @@ class _WeeklyStatsChartState extends State<WeeklyStatsChart> {
     interval = widget.interval;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return BarChart(
-
       BarChartData(
-
-
-
         titlesData: FlTitlesData(
           show: true,
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false,),
-
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false,
+            ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -81,16 +75,15 @@ class _WeeklyStatsChartState extends State<WeeklyStatsChart> {
             bottom: BorderSide(width: 1),
           ),
         ),
-        gridData: FlGridData(show: false),
+        gridData: const FlGridData(show: false),
         barGroups: List.generate(
           xAxisList.length,
-              (index) => BarChartGroupData(
+          (index) => BarChartGroupData(
             x: index,
             barRods: [
               BarChartRodData(
                   toY: yAxisList[index],
                   width: 20,
-                  
                   color: Colors.blue.shade500,
                   borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(10),
@@ -151,5 +144,3 @@ Widget leftTitles(double value, TitleMeta meta) {
     child: text,
   );
 }
-
-

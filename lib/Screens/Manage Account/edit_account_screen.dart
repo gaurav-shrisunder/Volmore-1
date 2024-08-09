@@ -131,7 +131,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 padding: const EdgeInsets.only(left: 18.0),
                 child: ElevatedButton(
                     style: const ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(Colors.red)),
+                        backgroundColor: MaterialStatePropertyAll(Colors.red)),
                     onPressed: () {
                       //  Get.to(const EditAccountScreen());
 

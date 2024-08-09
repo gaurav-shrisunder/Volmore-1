@@ -32,7 +32,7 @@ class _EventPageState extends State<EventPage>
 
   List<EventListDataModel> mainEventList = [];
 
-  List<EventDataModel> sortedEventList =[];
+  List<EventDataModel> sortedEventList = [];
 
   @override
   void initState() {
@@ -152,8 +152,10 @@ class _EventPageState extends State<EventPage>
             );
           } else {
             List<EventListDataModel> todaysEvents = [];
-            List<EventListDataModel> upcomingEvents = getUpcomingEvents(snapshot.data ?? []);
-            List<EventListDataModel> pastEvents = getPastEvents(snapshot.data ?? []);
+            List<EventListDataModel> upcomingEvents =
+                getUpcomingEvents(snapshot.data ?? []);
+            List<EventListDataModel> pastEvents =
+                getPastEvents(snapshot.data ?? []);
 
             for (var event in snapshot.data!) {
               if (containsToday(event.dates!)) {
@@ -292,7 +294,7 @@ class _EventPageState extends State<EventPage>
                           },
                         );
                       },
-                      icon: Icon(Icons.sort))
+                      icon: const Icon(Icons.sort))
                 ],
               ),
             ],
@@ -433,7 +435,7 @@ class _EventPageState extends State<EventPage>
     setState(() {
       // Replace the original list with the sorted one
       mainEventList = List.from(sortedEvents);
-   //   sortedEventList = mainEventList;
+      //   sortedEventList = mainEventList;
     });
   }
 }
