@@ -8,17 +8,25 @@ import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/firebase_options.dart';
+import 'package:volunterring/provider/theme_manager_provider.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 
-Future<void> main() async {
+import 'Utils/app_themes.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(ChangeNotifierProvider(
-    create: (_) => TimerProvider(),
-    child: const MyApp(),
-  ));
-}
 
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TimerProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeManager(AppThemes.lightTheme)),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
 class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
@@ -29,6 +37,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+
   bool isLoggedIn = false;
 
   @override
@@ -47,11 +56,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context);
     checkLocalStorage();
     return GetMaterialApp(
       title: 'Volunteer App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+      theme: themeManager.themeData,
+     /* ThemeData(
         colorScheme: ColorScheme.fromSeed(
           surface: Colors.white,
           surfaceTint: Colors.white,
@@ -61,9 +72,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           shadow: Colors.white,
           onPrimaryContainer: Colors.white,
           primaryContainer: Colors.white,
-          // surfaceContainer: Colors.white,
-
-          // surfaceContainer: Colors.white
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
@@ -79,7 +87,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             hourMinuteColor: Colors.blue.shade50),
         fontFamily: "Plus Jakarta Sans",
         useMaterial3: true,
-      ),
+      ),*/
       home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }

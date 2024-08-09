@@ -11,12 +11,12 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import '../../Models/event_data_model.dart';
 
-
 enum SortOption { az, za, dateAsc, dateDesc }
 
 class EventPage extends StatefulWidget {
   final SortOption initialSortOption;
-  const EventPage({super.key,  required this.initialSortOption});
+
+  const EventPage({super.key, required this.initialSortOption});
 
   @override
   _EventPageState createState() => _EventPageState();
@@ -30,6 +30,9 @@ class _EventPageState extends State<EventPage>
 
   SortOption? _selectedOption;
 
+  List<EventListDataModel> mainEventList = [];
+
+  List<EventDataModel> sortedEventList =[];
 
   @override
   void initState() {
@@ -80,7 +83,7 @@ class _EventPageState extends State<EventPage>
         Timestamp timestamp = dateMap['date'];
         DateTime date = timestamp.toDate();
         if (date.isAfter(today)) {
-          upcomingEvents.add(EventListDataModel(date: date,event: event));
+          upcomingEvents.add(EventListDataModel(date: date, event: event));
         }
       }
     }
@@ -95,7 +98,7 @@ class _EventPageState extends State<EventPage>
         Timestamp timestamp = dateMap['date'];
         DateTime date = timestamp.toDate();
         if (date.isBefore(today)) {
-          pastEvents.add(EventListDataModel(date: date,event: event));
+          pastEvents.add(EventListDataModel(date: date, event: event));
         }
       }
     }
@@ -127,17 +130,16 @@ class _EventPageState extends State<EventPage>
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return  Center(
+            return Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFfa6513),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  textStyle:
-                  const TextStyle(fontSize: 18, color: Colors.white),
+                  textStyle: const TextStyle(fontSize: 18, color: Colors.white),
                 ),
                 onPressed: () {
                   Get.to(const CreateLogScreen());
@@ -151,15 +153,14 @@ class _EventPageState extends State<EventPage>
           } else {
             List<EventListDataModel> todaysEvents = [];
             List<EventListDataModel> upcomingEvents = getUpcomingEvents(snapshot.data ?? []);
-            List<EventListDataModel> pastEvents = getPastEvents(snapshot.data!);
+            List<EventListDataModel> pastEvents = getPastEvents(snapshot.data ?? []);
 
             for (var event in snapshot.data!) {
               if (containsToday(event.dates!)) {
-
-                todaysEvents.add(EventListDataModel(event: event, date: DateTime.now()));
+                todaysEvents.add(
+                    EventListDataModel(event: event, date: DateTime.now()));
               }
             }
-
             return TabBarView(
               controller: _tabController,
               children: [
@@ -175,7 +176,6 @@ class _EventPageState extends State<EventPage>
   }
 
   Widget buildEventList(String title, List<EventListDataModel> events) {
-
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -192,9 +192,9 @@ class _EventPageState extends State<EventPage>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (title == "Today's Events")
-                Row(
-                  children: [
+              Row(
+                children: [
+                  if (title == "Today's Events")
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFfa6513),
@@ -214,16 +214,87 @@ class _EventPageState extends State<EventPage>
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
-                    IconButton(onPressed: (){
-                      showSortDialogBox(events);
-                    }, icon: Icon(Icons.sort))
-                  ],
-                ),
-              if(title != "Today's Events")
-                IconButton(onPressed: (){
-                  showSortDialogBox(events);
-                }, icon: Icon(Icons.sort))
-            
+                  IconButton(
+                      onPressed: () {
+                        // showSortDialogBox(events);
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            SortOption? selectedOption = _selectedOption;
+
+                            return StatefulBuilder(
+                              builder: (context, setState) {
+                                return SimpleDialog(
+                                  backgroundColor: Colors.white,
+                                  title: const Text("Sort by"),
+                                  children: [
+                                    Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        RadioListTile<SortOption>(
+                                          title: const Text('A-Z'),
+                                          value: SortOption.az,
+                                          groupValue: selectedOption,
+                                          onChanged: (SortOption? value) {
+                                            setState(() {
+                                              selectedOption = value;
+                                              //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                                              //   _updateEventList(events); // Update the main event list
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        RadioListTile<SortOption>(
+                                          title: const Text('Z-A'),
+                                          value: SortOption.za,
+                                          groupValue: selectedOption,
+                                          onChanged: (SortOption? value) {
+                                            setState(() {
+                                              selectedOption = value;
+                                              //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+                                              //    _updateEventList(events); // Update the main event list
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        RadioListTile<SortOption>(
+                                          title: const Text('Date: Ascending'),
+                                          value: SortOption.dateAsc,
+                                          groupValue: selectedOption,
+                                          onChanged: (SortOption? value) {
+                                            setState(() {
+                                              selectedOption = value;
+                                              //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
+                                              //   _updateEventList(events); // Update the main event list
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        RadioListTile<SortOption>(
+                                          title: const Text('Date: Descending'),
+                                          value: SortOption.dateDesc,
+                                          groupValue: selectedOption,
+                                          onChanged: (SortOption? value) {
+                                            setState(() {
+                                              selectedOption = value;
+                                              //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+                                              //   _updateEventList(events); // Update the main event list
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.sort))
+                ],
+              ),
             ],
           ),
         ),
@@ -241,7 +312,6 @@ class _EventPageState extends State<EventPage>
                   itemCount: events.length,
                   itemBuilder: (context, index) {
                     EventDataModel? event = events[index].event;
-
                     DateTime date = events[index].date;
                     Color color = colorMap[event?.groupColor] ?? Colors.pink;
                     bool isEnabled = containsToday(event!.dates!) &&
@@ -274,7 +344,6 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-
   void showSortDialogBox(List<EventListDataModel> events) {
     showDialog(
       context: context,
@@ -297,8 +366,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
-                          events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                          _updateEventList(events); // Update the main event list
+                          //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                          _updateEventList(
+                              events); // Update the main event list
                         });
                         Navigator.of(context).pop();
                       },
@@ -310,8 +380,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
-                          events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
-                          _updateEventList(events); // Update the main event list
+                          //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+                          _updateEventList(
+                              events); // Update the main event list
                         });
                         Navigator.of(context).pop();
                       },
@@ -323,8 +394,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
-                          events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
-                          _updateEventList(events); // Update the main event list
+                          //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
+                          _updateEventList(
+                              events); // Update the main event list
                         });
                         Navigator.of(context).pop();
                       },
@@ -336,8 +408,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
-                          events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
-                          _updateEventList(events); // Update the main event list
+                          //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+                          _updateEventList(
+                              events); // Update the main event list
                         });
                         Navigator.of(context).pop();
                       },
@@ -352,11 +425,15 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  void _updateEventList(List<EventListDataModel> sortedEvents) {
+  _updateEventList(List<EventListDataModel> sortedEvents) {
+    for (var action in sortedEvents) {
+      log("Sorted List: ${jsonEncode(action.event?.date.toString())}");
+    }
+
     setState(() {
       // Replace the original list with the sorted one
-   //   _mainEventList = List.from(sortedEvents);
+      mainEventList = List.from(sortedEvents);
+   //   sortedEventList = mainEventList;
     });
   }
-
 }
