@@ -78,6 +78,59 @@ class LogServices {
     return res;
   }
 
+  Future<List<EventDataModel>> fetchAllEventsWithLogs() async {
+    final SharedPreferences prefs = await _prefs;
+    String? uid = prefs.getString("uid");
+
+    if (uid == null) {
+      return []; // Handle the case where UID is null
+    }
+
+    try {
+      // Fetch all events for the user
+      QuerySnapshot eventSnapshot = await _firestore
+          .collection("users")
+          .doc(uid)
+          .collection("events")
+          .get();
+
+      List<EventDataModel> events = [];
+
+      // Iterate through each event document
+      for (var eventDoc in eventSnapshot.docs) {
+        String eventId = eventDoc.id;
+
+        // Fetch logs associated with this event
+        QuerySnapshot logsSnapshot = await _firestore
+            .collection("users")
+            .doc(uid)
+            .collection("events")
+            .doc(eventId)
+            .collection("logs")
+            .get();
+
+        List<LogModel> logs = logsSnapshot.docs.map((doc) {
+          return LogModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+        }).toList();
+
+        // Create an instance of EventModel
+        EventDataModel event = EventDataModel.fromMap(
+          eventDoc.data() as Map<String, dynamic>,
+          eventId,
+          logs,
+        );
+
+        events.add(event);
+      }
+
+      return events;
+    } catch (e) {
+      print(e);
+      return []; // Handle errors appropriately
+    }
+  }
+
+
   Future<String> createPastLog(Map<String, dynamic> eventData) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;

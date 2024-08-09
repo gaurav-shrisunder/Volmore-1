@@ -304,6 +304,7 @@ class AuthMethod {
           .map((doc) =>
               EventDataModel.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
+      print("events ${querySnapshot.docs[2].data()}");
     } catch (e) {
       print("Error fetching events: $e");
     }

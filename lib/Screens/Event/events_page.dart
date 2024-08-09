@@ -5,6 +5,7 @@ import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import '../../Models/event_data_model.dart';
 
@@ -18,6 +19,7 @@ class EventPage extends StatefulWidget {
 class _EventPageState extends State<EventPage>
     with SingleTickerProviderStateMixin {
   final _authMethod = AuthMethod();
+  final _logMethods = LogServices();
   late Future<List<EventDataModel>> _eventsFuture;
   late TabController _tabController;
 
@@ -25,7 +27,7 @@ class _EventPageState extends State<EventPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _eventsFuture = _authMethod.fetchEvents();
+    _eventsFuture = _logMethods.fetchAllEventsWithLogs();
   }
 
   @override
@@ -56,6 +58,20 @@ class _EventPageState extends State<EventPage>
           date.month == today.month &&
           date.day == today.day) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  bool isAnyLogUnverified(List<dynamic> logs, DateTime date) {
+    for (var log in logs) {
+      DateTime logDate = (log['date'] as Timestamp).toDate();
+      if (logDate.year == date.year &&
+          logDate.month == date.month &&
+          logDate.day == date.day) {
+        if (!log['isSignatureVerified']) {
+          return true;
+        }
       }
     }
     return false;
@@ -200,9 +216,25 @@ class _EventPageState extends State<EventPage>
                     EventDataModel event = events[index]['event'];
                     DateTime date = events[index]['date'];
                     Color color = colorMap[event.groupColor] ?? Colors.pink;
+
+                    // Check if there is any unverified log for past events
+                    bool isPastEvent = title == "Past Events";
+                    bool isUpcomingEvent = title == "Upcoming Events";
+                    bool isTodayEvent = title == "Today's Events";
                     bool isEnabled = containsToday(event.dates!) &&
                         title == "Today's Events";
-                    String buttonText = isEnabled ? "Log Now" : "Verify";
+
+                    // Enable the button for past events if there are unverified logs
+                    if (isPastEvent) {
+                      isEnabled = !isAnyLogUnverified(event.logs as List, date);
+                    }
+
+                    // Disable the button for upcoming events
+                    if (isUpcomingEvent) {
+                      isEnabled = false;
+                    }
+
+                    String buttonText = isTodayEvent ? "Log Now" : "Verify";
                     return EventWidget(
                       event,
                       color,
