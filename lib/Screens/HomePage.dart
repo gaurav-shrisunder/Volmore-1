@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage>
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const EventPage(),
+    const EventPage(initialSortOption: SortOption.az, ),
     const LeaderboardScreen(),
     const Text('Transcript Screen'),
     const UserProfilePage(),
@@ -65,10 +65,13 @@ class _HomePageState extends State<HomePage>
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
+       type: BottomNavigationBarType.shifting,
+
        showUnselectedLabels: true,
         elevation: 5,
         items:  <BottomNavigationBarItem>[
           BottomNavigationBarItem(
+
             icon: SvgPicture.asset("assets/icons/bottom_events_icon_light.svg"),
             label: 'Events',
           ),

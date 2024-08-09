@@ -229,10 +229,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
-                  title: 'Job Title',
+                  title: 'Job Title*',
                   controller: titleController,
-                  maxlines: 1,
-                  hintText: "Trash Clean Up",
+                  hintText: 'Trash Clean Up',
+                  validator: nameValidator,
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
@@ -240,6 +240,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   controller: descriptionController,
                   maxlines: 5,
                   hintText: 'Job Description',
+                  validator: nameValidator,
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
@@ -279,7 +280,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     icon: const Icon(CupertinoIcons.chevron_down, size: 20,),
                     decoration: InputDecoration(
                       filled: true,
-                      
+
                       hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 16,
@@ -667,6 +668,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
+
+                    titleController.text = titleController.text;
+
+
                     if (titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&

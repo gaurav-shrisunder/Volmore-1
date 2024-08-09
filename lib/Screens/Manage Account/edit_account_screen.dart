@@ -7,6 +7,8 @@ import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:volunterring/widgets/button.dart';
 
+import '../../widgets/InputFormFeild.dart';
+
 class EditAccountScreen extends StatefulWidget {
   final String name;
   final String phone;
@@ -38,40 +40,37 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       backgroundColor: Colors.white,
       appBar: simpleAppBar(context, "Edit Profile"),
       body: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(18),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFieldInput(
-                textEditingController: nameController,
-                label: 'Name',
-                hintText: 'Enter your name here',
-                textInputType: TextInputType.name,
+              InputFeildWidget(
+                title: 'Name',
+                controller: nameController,
+                hintText: 'Enter your name',
+                validator: nameValidator,
               ),
-              TextFieldInput(
-                textEditingController: phoneController,
-                label: 'Phone',
+              InputFeildWidget(
+                title: 'Phone',
+                controller: phoneController,
                 hintText: 'Enter your phone number',
-                textInputType: TextInputType.phone,
+                validator: phoneValidator,
               ),
-              TextFieldInput(
-                textEditingController: oldPasswordController,
-                label: 'Old Password*',
-                hintText: 'Enter old password here',
-                textInputType: TextInputType.text,
+              InputFeildWidget(
+                title: 'Old Password',
+                controller: oldPasswordController,
+                hintText: 'Enter your old password',
               ),
-              TextFieldInput(
-                textEditingController: newPasswordController,
-                label: 'New Password*',
+              InputFeildWidget(
+                title: 'New Password',
+                controller: newPasswordController,
                 hintText: 'Enter new password here',
-                textInputType: TextInputType.text,
-              ),
-              TextFieldInput(
-                textEditingController: confirmPasswordController,
-                label: 'Confirm Password*',
+
+              ),  InputFeildWidget(
+                title: 'Confirm Password',
+                controller: confirmPasswordController,
                 hintText: 'Re-enter new password',
-                textInputType: TextInputType.text,
               ),
               const SizedBox(
                 height: 10,
@@ -132,9 +131,28 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 padding: const EdgeInsets.only(left: 18.0),
                 child: ElevatedButton(
                     style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.red)),
+                        backgroundColor: WidgetStatePropertyAll(Colors.red)),
                     onPressed: () {
                       //  Get.to(const EditAccountScreen());
+
+                      showDialog(context: context, builder: (_){
+                        return SimpleDialog(
+                          title: Text("Are you sure you want to delete your account?"),
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(onPressed: (){
+                                  Navigator.pop(context);
+                                }, child: Text("No")),
+                                ElevatedButton(onPressed: (){
+
+                                }, child: Text("Yes"))
+                              ],
+                            )
+                          ],
+                        );
+                      });
                     },
                     child: const Text(
                       "Delete Account",

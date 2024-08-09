@@ -1,7 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+
+
+class EventListDataModel {
+  EventDataModel? event;
+  dynamic date;
+
+  EventListDataModel({this.event, this.date});
+
+  EventListDataModel.fromJson(Map<String, dynamic> json) {
+    event = json['event'] != null ?  EventDataModel.fromJson(json['event']) : null;
+    date = json['date'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (event != null) {
+      data['event'] = event!.toJson();
+    }
+    data['date'] = date;
+    return data;
+  }
+}
+
 class EventDataModel {
+
   dynamic date;
   String? description;
   String? group;
@@ -77,5 +101,10 @@ class EventDataModel {
     data['endTime'] = endTime;
     data['end_date'] = endDate;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'EventDataModel{date: $date, description: $description, group: $group, groupColor: $groupColor, id: $id, location: $location, address: $address, occurence: $occurence, title: $title, host: $host, time: $time, duration: $duration, startTime: $startTime, endTime: $endTime, endDate: $endDate, dates: $dates}';
   }
 }
