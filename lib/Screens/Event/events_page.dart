@@ -220,13 +220,13 @@ class _EventPageState extends State<EventPage>
                     // Check if there is any unverified log for past events
                     bool isPastEvent = title == "Past Events";
                     bool isUpcomingEvent = title == "Upcoming Events";
+                    bool isTodayEvent = title == "Today's Events";
                     bool isEnabled = containsToday(event.dates!) &&
                         title == "Today's Events";
 
                     // Enable the button for past events if there are unverified logs
                     if (isPastEvent) {
-                      isEnabled = isAnyLogUnverified(
-                          event.logs as List, date);
+                      isEnabled = !isAnyLogUnverified(event.logs as List, date);
                     }
 
                     // Disable the button for upcoming events
@@ -234,7 +234,7 @@ class _EventPageState extends State<EventPage>
                       isEnabled = false;
                     }
 
-                    String buttonText = isEnabled ? "Log Now" : "Verify";
+                    String buttonText = isTodayEvent ? "Log Now" : "Verify";
                     return EventWidget(
                       event,
                       color,
