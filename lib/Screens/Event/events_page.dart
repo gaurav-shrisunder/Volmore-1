@@ -1,15 +1,15 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/CreateLogScreen.dart';
-import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
-import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Screens/Event/events_widget.dart';
+import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
+import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
-import '../../Models/event_data_model.dart';
+import 'package:volunterring/Services/authentication.dart';
 
 enum SortOption { def, az, za, dateAsc, dateDesc }
 
@@ -25,6 +25,7 @@ class EventPage extends StatefulWidget {
 class _EventPageState extends State<EventPage>
     with SingleTickerProviderStateMixin {
   final _authMethod = AuthMethod();
+  final _logMethod = LogServices();
   late Future<List<EventDataModel>> _eventsFuture;
   late TabController _tabController;
 
@@ -32,13 +33,11 @@ class _EventPageState extends State<EventPage>
 
   List<EventListDataModel> mainEventList = [];
 
-  List<EventDataModel> sortedEventList =[];
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _eventsFuture = _authMethod.fetchEvents();
+    _eventsFuture = _logMethod.fetchAllEventsWithLogs();
     _selectedOption = widget.initialSortOption;
   }
 
@@ -108,14 +107,17 @@ class _EventPageState extends State<EventPage>
   }
 
   List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
-    DateTime today = DateTime.now();
+    DateTime today = DateTime.now().subtract(const Duration(days: 1));
     List<EventListDataModel> pastEvents = [];
     for (var event in events) {
       for (var dateMap in event.dates!) {
         Timestamp timestamp = dateMap['date'];
         DateTime date = timestamp.toDate();
-        if (date.isBefore(today)) {
-          pastEvents.add(EventListDataModel(date: date, event: event));
+        print("Evem ${event.logs}");
+        if (date.isBefore(today) && event.logs != null) {
+          if (event.logs!.isNotEmpty) {
+            pastEvents.add(EventListDataModel(date: date, event: event));
+          }
         }
       }
     }
@@ -135,6 +137,27 @@ class _EventPageState extends State<EventPage>
     }else{
       return pastEvents;
     }
+  }
+
+  bool isLogSignatureVerified(EventDataModel event, DateTime date) {
+    print("Log ${event.logs}");
+    if (event.logs == null) return false;
+
+    for (var log in event.logs!) {
+      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+        print(log);
+        print("Log");
+        return log.isSignatureVerified == true;
+      }
+    }
+
+    return false;
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   @override
@@ -184,8 +207,10 @@ class _EventPageState extends State<EventPage>
             );
           } else {
             List<EventListDataModel> todaysEvents = [];
-            List<EventListDataModel> upcomingEvents = getUpcomingEvents(snapshot.data ?? []);
-            List<EventListDataModel> pastEvents = getPastEvents(snapshot.data ?? []);
+            List<EventListDataModel> upcomingEvents =
+                getUpcomingEvents(snapshot.data ?? []);
+            List<EventListDataModel> pastEvents =
+                getPastEvents(snapshot.data ?? []);
 
             for (var event in snapshot.data!) {
               if (containsToday(event.dates!)) {
@@ -209,9 +234,10 @@ class _EventPageState extends State<EventPage>
             return TabBarView(
               controller: _tabController,
               children: [
-                buildEventList("Today's Events", todaysEvents),
-                buildEventList("Upcoming Events", upcomingEvents),
-                buildEventList("Past Events", pastEvents),
+                buildEventList("Today's Events", todaysEvents, isToday: true),
+                buildEventList("Upcoming Events", upcomingEvents,
+                    isUpcoming: true),
+                buildEventList("Past Events", pastEvents, isPast: true),
               ],
             );
           }
@@ -220,7 +246,8 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  Widget buildEventList(String title, List<EventListDataModel> events) {
+  Widget buildEventList(String title, List<EventListDataModel> events,
+      {bool isToday = false, bool isUpcoming = false, bool isPast = false}) {
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -352,7 +379,7 @@ class _EventPageState extends State<EventPage>
                           },
                         );
                       },
-                      icon: Icon(Icons.sort))
+                      icon: const Icon(Icons.sort))
                 ],
               ),
             ],
@@ -374,25 +401,56 @@ class _EventPageState extends State<EventPage>
                     EventDataModel? event = events[index].event;
                     DateTime date = events[index].date;
                     Color color = colorMap[event?.groupColor] ?? Colors.pink;
-                    bool isEnabled = containsToday(event!.dates!) &&
-                        title == "Today's Events";
-                    String buttonText = isEnabled ? "Log Now" : "Verify";
+
+                    bool isEnabled = false;
+                    String buttonText = "";
+
+                    if (isToday) {
+                      isEnabled = true;
+                      buttonText = "Log Now";
+                    } else if (isUpcoming) {
+                      isEnabled = false;
+                      buttonText = "Log Now";
+                    } else if (isPast) {
+                      bool isVerified = isLogSignatureVerified(event!, date);
+                      if (isVerified) {
+                        isEnabled = false;
+                        buttonText = "Verify";
+                      } else {
+                        isEnabled = true;
+                        buttonText = "Verify";
+                      }
+                    }
+
                     return EventWidget(
-                      event,
+                      event!,
                       color,
                       date: date, // Pass the date to the EventWidget
                       isEnabled: isEnabled,
                       onPressed: isEnabled
                           ? () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LogNowPage(
-                                    event,
-                                    date: date,
+                              if (isToday) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LogNowPage(
+                                      event,
+                                      date: date,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
+                              if (isPast) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PastEventVerification(
+                                      date: date,
+                                      event: event,
+                                    ),
+                                  ),
+                                );
+                              }
                             }
                           : null,
                       buttonText: buttonText,
@@ -403,111 +461,10 @@ class _EventPageState extends State<EventPage>
       ],
     );
   }
+}
 
- /* void showSortDialogBox(List<EventListDataModel> events) {
-    showDialog(
-      context: context,
-      builder: (_) {
-        SortOption? selectedOption = _selectedOption;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return SimpleDialog(
-              backgroundColor: Colors.white,
-              title: const Text("Sort by"),
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RadioListTile<SortOption>(
-                      title: const Text('Default: By Name'),
-                      value: SortOption.def,
-                      groupValue: selectedOption,
-                      onChanged: (SortOption? value) {
-                        setState(() {
-                          selectedOption = value;
-                          _selectedOption = selectedOption;
-                          //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                        // Update the main event list
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    RadioListTile<SortOption>(
-                      title: const Text('A-Z'),
-                      value: SortOption.az,
-                      groupValue: selectedOption,
-                      onChanged: (SortOption? value) {
-                        setState(() {
-                          selectedOption = value;
-                          _selectedOption = selectedOption;
-                          //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    RadioListTile<SortOption>(
-                      title: const Text('Z-A'),
-                      value: SortOption.za,
-                      groupValue: selectedOption,
-                      onChanged: (SortOption? value) {
-                        setState(() {
-                          selectedOption = value;
-                          _selectedOption = selectedOption;
-                          //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
-
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    RadioListTile<SortOption>(
-                      title: const Text('Date: Ascending'),
-                      value: SortOption.dateAsc,
-                      groupValue: selectedOption,
-                      onChanged: (SortOption? value) {
-                        setState(() {
-                          selectedOption = value;
-                          _selectedOption = selectedOption;
-                          //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
-
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    RadioListTile<SortOption>(
-                      title: const Text('Date: Descending'),
-                      value: SortOption.dateDesc,
-                      groupValue: selectedOption,
-                      onChanged: (SortOption? value) {
-                        setState(() {
-                          selectedOption = value;
-                          _selectedOption = selectedOption;
-                          //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
-
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                )
-              ],
-            );
-          },
-        );
-      },
-    );
-  }*/
-
-  // _updateEventList(List<EventListDataModel> sortedEvents) {
-  //   for (var action in sortedEvents) {
-  //     log("Sorted List: ${jsonEncode(action.event?.date.toString())}");
-  //   }
-  //
-  //   setState(() {
-  //     // Replace the original list with the sorted one
-  //     mainEventList = List.from(sortedEvents);
-  //  //   sortedEventList = mainEventList;
-  //   });
-  // }
+extension DateTimeCompare on DateTime {
+  bool isSameDateAs(DateTime other) {
+    return year == other.year && month == other.month && day == other.day;
+  }
 }

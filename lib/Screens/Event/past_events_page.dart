@@ -170,6 +170,24 @@ class _PastEventsPageState extends State<PastEventsPage> {
     });
   }
 
+  DateTime _parseTime(String timeStr, DateTime date) {
+    final timeParts = timeStr.split(" ");
+    final time = timeParts[0].split(":");
+    final period = timeParts[1].toLowerCase();
+
+    int hour = int.parse(time[0]);
+    int minute = int.parse(time[1]);
+
+    // Convert to 24-hour format
+    if (period == "pm" && hour != 12) {
+      hour += 12;
+    } else if (period == "am" && hour == 12) {
+      hour = 0;
+    }
+
+    return DateTime(date.year, date.month, date.day, hour, minute);
+  }
+
   Duration calculateDuration(String startTimeStr, String endTimeStr) {
     // Define time format
     DateFormat timeFormat = DateFormat('h:mm a');
@@ -192,20 +210,50 @@ class _PastEventsPageState extends State<PastEventsPage> {
   }
 
   void submitData() async {
-    List<Map<String, String>> dateTimes = [];
+    List<Map<String, dynamic>> dateTimes = [];
+    List<Map<String, dynamic>> logs = [];
+    DateFormat dateFormat = DateFormat("dd/MM/yyyy");
     for (int i = 0; i < dateControllers.length; i++) {
       String startTime = timeControllers[i].text;
       String endTime = endTimeControllers[i].text;
       Duration duration = calculateDuration(startTime, endTime);
-
+      print("Start Time $startTime");
       // Formatting duration as hours and minutes
       String durationString = '${duration.inHours}:${duration.inMinutes % 60}';
 
       dateTimes.add({
-        'date': dateControllers[i].text,
-        'startTime': startTime,
-        'endTime': endTime,
-        'duration': durationString,
+        "date": dateFormat.parse(dateControllers[i].text),
+        "isVerified": false,
+        "isLocation": false,
+        "duration": "00:00"
+      });
+    }
+    DateFormat timeFormat = DateFormat.jm();
+
+    for (int i = 0; i < dateControllers.length; i++) {
+      // Parse date
+      DateTime date = dateFormat.parse(dateControllers[i].text);
+
+      String startTimeString = timeControllers[i].text.trim();
+      String endTimeString = endTimeControllers[i].text.trim();
+
+      DateTime startDateTime = _parseTime(startTimeString, date);
+      DateTime endDateTime = _parseTime(endTimeString, date);
+      // Calculate duration
+      Duration duration = endDateTime.difference(startDateTime);
+
+      // Formatting duration as hours, minutes, and seconds
+      String durationString = duration.toString().split('.').first;
+
+      print("Start Time $startDateTime");
+      print("End Time $endDateTime");
+      print("Duration $durationString");
+
+      logs.add({
+        "date": date,
+        "startTime": startDateTime,
+        "endTime": endDateTime,
+        "duration": durationString,
       });
     }
 
@@ -218,7 +266,11 @@ class _PastEventsPageState extends State<PastEventsPage> {
       'address': locationController.text,
       'dateTimes': dateTimes,
       'group': _selectedGroup,
+      'date': dateFormat.parse(dateControllers[0].text),
       'location': null,
+      'endDate': dateFormat.parse(dateControllers.last.text),
+      'dates': dateTimes,
+      'logs': logs,
     };
     var res = await _logMethod.createPastLog(eventData);
     ScaffoldMessenger.of(context).showSnackBar(

@@ -29,7 +29,7 @@ class FAQPage extends StatelessWidget {
       },
     ];
     return Scaffold(
-      appBar: AppBar(title: Text('')),
+      appBar: AppBar(title: const Text('')),
       body: SafeArea(
         child: Center(
             child: Column(

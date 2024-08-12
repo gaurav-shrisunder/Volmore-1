@@ -50,15 +50,16 @@ class _HomePageState extends State<HomePage>
         title: const Text(
           'VOLMORE',
           style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.bold,),
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: false,
         elevation: 1,
         automaticallyImplyLeading: false,
-     //   backgroundColor: Colors.white,
+        //   backgroundColor: Colors.white,
         shadowColor: Colors.black,
         actions: [
-
           IconButton(
             icon: const Icon(Icons.settings_outlined, size: 32),
             onPressed: _showSettingsBottomSheet,
@@ -74,33 +75,32 @@ class _HomePageState extends State<HomePage>
                   : Colors.grey,
             ),
             onPressed: () {
-              setState(() {
-              });
+              setState(() {});
               themeManager.toggleTheme();
             },
             iconSize: 30.0,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            style: const ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+            style: const ButtonStyle(
+                shape: MaterialStatePropertyAll(CircleBorder())),
             splashRadius: 24.0,
           )
         ],
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
-
         backgroundColor: Colors.white,
-       type: BottomNavigationBarType.shifting,
-       showUnselectedLabels: true,
+        type: BottomNavigationBarType.shifting,
+        showUnselectedLabels: true,
         elevation: 5,
-        items:  <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-
             icon: SvgPicture.asset("assets/icons/bottom_events_icon_light.svg"),
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset("assets/icons/bottom_leadership_icon_light.svg"),
+            icon: SvgPicture.asset(
+                "assets/icons/bottom_leadership_icon_light.svg"),
             label: 'Leaderboard',
           ),
           BottomNavigationBarItem(
@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage>
             label: 'Transcript',
           ),
           BottomNavigationBarItem(
-            icon:SvgPicture.asset("assets/icons/bottom_profile_light.svg"),
+            icon: SvgPicture.asset("assets/icons/bottom_profile_light.svg"),
             label: 'Profile',
           ),
         ],
@@ -130,7 +130,8 @@ class _HomePageState extends State<HomePage>
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined, ()=>  Get.to(const CreateLogScreen())),
+              _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined,
+                  () => Get.to(const CreateLogScreen())),
               _buildSettingsTile(
                   'Support - I need help',
                   Icons.arrow_forward_ios_outlined,
