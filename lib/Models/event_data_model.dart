@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class LogModel {
-  final String logId;
+   String? logId;
   String? elapsedTime;
   dynamic startTime;
   dynamic endTime;

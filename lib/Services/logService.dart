@@ -84,6 +84,7 @@ class LogServices {
     String? uid = prefs.getString("uid");
 
     if (uid == null) {
+      print('Inside empty');
       return []; // Handle the case where UID is null
     }
 
