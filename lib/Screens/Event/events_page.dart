@@ -288,7 +288,6 @@ class _EventPageState extends State<EventPage>
                     ),
                   IconButton(
                       onPressed: () {
-                        // showSortDialogBox(events);
                         showDialog(
                           context: context,
                           builder: (_) {
@@ -404,8 +403,9 @@ class _EventPageState extends State<EventPage>
 
                     bool isEnabled = false;
                     String buttonText = "";
-
+                    bool isVerified = isLogSignatureVerified(event!, date);
                     if (isToday) {
+
                       isEnabled = true;
                       buttonText = "Log Now";
                     } else if (isUpcoming) {
@@ -422,7 +422,9 @@ class _EventPageState extends State<EventPage>
                       }
                     }
 
-                    return EventWidget(
+
+
+                    return isVerified && isToday ? const SizedBox.shrink() : EventWidget(
                       event!,
                       color,
                       date: date, // Pass the date to the EventWidget
