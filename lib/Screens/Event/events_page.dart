@@ -11,7 +11,7 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import '../../Models/event_data_model.dart';
 
-enum SortOption { az, za, dateAsc, dateDesc }
+enum SortOption { def, az, za, dateAsc, dateDesc }
 
 class EventPage extends StatefulWidget {
   final SortOption initialSortOption;
@@ -87,7 +87,24 @@ class _EventPageState extends State<EventPage>
         }
       }
     }
-    return upcomingEvents;
+    print('_selectedOption ==$_selectedOption');
+    if(_selectedOption == SortOption.az){
+      upcomingEvents.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+      return upcomingEvents;
+    }else if(_selectedOption == SortOption.za){
+      upcomingEvents.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+      return upcomingEvents;
+    }else if(_selectedOption == SortOption.dateAsc){
+      upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
+      return upcomingEvents;
+    }else if(_selectedOption == SortOption.dateDesc){
+      upcomingEvents.sort((a, b) => b.date!.compareTo(a.date));
+      return upcomingEvents;
+    }else{
+      return upcomingEvents;
+    }
+
+
   }
 
   List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
@@ -102,7 +119,22 @@ class _EventPageState extends State<EventPage>
         }
       }
     }
-    return pastEvents;
+    print('_selectedOption ==$_selectedOption');
+    if(_selectedOption == SortOption.az){
+      pastEvents.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+      return pastEvents;
+    }else if(_selectedOption == SortOption.za){
+      pastEvents.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+      return pastEvents;
+    }else if(_selectedOption == SortOption.dateAsc){
+      pastEvents.sort((a, b) => a.event!.date.compareTo(b.event!.date));
+      return pastEvents;
+    }else if(_selectedOption == SortOption.dateDesc){
+      pastEvents.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+      return pastEvents;
+    }else{
+      return pastEvents;
+    }
   }
 
   @override
@@ -159,6 +191,19 @@ class _EventPageState extends State<EventPage>
               if (containsToday(event.dates!)) {
                 todaysEvents.add(
                     EventListDataModel(event: event, date: DateTime.now()));
+                print('_selectedOption ==$_selectedOption');
+                if(_selectedOption == SortOption.az){
+                  todaysEvents.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+
+                }else if(_selectedOption == SortOption.za){
+                  todaysEvents.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+
+                }else if(_selectedOption == SortOption.dateAsc){
+                  todaysEvents.sort((a, b) => a.event!.date.compareTo(b.event!.date));
+
+                }else if(_selectedOption == SortOption.dateDesc){
+                  todaysEvents.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+                }
               }
             }
             return TabBarView(
@@ -222,72 +267,87 @@ class _EventPageState extends State<EventPage>
                           builder: (_) {
                             SortOption? selectedOption = _selectedOption;
 
-                            return StatefulBuilder(
-                              builder: (context, setState) {
-                                return SimpleDialog(
-                                  backgroundColor: Colors.white,
-                                  title: const Text("Sort by"),
+                            return SimpleDialog(
+                              backgroundColor: Colors.white,
+                              title: const Text("Sort by"),
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        RadioListTile<SortOption>(
-                                          title: const Text('A-Z'),
-                                          value: SortOption.az,
-                                          groupValue: selectedOption,
-                                          onChanged: (SortOption? value) {
-                                            setState(() {
-                                              selectedOption = value;
-                                              //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                                              //   _updateEventList(events); // Update the main event list
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        RadioListTile<SortOption>(
-                                          title: const Text('Z-A'),
-                                          value: SortOption.za,
-                                          groupValue: selectedOption,
-                                          onChanged: (SortOption? value) {
-                                            setState(() {
-                                              selectedOption = value;
-                                              //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
-                                              //    _updateEventList(events); // Update the main event list
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        RadioListTile<SortOption>(
-                                          title: const Text('Date: Ascending'),
-                                          value: SortOption.dateAsc,
-                                          groupValue: selectedOption,
-                                          onChanged: (SortOption? value) {
-                                            setState(() {
-                                              selectedOption = value;
-                                              //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
-                                              //   _updateEventList(events); // Update the main event list
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        RadioListTile<SortOption>(
-                                          title: const Text('Date: Descending'),
-                                          value: SortOption.dateDesc,
-                                          groupValue: selectedOption,
-                                          onChanged: (SortOption? value) {
-                                            setState(() {
-                                              selectedOption = value;
-                                              //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
-                                              //   _updateEventList(events); // Update the main event list
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    )
+                                    RadioListTile<SortOption>(
+                                      title: const Text('Default: By Name'),
+                                      value: SortOption.def,
+                                      groupValue: selectedOption,
+                                      onChanged: (SortOption? value) {
+                                        setState(() {
+                                          selectedOption = value;
+                                          _selectedOption = selectedOption;
+                                          //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                                          // Update the main event list
+                                        });
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    RadioListTile<SortOption>(
+                                      title: const Text('A-Z'),
+                                      value: SortOption.az,
+                                      groupValue: selectedOption,
+                                      onChanged: (SortOption? value) {
+                                        setState(() {
+                                          selectedOption = value;
+                                          _selectedOption = selectedOption;
+
+                                          //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                                          //   _updateEventList(events); // Update the main event list
+                                        });
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    RadioListTile<SortOption>(
+                                      title: const Text('Z-A'),
+                                      value: SortOption.za,
+                                      groupValue: selectedOption,
+                                      onChanged: (SortOption? value) {
+                                        setState(() {
+                                          selectedOption = value;
+                                          _selectedOption = selectedOption;
+                                          //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+                                          //    _updateEventList(events); // Update the main event list
+                                        });
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    RadioListTile<SortOption>(
+                                      title: const Text('Date: Ascending'),
+                                      value: SortOption.dateAsc,
+                                      groupValue: selectedOption,
+                                      onChanged: (SortOption? value) {
+                                        setState(() {
+                                          selectedOption = value;
+                                          _selectedOption = selectedOption;
+                                          //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
+                                          //   _updateEventList(events); // Update the main event list
+                                        });
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    RadioListTile<SortOption>(
+                                      title: const Text('Date: Descending'),
+                                      value: SortOption.dateDesc,
+                                      groupValue: selectedOption,
+                                      onChanged: (SortOption? value) {
+                                        setState(() {
+                                          selectedOption = value;
+                                          _selectedOption = selectedOption;
+                                          //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+                                          //   _updateEventList(events); // Update the main event list
+                                        });
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
                                   ],
-                                );
-                              },
+                                )
+                              ],
                             );
                           },
                         );
@@ -344,7 +404,7 @@ class _EventPageState extends State<EventPage>
     );
   }
 
-  void showSortDialogBox(List<EventListDataModel> events) {
+ /* void showSortDialogBox(List<EventListDataModel> events) {
     showDialog(
       context: context,
       builder: (_) {
@@ -360,15 +420,29 @@ class _EventPageState extends State<EventPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     RadioListTile<SortOption>(
+                      title: const Text('Default: By Name'),
+                      value: SortOption.def,
+                      groupValue: selectedOption,
+                      onChanged: (SortOption? value) {
+                        setState(() {
+                          selectedOption = value;
+                          _selectedOption = selectedOption;
+                          //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                        // Update the main event list
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    RadioListTile<SortOption>(
                       title: const Text('A-Z'),
                       value: SortOption.az,
                       groupValue: selectedOption,
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
+                          _selectedOption = selectedOption;
                           //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                          _updateEventList(
-                              events); // Update the main event list
+
                         });
                         Navigator.of(context).pop();
                       },
@@ -380,9 +454,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
+                          _selectedOption = selectedOption;
                           //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
-                          _updateEventList(
-                              events); // Update the main event list
+
                         });
                         Navigator.of(context).pop();
                       },
@@ -394,9 +468,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
+                          _selectedOption = selectedOption;
                           //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
-                          _updateEventList(
-                              events); // Update the main event list
+
                         });
                         Navigator.of(context).pop();
                       },
@@ -408,9 +482,9 @@ class _EventPageState extends State<EventPage>
                       onChanged: (SortOption? value) {
                         setState(() {
                           selectedOption = value;
+                          _selectedOption = selectedOption;
                           //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
-                          _updateEventList(
-                              events); // Update the main event list
+
                         });
                         Navigator.of(context).pop();
                       },
@@ -423,17 +497,17 @@ class _EventPageState extends State<EventPage>
         );
       },
     );
-  }
+  }*/
 
-  _updateEventList(List<EventListDataModel> sortedEvents) {
-    for (var action in sortedEvents) {
-      log("Sorted List: ${jsonEncode(action.event?.date.toString())}");
-    }
-
-    setState(() {
-      // Replace the original list with the sorted one
-      mainEventList = List.from(sortedEvents);
-   //   sortedEventList = mainEventList;
-    });
-  }
+  // _updateEventList(List<EventListDataModel> sortedEvents) {
+  //   for (var action in sortedEvents) {
+  //     log("Sorted List: ${jsonEncode(action.event?.date.toString())}");
+  //   }
+  //
+  //   setState(() {
+  //     // Replace the original list with the sorted one
+  //     mainEventList = List.from(sortedEvents);
+  //  //   sortedEventList = mainEventList;
+  //   });
+  // }
 }

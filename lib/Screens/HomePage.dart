@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage>
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const EventPage(initialSortOption: SortOption.az, ),
+    const EventPage(initialSortOption: SortOption.def),
     const LeaderboardScreen(),
     const Text('Transcript Screen'),
     const UserProfilePage(),
