@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:volunterring/Models/UserModel.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
 
 class LogServices {
@@ -130,7 +131,6 @@ class LogServices {
     }
   }
 
-
   Future<String> createPastLog(Map<String, dynamic> eventData) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
@@ -180,6 +180,7 @@ class LogServices {
         for (Map<String, dynamic> log in logs) {
           String logId = _uuid.v4();
           await logsCollection.doc(logId).set({
+            'id': logId,
             'elapsedTime(hh:mm:ss)':
                 log['duration'], // Use the duration from logs
             'location': null, // Keep the location null as required
@@ -238,5 +239,29 @@ class LogServices {
     }
 
     return res;
+  }
+
+  Future<void> updateSignatureInFirebase(
+      String logId, String signature, String eventId) async {
+    print("Log id $logId");
+    try {
+      final SharedPreferences prefs = await _prefs;
+
+      String uid = prefs.getString("uid") ?? "";
+      CollectionReference logs = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('events')
+          .doc(eventId)
+          .collection("logs");
+      print("Log if $logId");
+      await logs.doc(logId).update({
+        'signature': signature,
+        'isSignatureVerified': signature.isNotEmpty,
+      });
+      Get.to(const HomePage());
+    } catch (e) {
+      Get.snackbar("Error", "Some error");
+    }
   }
 }

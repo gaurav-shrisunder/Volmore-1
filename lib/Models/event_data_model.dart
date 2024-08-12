@@ -24,7 +24,7 @@ class LogModel {
 
   factory LogModel.fromMap(Map<String, dynamic> data, String id) {
     return LogModel(
-      logId: id,
+      logId: data['id'],
       elapsedTime: data['elapsedTime(hh:mm:ss)'],
       startTime: data['startTime'],
       endTime: data['endTime'],

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
 import 'package:lottie/lottie.dart';
@@ -14,6 +15,7 @@ import 'package:volunterring/Screens/Event/volunteer_confirmation_screen.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 
 class TimerProvider with ChangeNotifier {
+  final Uuid _uuid = const Uuid();
   int _elapsedTime = 0;
   bool _isLogging = false;
   final int _points = 0;
@@ -85,6 +87,7 @@ class TimerProvider with ChangeNotifier {
   Future<void> CreateSingleLog(BuildContext context, EventDataModel event,
       DateTime date, String signature, String number) async {
     final SharedPreferences prefs = await _prefs;
+    String logId = _uuid.v4();
     String uid = prefs.getString("uid") ?? "";
     _isLogging = false;
     showDialog(
@@ -99,7 +102,8 @@ class TimerProvider with ChangeNotifier {
         .collection('events')
         .doc(event.id)
         .collection("logs");
-    await logs.add({
+    await logs.doc(logId).set({
+      'id': logId,
       'elapsedTime(hh:mm:ss)':
           "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600) ~/ 60}:${_elapsedTime % 60}",
       'location': _locationData != null
@@ -157,6 +161,8 @@ class TimerProvider with ChangeNotifier {
     // _elapsedTime = 0;
     notifyListeners();
   }
+
+  
 
   void _startTimer() {
     Future.delayed(const Duration(seconds: 1), () {
