@@ -6,6 +6,7 @@ import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
+import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
 import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/Services/authentication.dart';
@@ -375,6 +376,17 @@ class _EventPageState extends State<EventPage>
                                     builder: (context) => LogNowPage(
                                       event,
                                       date: date,
+                                    ),
+                                  ),
+                                );
+                              }
+                              if (isPast) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PastEventVerification(
+                                      date: date,
+                                      event: event,
                                     ),
                                   ),
                                 );
