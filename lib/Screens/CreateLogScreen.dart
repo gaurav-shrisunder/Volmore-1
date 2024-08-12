@@ -52,18 +52,23 @@ class CreateLogScreen extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    width: Get.width * 0.28,
-                    height: Get.height * 0.14,
-                    decoration: BoxDecoration(
-                        color: const Color(0xFFE5FCF5),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        "assets/images/pastEvents.jpg",
-                        fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: (){
+                      Get.to(const PastEventsPage());
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.all(8),
+                      width: Get.width * 0.28,
+                      height: Get.height * 0.14,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFE5FCF5),
+                          borderRadius: BorderRadius.circular(20)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          "assets/images/pastEvents.jpg",
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
