@@ -113,7 +113,7 @@ class _EventPageState extends State<EventPage>
         DateTime date = timestamp.toDate();
 
         if (date.isBefore(today) && event.logs != null) {
-          if (event.logs!.isNotEmpty) {
+          if (event.logs!.isNotEmpty && isLogPresent(event, date)) {
             pastEvents.add(EventListDataModel(date: date, event: event));
           }
         }
@@ -143,6 +143,18 @@ class _EventPageState extends State<EventPage>
     for (var log in event.logs!) {
       if (log.date != null && isSameDate(log.date.toDate(), date)) {
         return log.isSignatureVerified == true;
+      }
+    }
+
+    return false;
+  }
+
+  bool isLogPresent(EventDataModel event, DateTime date) {
+    if (event.logs == null) return false;
+
+    for (var log in event.logs!) {
+      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+        return true;
       }
     }
 
@@ -401,14 +413,13 @@ class _EventPageState extends State<EventPage>
                     String buttonText = "";
                     bool isVerified = isLogSignatureVerified(event!, date);
                     if (isToday) {
-
                       isEnabled = true;
                       buttonText = "Log Now";
                     } else if (isUpcoming) {
                       isEnabled = false;
                       buttonText = "Log Now";
                     } else if (isPast) {
-                      bool isVerified = isLogSignatureVerified(event!, date);
+                      bool isVerified = isLogSignatureVerified(event, date);
                       if (isVerified) {
                         isEnabled = false;
                         buttonText = "Verify";
@@ -418,41 +429,42 @@ class _EventPageState extends State<EventPage>
                       }
                     }
 
-
-
-                    return isVerified && isToday ? const SizedBox.shrink() : EventWidget(
-                      event!,
-                      color,
-                      date: date, // Pass the date to the EventWidget
-                      isEnabled: isEnabled,
-                      onPressed: isEnabled
-                          ? () {
-                              if (isToday) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LogNowPage(
-                                      event,
-                                      date: date,
-                                    ),
-                                  ),
-                                );
-                              }
-                              if (isPast) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PastEventVerification(
-                                      date: date,
-                                      event: event,
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          : null,
-                      buttonText: buttonText,
-                    );
+                    return isVerified && isToday
+                        ? const SizedBox.shrink()
+                        : EventWidget(
+                            event,
+                            color,
+                            date: date, // Pass the date to the EventWidget
+                            isEnabled: isEnabled,
+                            onPressed: isEnabled
+                                ? () {
+                                    if (isToday) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LogNowPage(
+                                            event,
+                                            date: date,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    if (isPast) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              PastEventVerification(
+                                            date: date,
+                                            event: event,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                : null,
+                            buttonText: buttonText,
+                          );
                   },
                 ),
               ),

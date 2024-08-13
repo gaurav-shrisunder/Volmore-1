@@ -50,6 +50,8 @@ class _PastEventVerificationState extends State<PastEventVerification> {
 
     String? getLogIdForDate(EventDataModel event, DateTime date) {
       for (LogModel log in event.logs ?? []) {
+        print(log.date.toDate());
+        print(date.toIso8601String());
         if (log.date != null && isSameDate(log.date.toDate(), date)) {
           return log.logId;
         }
@@ -231,6 +233,8 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                     );
                     return;
                   }
+                  print(getLogIdForDate(widget.event, widget.date));
+                  print(widget.event.logs![0].logId);
                   logMethods.updateSignatureInFirebase(
                       getLogIdForDate(widget.event, widget.date) ?? "",
                       signatureString,
