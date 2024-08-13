@@ -87,23 +87,21 @@ class _EventPageState extends State<EventPage>
       }
     }
     print('_selectedOption ==$_selectedOption');
-    if(_selectedOption == SortOption.az){
+    if (_selectedOption == SortOption.az) {
       upcomingEvents.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
       return upcomingEvents;
-    }else if(_selectedOption == SortOption.za){
+    } else if (_selectedOption == SortOption.za) {
       upcomingEvents.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
       return upcomingEvents;
-    }else if(_selectedOption == SortOption.dateAsc){
+    } else if (_selectedOption == SortOption.dateAsc) {
       upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
       return upcomingEvents;
-    }else if(_selectedOption == SortOption.dateDesc){
+    } else if (_selectedOption == SortOption.dateDesc) {
       upcomingEvents.sort((a, b) => b.date!.compareTo(a.date));
       return upcomingEvents;
-    }else{
+    } else {
       return upcomingEvents;
     }
-
-
   }
 
   List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
@@ -113,7 +111,7 @@ class _EventPageState extends State<EventPage>
       for (var dateMap in event.dates!) {
         Timestamp timestamp = dateMap['date'];
         DateTime date = timestamp.toDate();
-        print("Evem ${event.logs}");
+
         if (date.isBefore(today) && event.logs != null) {
           if (event.logs!.isNotEmpty) {
             pastEvents.add(EventListDataModel(date: date, event: event));
@@ -122,31 +120,28 @@ class _EventPageState extends State<EventPage>
       }
     }
     print('_selectedOption ==$_selectedOption');
-    if(_selectedOption == SortOption.az){
+    if (_selectedOption == SortOption.az) {
       pastEvents.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
       return pastEvents;
-    }else if(_selectedOption == SortOption.za){
+    } else if (_selectedOption == SortOption.za) {
       pastEvents.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
       return pastEvents;
-    }else if(_selectedOption == SortOption.dateAsc){
+    } else if (_selectedOption == SortOption.dateAsc) {
       pastEvents.sort((a, b) => a.event!.date.compareTo(b.event!.date));
       return pastEvents;
-    }else if(_selectedOption == SortOption.dateDesc){
+    } else if (_selectedOption == SortOption.dateDesc) {
       pastEvents.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
       return pastEvents;
-    }else{
+    } else {
       return pastEvents;
     }
   }
 
   bool isLogSignatureVerified(EventDataModel event, DateTime date) {
-    print("Log ${event.logs}");
     if (event.logs == null) return false;
 
     for (var log in event.logs!) {
       if (log.date != null && isSameDate(log.date.toDate(), date)) {
-        print(log);
-        print("Log");
         return log.isSignatureVerified == true;
       }
     }
@@ -217,17 +212,18 @@ class _EventPageState extends State<EventPage>
                 todaysEvents.add(
                     EventListDataModel(event: event, date: DateTime.now()));
                 print('_selectedOption ==$_selectedOption');
-                if(_selectedOption == SortOption.az){
-                  todaysEvents.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-
-                }else if(_selectedOption == SortOption.za){
-                  todaysEvents.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
-
-                }else if(_selectedOption == SortOption.dateAsc){
-                  todaysEvents.sort((a, b) => a.event!.date.compareTo(b.event!.date));
-
-                }else if(_selectedOption == SortOption.dateDesc){
-                  todaysEvents.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+                if (_selectedOption == SortOption.az) {
+                  todaysEvents.sort(
+                      (a, b) => a.event!.title!.compareTo(b.event!.title!));
+                } else if (_selectedOption == SortOption.za) {
+                  todaysEvents.sort(
+                      (a, b) => b.event!.title!.compareTo(a.event!.title!));
+                } else if (_selectedOption == SortOption.dateAsc) {
+                  todaysEvents
+                      .sort((a, b) => a.event!.date.compareTo(b.event!.date));
+                } else if (_selectedOption == SortOption.dateDesc) {
+                  todaysEvents
+                      .sort((a, b) => b.event!.date!.compareTo(a.event!.date));
                 }
               }
             }
