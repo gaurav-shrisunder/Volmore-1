@@ -84,8 +84,13 @@ class TimerProvider with ChangeNotifier {
                 )));
   }
 
-  Future<void> CreateSingleLog(BuildContext context, EventDataModel event,
-      DateTime date, String signature, String number) async {
+  Future<void> CreateSingleLog(
+      BuildContext context,
+      EventDataModel event,
+      DateTime date,
+      String signature,
+      String number,
+      List<Map<String, String>>? selectedLogs) async {
     final SharedPreferences prefs = await _prefs;
     String logId = _uuid.v4();
     String uid = prefs.getString("uid") ?? "";
@@ -121,6 +126,31 @@ class TimerProvider with ChangeNotifier {
     }).then((onValue) {
       Navigator.of(context).pop();
     });
+    if (selectedLogs!.isNotEmpty) {
+      try {
+        for (var selectedEvent in selectedLogs) {
+          String eventId = selectedEvent['eventId']!;
+          String logId = selectedEvent['logId']!;
+          final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+          // Specify the path to the log document
+          DocumentReference logRef = firestore
+              .collection('users')
+              .doc(uid)
+              .collection('events')
+              .doc(eventId)
+              .collection('logs')
+              .doc(logId);
+          await logRef.update({
+            'signature': signature,
+            'isSignatureVerified': true,
+            'phoneNumber': number,
+          });
+        }
+      } catch (e) {
+        Get.snackbar("Error", "Some Error in past events");
+      }
+    }
     showDialog(
         context: context,
         builder: (_) {
@@ -161,8 +191,6 @@ class TimerProvider with ChangeNotifier {
     // _elapsedTime = 0;
     notifyListeners();
   }
-
-  
 
   void _startTimer() {
     Future.delayed(const Duration(seconds: 1), () {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:convert';
@@ -38,7 +39,7 @@ class _VolunteerConfirmationScreenState
   @override
   void initState() {
     super.initState();
-    _eventsFuture = _authMethod.fetchEvents();
+    _eventsFuture = _logMethod.fetchAllEventsWithLogs();
   }
 
   final SignatureController _signatureController = SignatureController(
@@ -56,6 +57,43 @@ class _VolunteerConfirmationScreenState
     }
   }
 
+  List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
+    DateTime today = DateTime.now().subtract(const Duration(days: 1));
+    List<EventListDataModel> pastEvents = [];
+    for (var event in events) {
+      for (var dateMap in event.dates!) {
+        Timestamp timestamp = dateMap['date'];
+        DateTime date = timestamp.toDate();
+
+        if (date.isBefore(today) && event.logs != null) {
+          if (event.logs!.isNotEmpty && event.group == widget.event.group) {
+            pastEvents.add(EventListDataModel(date: date, event: event));
+          }
+        }
+      }
+    }
+    return pastEvents;
+  }
+
+  LogModel? FetchLog(EventDataModel event, DateTime date) {
+    if (event.logs == null) return null;
+
+    for (var log in event.logs!) {
+      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+        return log;
+      }
+    }
+
+    return null;
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  List<Map<String, String>> selectedEvents = [];
   @override
   Widget build(BuildContext context) {
     Color color = colorMap[widget.event.groupColor] ?? Colors.pink;
@@ -272,15 +310,11 @@ class _VolunteerConfirmationScreenState
                         ),
                       );
                     } else {
+                      List<EventListDataModel> pastEvents =
+                          getPastEvents(snapshot.data ?? []);
                       return SizedBox(
                         height: screenHeight * 0.4, // Adjust as needed
-                        child: buildEventList("Past Events", (event) {
-                          DateTime eventDate =
-                              DateTime.parse(event.date.toString());
-                          DateTime today =
-                              DateTime.now().subtract(const Duration(days: 1));
-                          return eventDate.isBefore(today);
-                        }, snapshot.data!),
+                        child: buildEventList("Past Events", pastEvents),
                       );
                     }
                   })
@@ -291,8 +325,7 @@ class _VolunteerConfirmationScreenState
     );
   }
 
-  Widget buildEventList(String title, bool Function(EventDataModel) filter,
-      List<EventDataModel> events) {
+  Widget buildEventList(String title, List<EventListDataModel> events) {
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -300,73 +333,101 @@ class _VolunteerConfirmationScreenState
           child: ListView.builder(
             itemCount: events.length,
             itemBuilder: (context, index) {
-              EventDataModel event = events[index];
-              Color color = colorMap[event.groupColor] ?? Colors.pink;
-              bool isEnabled = event.dates!.contains(
-                      DateFormat('dd/MM/yyyy').format(DateTime.now())) &&
-                  title == "Today's Events";
+              EventListDataModel event = events[index];
+              Color color = colorMap[event.event!.groupColor] ?? Colors.pink;
+              LogModel? log = FetchLog(event.event!, event.date);
+              if (log == null) {
+                return const SizedBox();
+              }
 
-              return filter(event)
-                  ? Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+              bool isSelected = selectedEvents.any((selectedEvent) =>
+                  selectedEvent['eventId'] == event.event!.id &&
+                  selectedEvent['logId'] == log.logId);
+
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedEvents.add({
+                                  'eventId': event.event!.id!,
+                                  'logId': log.logId!,
+                                });
+                              } else {
+                                selectedEvents.removeWhere((selectedEvent) =>
+                                    selectedEvent['eventId'] ==
+                                        event.event!.id &&
+                                    selectedEvent['logId'] == log.logId);
+                              }
+                            });
+                          },
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(event.event!.title.toString().capitalize ?? "",
+                                style: TextStyle(color: color, fontSize: 18)),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
                               children: [
-                                Text(event.title.toString().capitalize ?? "",
-                                    style:
-                                        TextStyle(color: color, fontSize: 18)),
+                                const Icon(
+                                  Icons.calendar_month,
+                                  color: greyColor,
+                                ),
                                 const SizedBox(
-                                  height: 2,
+                                  width: 5,
                                 ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.timer_sharp,
-                                      color: greyColor,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      event.time ?? "",
-                                      style: const TextStyle(
-                                          fontSize: 16, color: greyColor),
-                                    ),
-                                  ],
+                                Text(
+                                  'Date: ${DateFormat.yMMMd().format(event.date)}' ??
+                                      "",
+                                  style: const TextStyle(
+                                      fontSize: 16, color: greyColor),
                                 ),
-                              ]),
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                color: greyColor,
-                                size: 30,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.document_scanner_outlined,
-                                color: greyColor,
-                                size: 30,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.timer,
-                                color: greyColor,
-                                size: 30,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color:
+                              log.isLocationVerified ? Colors.blue : greyColor,
+                          size: 30,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.document_scanner_outlined,
+                          color:
+                              log.isSignatureVerified ? Colors.blue : greyColor,
+                          size: 30,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.timer,
+                          color: log.isTimeVerified ? Colors.blue : greyColor,
+                          size: 30,
+                        )
+                      ],
                     )
-                  : Container();
+                  ],
+                ),
+              );
             },
           ),
         ),
@@ -406,38 +467,7 @@ class _VolunteerConfirmationScreenState
       );
       return;
     }
-    timerProvider.CreateSingleLog(
-        context, widget.event, widget.date, signatureString, number);
-
-    // List<Map<String, String>> dateTimes = [];
-
-    // String startTime = widget.event.startTime;
-    // String endTime = widget.event.endTime;
-    // // Duration duration = widget.event.duration;
-
-    // // Formatting duration as hours and minutes
-    // //  String durationString = '${duration.inHours}:${duration.inMinutes % 60}';
-
-    // dateTimes.add({
-    //   'date': DateFormat.yMMMMEEEEd().format(widget.event.date),
-    //   'startTime': startTime,
-    //   'endTime': endTime,
-    //   'duration': widget.event.duration!,
-    // });
-
-    // // Creating the data map
-    // EventDataModel eventData = EventDataModel();
-    // eventData.address = widget.event.address;
-    // eventData.title = widget.event.title;
-    // eventData.description = widget.event.description;
-    // eventData.group = widget.event.group;
-    // eventData.location = widget.event.location;
-    // eventData.date = dateTimes;
-
-    // var res = await _logMethod.createSingleLog(eventData);
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(content: Text(res)),
-    // );
-    // Get.back();
+    timerProvider.CreateSingleLog(context, widget.event, widget.date,
+        signatureString, number, selectedEvents);
   }
 }
