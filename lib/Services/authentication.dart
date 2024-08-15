@@ -284,6 +284,26 @@ class AuthMethod {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchGroups() async {
+    List<Map<String, dynamic>> groups = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('groups').get();
+      print("querySnapshot.docs: ${querySnapshot.docs}");
+
+      groups = querySnapshot.docs.map((doc) {
+        return {
+          'name': doc['name'] as String,
+          'color':
+              doc['color'] as String, // Assuming color is stored as a String
+        };
+      }).toList();
+    } catch (e) {
+      print("Error fetching group names and colors: $e");
+    }
+    return groups;
+  }
+
   //Fetch Events
   Future<List<EventDataModel>> fetchEvents() async {
     final SharedPreferences prefs = await _prefs;

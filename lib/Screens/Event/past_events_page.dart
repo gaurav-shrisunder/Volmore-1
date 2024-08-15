@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
@@ -276,7 +277,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(res)),
     );
-    Get.back();
+    Get.to(const HomePage());
   }
 
   @override
