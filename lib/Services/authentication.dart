@@ -331,4 +331,32 @@ class AuthMethod {
 
     return events;
   }
+
+  Future<EventDataModel?> fetchEventById(String userId, String eventId) async {
+    try {
+      // Get the document reference of the specific event
+      DocumentSnapshot eventSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('events')
+          .doc(eventId)
+          .get();
+
+      // Check if the document exists
+      if (eventSnapshot.exists) {
+        // Convert the snapshot to EventDataModel
+        Map<String, dynamic> eventData =
+            eventSnapshot.data() as Map<String, dynamic>;
+        EventDataModel event = EventDataModel.fromJson(eventData);
+
+        return event;
+      } else {
+        print("Event with ID $eventId does not exist.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching event: $e");
+      return null;
+    }
+  }
 }

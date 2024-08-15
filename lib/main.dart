@@ -1,17 +1,16 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:volunterring/Screens/dashboard.dart';
-import 'package:volunterring/firebase_options.dart';
 import 'package:volunterring/provider/theme_manager_provider.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
+import 'package:volunterring/Utils/app_themes.dart';
 
-import 'Utils/app_themes.dart';
+import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,30 +20,31 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TimerProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeManager(AppThemes.lightTheme)),
+        ChangeNotifierProvider(
+            create: (_) => ThemeManager(AppThemes.lightTheme)),
       ],
       child: const MyApp(),
     ),
   );
 }
+
 class MyApp extends StatefulWidget {
-  const MyApp({
-    super.key,
-  });
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
-
   bool isLoggedIn = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    // Handle dynamic link when the app is launched via a deep link
+    handleDynamicLink();
   }
 
   @override
@@ -53,7 +53,34 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  // This widget is the root of your application.
+  Future<void> handleDynamicLink() async {
+    // This handles the case when the app is started with a dynamic link
+    final PendingDynamicLinkData? initialLink =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+    if (initialLink != null) {
+      final Uri deepLink = initialLink.link;
+      final String? eventId = deepLink.queryParameters['eventId'];
+      final String? userId = deepLink.queryParameters['userId'];
+      if (eventId != null) {
+        // Show the event popup
+        showEventPopup(userId!, eventId);
+      }
+    }
+
+    // This handles dynamic links when the app is already running in the background
+    FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
+      final Uri deepLink = data.link;
+      final String? eventId = deepLink.queryParameters['eventId'];
+      final String? userId = deepLink.queryParameters['userId'];
+      if (eventId != null) {
+        // Show the event popup
+        showEventPopup(userId!, eventId);
+      }
+    }).onError((error) {
+      print('Dynamic Link Failed: $error');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context);
@@ -62,32 +89,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       title: 'Volunteer App',
       debugShowCheckedModeBanner: false,
       theme: themeManager.themeData,
-     /* ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          surface: Colors.white,
-          surfaceTint: Colors.white,
-          seedColor: Colors.black,
-          secondary: Colors.white,
-          primary: Colors.black,
-          shadow: Colors.white,
-          onPrimaryContainer: Colors.white,
-          primaryContainer: Colors.white,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-        ),
-        datePickerTheme:
-            const DatePickerThemeData(backgroundColor: Colors.white),
-        dialogBackgroundColor: Colors.white,
-        timePickerTheme: TimePickerThemeData(
-            backgroundColor: Colors.white,
-            dayPeriodColor: Colors.blue.shade50,
-            dialBackgroundColor: Colors.blue.shade50,
-            hourMinuteTextColor: Colors.black,
-            hourMinuteColor: Colors.blue.shade50),
-        fontFamily: "Plus Jakarta Sans",
-        useMaterial3: true,
-      ),*/
       home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }
@@ -101,7 +102,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       });
     } else {
       // UID is not present in local storage
-      // Do something else
     }
   }
 }
