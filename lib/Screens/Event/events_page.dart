@@ -209,7 +209,7 @@ class _EventPageState extends State<EventPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+    //  backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBar(
@@ -306,7 +306,7 @@ class _EventPageState extends State<EventPage>
               Text(
                 title,
                 style: const TextStyle(
-                  color: headingBlue,
+             //     color: headingBlue,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
@@ -341,7 +341,7 @@ class _EventPageState extends State<EventPage>
                             SortOption? selectedOption = _selectedOption;
 
                             return SimpleDialog(
-                              backgroundColor: Colors.white,
+                            //  backgroundColor: Colors.white,
                               title: const Text("Sort by"),
                               children: [
                                 Column(

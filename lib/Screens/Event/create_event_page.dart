@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
@@ -197,7 +198,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Colors.white,
+    //  backgroundColor: Colors.white,
       appBar: simpleAppBar(context , ""),
       body: SafeArea(
         child: Padding(
@@ -214,7 +215,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: headingBlue,
+                   //   color: headingBlue,
                     ),
                   ),
                 ),
@@ -224,7 +225,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xff0c4a6f),
+                   //   color: Color(0xff0c4a6f),
                     ),
                   ),
                 ),
@@ -260,7 +261,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
-                    color: headingBlue,
+                  //  color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -288,7 +289,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           fontWeight: FontWeight.w400),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 20),
-                      fillColor: Colors.white,
+                   //   fillColor: Colors.white,
                       focusColor: Colors.white,
 
                       enabledBorder: OutlineInputBorder(
@@ -338,7 +339,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
-                    color: headingBlue,
+                 //   color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -373,12 +374,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             filled: true,
                             hintText: 'Select Date',
                             hintStyle: TextStyle(
-                                color: Colors.grey[900],
+                              //  color: Colors.grey[900],
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 20),
-                            fillColor: Colors.white,
+                       //     fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -426,12 +427,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           filled: true,
                           hintText: 'Time',
                           hintStyle: TextStyle(
-                              color: Colors.grey[900],
+                            //  color: Colors.grey[900],
                               fontSize: 16,
                               fontWeight: FontWeight.w400),
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 20),
-                          fillColor: Colors.white,
+                     //     fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(
@@ -463,7 +464,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
-                              color: headingBlue,
+                            //  color: headingBlue,
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -501,13 +502,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                       filled: true,
                                       hintText: 'Select End Date',
                                       hintStyle: TextStyle(
-                                          color: Colors.grey[900],
+                                     //     color: Colors.grey[900],
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       contentPadding:
                                           const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 20),
-                                      fillColor: Colors.white,
+                                  //    fillColor: Colors.white,
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
                                         borderSide: const BorderSide(
@@ -556,12 +557,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                     filled: true,
                                     hintText: 'Time',
                                     hintStyle: TextStyle(
-                                        color: Colors.grey[900],
+                                   //     color: Colors.grey[900],
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 20),
-                                    fillColor: Colors.white,
+                                 //   fillColor: Colors.white,
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: const BorderSide(
@@ -592,7 +593,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
-                    color: headingBlue,
+                 //   color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -614,16 +615,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         child: DropdownButtonFormField<String>(
                           hint: const Text('Select a Group'),
                           value: _selectedGroup,
-                          dropdownColor: Colors.white,
+                        //  dropdownColor: Colors.white,
                           decoration: InputDecoration(
                             filled: true,
                             hintStyle: TextStyle(
-                                color: Colors.grey[400],
+                            //    color: Colors.grey[400],
                                 fontSize: 19,
                                 fontWeight: FontWeight.w400),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 20),
-                            fillColor: Colors.white,
+                         //   fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -715,7 +716,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Dashboard()),
+                                builder: (context) => const HomePage()),
                             (route) => false);
                       }
                     } else {

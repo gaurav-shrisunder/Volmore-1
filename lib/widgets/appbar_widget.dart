@@ -13,7 +13,8 @@ AppBar simpleAppBar(BuildContext context, String title){
     leading: IconButton(onPressed: (){
       Navigator.pop(context);
     }, icon: const Icon(CupertinoIcons.chevron_left)),
-    backgroundColor: Colors.white,);
+  //  backgroundColor: Colors.white,
+  );
 }
 
 class AppbarTitleWidget extends StatelessWidget {

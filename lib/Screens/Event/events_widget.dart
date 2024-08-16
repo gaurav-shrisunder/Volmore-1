@@ -60,7 +60,7 @@ class EventWidget extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                        //  color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
@@ -78,7 +78,9 @@ class EventWidget extends StatelessWidget {
                             const Icon(Icons.date_range,
                                 size: 16, color: Colors.green),
                             const SizedBox(width: 4),
-                            Text('Date: ${DateFormat.yMMMd().format(date)}'),
+                            Text('Date: ${DateFormat.yMMMd().format(date)}' ,style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal),),
                           ],
                         ),
                       ),
@@ -87,7 +89,7 @@ class EventWidget extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                        //  color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
@@ -108,6 +110,9 @@ class EventWidget extends StatelessWidget {
                             Text(
                               'Host by: ${event.host?.split(" ")[0] ?? "You"}',
                               softWrap: true,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal),
                             ),
                           ],
                         ),
@@ -116,7 +121,9 @@ class EventWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                      "Event Description: ${event.description ?? "Description"}"),
+                      "Event Description: ${event.description ?? "Description"}",  style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal),),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

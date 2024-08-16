@@ -1,9 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
@@ -58,6 +61,8 @@ class TimerProvider with ChangeNotifier {
   Future<void> toggleLogging() async {
     if (_isLogging) {
       _isLogging = false;
+      /// added the below to reset the elapsed time when going to next page
+      _elapsedTime = 0;
     } else {
       if (elapsedTime == 0) {
         _startTime = DateTime.now();
@@ -75,6 +80,7 @@ class TimerProvider with ChangeNotifier {
     toggleLogging();
 
     notifyListeners();
+    log('time is: ${event.toString()}');
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -84,12 +90,12 @@ class TimerProvider with ChangeNotifier {
                 )));
   }
 
-  Future<void> CreateSingleLog(
+  Future<void> createSingleLog(
       BuildContext context,
       EventDataModel event,
       DateTime date,
-      String signature,
-      String number,
+      String? signature,
+      String? number,
       List<Map<String, String>>? selectedLogs) async {
     final SharedPreferences prefs = await _prefs;
     String logId = _uuid.v4();
@@ -121,7 +127,7 @@ class TimerProvider with ChangeNotifier {
       'phoneNumber': number,
       'date': date,
       'isLocationVerified': _locationData != null ? true : false,
-      'isSignatureVerified': signature.isNotEmpty ? true : false,
+      'isSignatureVerified': signature != null ? true : false,
       'isTimeVerified': _elapsedTime != 0 ? true : false,
     }).then((onValue) {
       Navigator.of(context).pop();

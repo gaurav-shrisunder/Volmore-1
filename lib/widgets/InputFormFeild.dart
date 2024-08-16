@@ -47,7 +47,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: headingBlue, // Assuming headingBlue is a color
+         //   color: headingBlue, // Assuming headingBlue is a color
           ),
         ),
         const SizedBox(
@@ -66,7 +66,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
                 fontWeight: FontWeight.w400),
             contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            fillColor: Colors.white,
+          //  fillColor: Colors.white,
             prefixIcon: widget.prefixicon,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

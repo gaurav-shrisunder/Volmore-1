@@ -32,7 +32,8 @@ class _LogNowPageState extends State<LogNowPage> {
       body: Container(
 
         width: screenWidth,
-        decoration: const BoxDecoration(color: Colors.white
+        decoration: const BoxDecoration(
+          //  color: Colors.white
             // gradient: backgroundGradient,
             ),
         child: Padding(
@@ -120,14 +121,14 @@ class _LogNowPageState extends State<LogNowPage> {
                                             color: Colors.blue[50],
                                             shape: BoxShape.circle),
                                         child: const Icon(
-                                          Icons.pause,
+                                          Icons.restart_alt,
                                           size: 40,
                                         )),
                                     const SizedBox(
                                       height: 10,
                                     ),
                                     const Text(
-                                      "Pause",
+                                      "Restart",
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontSize: 18,
@@ -214,6 +215,9 @@ class _LogNowPageState extends State<LogNowPage> {
                                   ? DateFormat('HH:mm')
                                       .format(timerProvider.startTime.toLocal())
                                   : '--:--',
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal),
                             ),
                           ],
                         ),
@@ -241,6 +245,7 @@ class _LogNowPageState extends State<LogNowPage> {
                                       .format(DateTime.now().toLocal())
                                   : '--:--',
                               style: const TextStyle(
+                                color: Colors.black,
                                   fontWeight: FontWeight.normal),
                             ),
                           ],
@@ -256,7 +261,7 @@ class _LogNowPageState extends State<LogNowPage> {
                         'Enable Location Tracking',
                         style: TextStyle(
                           fontSize: screenWidth * 0.05,
-                          color: Colors.black,
+                        //  color: Colors.black,
                         ),
                       ),
                       Switch(

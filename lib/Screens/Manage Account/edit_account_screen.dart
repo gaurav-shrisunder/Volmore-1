@@ -37,7 +37,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.white,
+    //  backgroundColor: Colors.white,
       appBar: simpleAppBar(context, "Edit Profile"),
       body: Padding(
         padding: const EdgeInsets.all(18),
