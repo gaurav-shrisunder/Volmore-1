@@ -114,7 +114,7 @@ Widget bottomTitles(
   final Widget text = Text(
     bottomTilesData[value.toInt()],
     style: const TextStyle(
-      color: Colors.black,
+   //   color: Colors.black,
       fontWeight: FontWeight.bold,
       fontSize: 12,
     ),
@@ -132,7 +132,7 @@ Widget leftTitles(double value, TitleMeta meta) {
   final Widget text = Text(
     formattedValue,
     style: const TextStyle(
-      color: Colors.black,
+   //   color: Colors.black,
       fontWeight: FontWeight.bold,
       fontSize: 12,
     ),

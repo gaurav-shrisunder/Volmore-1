@@ -31,12 +31,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.white,
+    //  backgroundColor: Colors.white,
       body: Container(
-        decoration: const BoxDecoration(
+     /*   decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage("assets/images/profilecsreen_bg.png"),
-                alignment: Alignment.topRight)),
+                alignment: Alignment.topRight)),*/
         child: FutureBuilder<UserModel>(
           future: fetchUserData(),
           builder: (context, snapshot) {
@@ -159,7 +159,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black))),
+                                //  color: Colors.black
+                              ))),
                       SizedBox(height: height * 0.02),
                       SizedBox(
                           height: 200,

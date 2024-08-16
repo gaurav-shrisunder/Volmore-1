@@ -14,7 +14,7 @@ class CreateLogScreen extends StatelessWidget {
     return SafeArea(
         child: Scaffold(
       appBar: simpleAppBar(context, ""),
-      backgroundColor: Colors.white,
+    //  backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -27,7 +27,7 @@ class CreateLogScreen extends StatelessWidget {
                   "Create an Event",
                   style: TextStyle(
                       decorationColor: headingBlue,
-                      color: headingBlue,
+                     // color: headingBlue,
                       fontSize: Get.height * 0.03,
                       fontWeight: FontWeight.bold),
                 ),
@@ -85,6 +85,7 @@ class CreateLogScreen extends StatelessWidget {
                           "Log Past Hours",
                           textAlign: TextAlign.left,
                           style: TextStyle(
+                            color: headingBlue,
                               fontWeight: FontWeight.bold,
                               fontSize: Get.height * 0.022),
                         ),
@@ -98,6 +99,7 @@ class CreateLogScreen extends StatelessWidget {
                               textAlign: TextAlign.left,
                               softWrap: true,
                               style: TextStyle(
+                                color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: Get.height * 0.016),
                             ),
@@ -215,6 +217,7 @@ class CreateLogScreen extends StatelessWidget {
                             "Create New Event",
                             textAlign: TextAlign.left,
                             style: TextStyle(
+                              color: headingBlue,
                                 fontWeight: FontWeight.bold,
                                 fontSize: Get.height * 0.022),
                           ),
@@ -228,6 +231,7 @@ class CreateLogScreen extends StatelessWidget {
                                 textAlign: TextAlign.left,
                                 softWrap: true,
                                 style: TextStyle(
+                                  color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                     fontSize: Get.height * 0.016),
                               ),
@@ -278,6 +282,7 @@ class CreateLogScreen extends StatelessWidget {
                           "Volunteering Ideas",
                           textAlign: TextAlign.left,
                           style: TextStyle(
+                            color: headingBlue,
                               fontWeight: FontWeight.bold,
                               fontSize: Get.height * 0.022),
                         ),
@@ -291,6 +296,7 @@ class CreateLogScreen extends StatelessWidget {
                               textAlign: TextAlign.left,
                               softWrap: true,
                               style: TextStyle(
+                                color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: Get.height * 0.016),
                             ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -15,6 +16,7 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
+import 'package:volunterring/widgets/InputFormFeild.dart';
 
 import '../../Services/logService.dart';
 
@@ -35,6 +37,15 @@ class _VolunteerConfirmationScreenState
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
   final LogServices _logMethod = LogServices();
+
+  String? _errorMessage;
+
+  void _validateInput() {
+    final error = phoneValidator(_phoneNumberController.text);
+    setState(() {
+      _errorMessage = error;
+    });
+  }
 
   @override
   void initState() {
@@ -66,7 +77,7 @@ class _VolunteerConfirmationScreenState
         DateTime date = timestamp.toDate();
 
         if (date.isBefore(today) && event.logs != null) {
-          if (event.logs!.isNotEmpty && event.group == widget.event.group) {
+          if (event.logs!.isNotEmpty && event.group == widget.event.group && event.logs!.any((test) => test.isSignatureVerified == false)) {
             pastEvents.add(EventListDataModel(date: date, event: event));
           }
         }
@@ -124,8 +135,13 @@ class _VolunteerConfirmationScreenState
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => const HomePage()));
+              final timerProvider = Provider.of<TimerProvider>(context, listen: false);
+              timerProvider.createSingleLog(context, widget.event, widget.date,
+                  null, null, selectedEvents).then((onValue){
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => const HomePage()));
+              });
+
             },
             child: Text(
               "Skip",
@@ -155,7 +171,7 @@ class _VolunteerConfirmationScreenState
                 height: screenHeight * 0.01,
               ),
               Text(
-                DateFormat.yMMMMEEEEd().format(widget.event.date),
+                DateFormat.yMMMMEEEEd().format(widget.date),
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -266,6 +282,7 @@ class _VolunteerConfirmationScreenState
                             color: Colors.grey[300]!,
                           ),
                         ),
+
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(9.0),
                           borderSide: BorderSide(
@@ -278,7 +295,20 @@ class _VolunteerConfirmationScreenState
                             color: Colors.blue[200]!,
                           ),
                         ),
+                        errorText: _errorMessage, // Display the error message
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.red[400]!,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
+                      onChanged: (value){
+                        _validateInput();
+                      },
+
+                     // validator: phoneValidator,
                     ),
                   ),
                 ],
@@ -433,7 +463,20 @@ class _VolunteerConfirmationScreenState
         ),
         GestureDetector(
           onTap: () {
-            submitEvent(context, _phoneNumberController.text);
+            if(_errorMessage != null){
+              Fluttertoast.showToast(
+                  msg: "Enter valid phone number",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0
+              );
+            }else{
+              submitEvent(context, _phoneNumberController.text);
+            }
+
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
@@ -450,7 +493,8 @@ class _VolunteerConfirmationScreenState
                   fontWeight: FontWeight.bold),
             )),
           ),
-        )
+        ),
+        SizedBox(height: 20,)
       ],
     );
   }
@@ -467,7 +511,8 @@ class _VolunteerConfirmationScreenState
       );
       return;
     }
-    timerProvider.CreateSingleLog(context, widget.event, widget.date,
+    timerProvider.createSingleLog(context, widget.event, widget.date,
         signatureString, number, selectedEvents);
   }
+
 }

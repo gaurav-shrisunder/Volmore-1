@@ -12,6 +12,8 @@ import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
+import '../../widgets/InputFormFeild.dart';
+
 class PastEventVerification extends StatefulWidget {
   final EventDataModel event;
   final DateTime date;
@@ -30,6 +32,15 @@ class _PastEventVerificationState extends State<PastEventVerification> {
     exportBackgroundColor: Colors.white,
   );
   final logMethods = LogServices();
+
+  String? _errorMessage;
+
+  void _validateInput() {
+    final error = phoneValidator(_phoneNumberController.text);
+    setState(() {
+      _errorMessage = error;
+    });
+  }
 
   Future<String> _exportSignatureAsString() async {
     final Uint8List? data = await _signatureController.toPngBytes();
@@ -87,7 +98,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                   context, MaterialPageRoute(builder: (_) => const HomePage()));
             },
             child: Text(
-              "Skip",
+              "Cancel",
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -199,6 +210,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                             color: Colors.grey[300]!,
                           ),
                         ),
+
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(9.0),
                           borderSide: BorderSide(
@@ -211,7 +223,20 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                             color: Colors.blue[200]!,
                           ),
                         ),
+                        errorText: _errorMessage, // Display the error message
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.red[400]!,
+                            width: 2.0,
+                          ),
+                        ),
                       ),
+                      onChanged: (value){
+                        _validateInput();
+                      },
+
+                      // validator: phoneValidator,
                     ),
                   ),
                 ],
