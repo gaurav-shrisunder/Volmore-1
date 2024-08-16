@@ -77,7 +77,9 @@ class _VolunteerConfirmationScreenState
         DateTime date = timestamp.toDate();
 
         if (date.isBefore(today) && event.logs != null) {
-          if (event.logs!.isNotEmpty && event.group == widget.event.group && event.logs!.any((test) => test.isSignatureVerified == false)) {
+          if (event.logs!.isNotEmpty &&
+              event.group == widget.event.group &&
+              event.logs!.any((test) => test.isSignatureVerified == false)) {
             pastEvents.add(EventListDataModel(date: date, event: event));
           }
         }
@@ -135,13 +137,15 @@ class _VolunteerConfirmationScreenState
         actions: [
           GestureDetector(
             onTap: () {
-              final timerProvider = Provider.of<TimerProvider>(context, listen: false);
-              timerProvider.createSingleLog(context, widget.event, widget.date,
-                  null, null, selectedEvents).then((onValue){
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => const HomePage()));
+              final timerProvider =
+                  Provider.of<TimerProvider>(context, listen: false);
+              timerProvider
+                  .createSingleLog(context, widget.event, widget.date, null,
+                      null, selectedEvents)
+                  .then((onValue) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const HomePage()));
               });
-
             },
             child: Text(
               "Skip",
@@ -205,7 +209,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    widget.event.time ?? "",
+                    "${widget.event.time}" ?? "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -304,11 +308,11 @@ class _VolunteerConfirmationScreenState
                           ),
                         ),
                       ),
-                      onChanged: (value){
+                      onChanged: (value) {
                         _validateInput();
                       },
 
-                     // validator: phoneValidator,
+                      // validator: phoneValidator,
                     ),
                   ),
                 ],
@@ -356,114 +360,146 @@ class _VolunteerConfirmationScreenState
   }
 
   Widget buildEventList(String title, List<EventListDataModel> events) {
+    print("Length ${events.length}");
     return Column(
       children: [
         const SizedBox(height: 15),
-        Expanded(
-          child: ListView.builder(
-            itemCount: events.length,
-            itemBuilder: (context, index) {
-              EventListDataModel event = events[index];
-              Color color = colorMap[event.event!.groupColor] ?? Colors.pink;
-              LogModel? log = FetchLog(event.event!, event.date);
-              if (log == null) {
-                return const SizedBox();
-              }
-
-              bool isSelected = selectedEvents.any((selectedEvent) =>
-                  selectedEvent['eventId'] == event.event!.id &&
-                  selectedEvent['logId'] == log.logId);
-
-              return Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSelected,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value == true) {
-                                selectedEvents.add({
-                                  'eventId': event.event!.id!,
-                                  'logId': log.logId!,
-                                });
-                              } else {
-                                selectedEvents.removeWhere((selectedEvent) =>
-                                    selectedEvent['eventId'] ==
-                                        event.event!.id &&
-                                    selectedEvent['logId'] == log.logId);
-                              }
-                            });
-                          },
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(event.event!.title.toString().capitalize ?? "",
-                                style: TextStyle(color: color, fontSize: 18)),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.calendar_month,
-                                  color: greyColor,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Date: ${DateFormat.yMMMd().format(event.date)}' ??
-                                      "",
-                                  style: const TextStyle(
-                                      fontSize: 16, color: greyColor),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          color:
-                              log.isLocationVerified ? Colors.blue : greyColor,
-                          size: 30,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.document_scanner_outlined,
-                          color:
-                              log.isSignatureVerified ? Colors.blue : greyColor,
-                          size: 30,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.timer,
-                          color: log.isTimeVerified ? Colors.blue : greyColor,
-                          size: 30,
-                        )
-                      ],
-                    )
-                  ],
+        events.isEmpty
+            ? const SizedBox(
+                height: 250,
+                child: Center(
+                  child: Text("No Events Found",
+                      style: TextStyle(
+                        color: Colors.black,
+                      )),
                 ),
-              );
-            },
-          ),
-        ),
+              )
+            : Expanded(
+                child: ListView.builder(
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    print("length");
+                    print(events.length);
+                    EventListDataModel event = events[index];
+                    Color color =
+                        colorMap[event.event!.groupColor] ?? Colors.pink;
+                    LogModel? log = FetchLog(event.event!, event.date);
+                    if (log == null) {
+                      return const SizedBox();
+                    }
+
+                    if (events.isEmpty) {
+                      return const Text("No Events Found",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ));
+                    }
+
+                    bool isSelected = selectedEvents.any((selectedEvent) =>
+                        selectedEvent['eventId'] == event.event!.id &&
+                        selectedEvent['logId'] == log.logId);
+
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: isSelected,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      selectedEvents.add({
+                                        'eventId': event.event!.id!,
+                                        'logId': log.logId!,
+                                      });
+                                    } else {
+                                      selectedEvents.removeWhere(
+                                          (selectedEvent) =>
+                                              selectedEvent['eventId'] ==
+                                                  event.event!.id &&
+                                              selectedEvent['logId'] ==
+                                                  log.logId);
+                                    }
+                                  });
+                                },
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      event.event!.title
+                                              .toString()
+                                              .capitalize ??
+                                          "",
+                                      style: TextStyle(
+                                          color: color, fontSize: 18)),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month,
+                                        color: greyColor,
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        'Date: ${DateFormat.yMMMd().format(event.date)}' ??
+                                            "",
+                                        style: const TextStyle(
+                                            fontSize: 16, color: greyColor),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                color: log.isLocationVerified
+                                    ? Colors.blue
+                                    : greyColor,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Icon(
+                                Icons.document_scanner_outlined,
+                                color: log.isSignatureVerified
+                                    ? Colors.blue
+                                    : greyColor,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Icon(
+                                Icons.timer,
+                                color: log.isTimeVerified
+                                    ? Colors.blue
+                                    : greyColor,
+                                size: 30,
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
         GestureDetector(
           onTap: () {
-            if(_errorMessage != null){
+            if (_errorMessage != null) {
               Fluttertoast.showToast(
                   msg: "Enter valid phone number",
                   toastLength: Toast.LENGTH_SHORT,
@@ -471,12 +507,10 @@ class _VolunteerConfirmationScreenState
                   timeInSecForIosWeb: 1,
                   backgroundColor: Colors.red,
                   textColor: Colors.white,
-                  fontSize: 16.0
-              );
-            }else{
+                  fontSize: 16.0);
+            } else {
               submitEvent(context, _phoneNumberController.text);
             }
-
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
@@ -494,7 +528,9 @@ class _VolunteerConfirmationScreenState
             )),
           ),
         ),
-        SizedBox(height: 20,)
+        const SizedBox(
+          height: 20,
+        )
       ],
     );
   }
@@ -514,5 +550,4 @@ class _VolunteerConfirmationScreenState
     timerProvider.createSingleLog(context, widget.event, widget.date,
         signatureString, number, selectedEvents);
   }
-
 }
