@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Services/deep_links.dart';
 
 import '../../Models/event_data_model.dart';
 
@@ -21,6 +23,7 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("Event id ${event.id}");
     return Center(
       child: Stack(
         children: [
@@ -129,7 +132,14 @@ class EventWidget extends StatelessWidget {
                         children: [
                           IconButton(
                             icon: Image.asset('assets/icons/share.png'),
-                            onPressed: () {},
+                            onPressed: () async {
+                              final SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              final String? uid = prefs.getString('uid');
+                              String url =
+                                  await createDynamicLink(event.id!, uid!);
+                              print("URL: $url");
+                            },
                           ),
                           IconButton(
                             icon: Image.asset('assets/icons/add.png'),

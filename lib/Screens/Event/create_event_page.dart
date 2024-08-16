@@ -92,6 +92,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       print("Error fetching group names: $e");
     }
   }
+  
 
   Future<void> _addGroup(String name, String color) async {
     try {
