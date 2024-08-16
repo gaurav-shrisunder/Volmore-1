@@ -284,6 +284,26 @@ class AuthMethod {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchGroups() async {
+    List<Map<String, dynamic>> groups = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('groups').get();
+      print("querySnapshot.docs: ${querySnapshot.docs}");
+
+      groups = querySnapshot.docs.map((doc) {
+        return {
+          'name': doc['name'] as String,
+          'color':
+              doc['color'] as String, // Assuming color is stored as a String
+        };
+      }).toList();
+    } catch (e) {
+      print("Error fetching group names and colors: $e");
+    }
+    return groups;
+  }
+
   //Fetch Events
   Future<List<EventDataModel>> fetchEvents() async {
     final SharedPreferences prefs = await _prefs;
@@ -310,5 +330,33 @@ class AuthMethod {
     }
 
     return events;
+  }
+
+  Future<EventDataModel?> fetchEventById(String userId, String eventId) async {
+    try {
+      // Get the document reference of the specific event
+      DocumentSnapshot eventSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('events')
+          .doc(eventId)
+          .get();
+
+      // Check if the document exists
+      if (eventSnapshot.exists) {
+        // Convert the snapshot to EventDataModel
+        Map<String, dynamic> eventData =
+            eventSnapshot.data() as Map<String, dynamic>;
+        EventDataModel event = EventDataModel.fromJson(eventData);
+
+        return event;
+      } else {
+        print("Event with ID $eventId does not exist.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching event: $e");
+      return null;
+    }
   }
 }
