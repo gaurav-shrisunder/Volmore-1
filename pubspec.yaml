@@ -60,6 +60,7 @@ dependencies:
   fl_chart: ^0.64.0
   fluttertoast:
   firebase_dynamic_links: ^5.4.8
+  share_plus: ^7.2.2
 
 dev_dependencies:
   flutter_test:
