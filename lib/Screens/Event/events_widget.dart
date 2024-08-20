@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/deep_links.dart';
 
 import '../../Models/event_data_model.dart';
@@ -23,6 +25,8 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+
     print("Event id ${event.id}");
     return Center(
       child: Stack(
@@ -60,7 +64,7 @@ class EventWidget extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 5),
                         decoration: BoxDecoration(
-                        //  color: Colors.white,
+                          //  color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
@@ -78,9 +82,12 @@ class EventWidget extends StatelessWidget {
                             const Icon(Icons.date_range,
                                 size: 16, color: Colors.green),
                             const SizedBox(width: 4),
-                            Text('Date: ${DateFormat.yMMMd().format(date)}' ,style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.normal),),
+                            Text(
+                              'Date: ${DateFormat.yMMMd().format(date)}',
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal),
+                            ),
                           ],
                         ),
                       ),
@@ -89,7 +96,7 @@ class EventWidget extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 5),
                         decoration: BoxDecoration(
-                        //  color: Colors.white,
+                          //  color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
@@ -121,9 +128,10 @@ class EventWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                      "Event Description: ${event.description ?? "Description"}",  style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal),),
+                    "Event Description: ${event.description ?? "Description"}",
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.normal),
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,6 +147,7 @@ class EventWidget extends StatelessWidget {
                               String url =
                                   await createDynamicLink(event.id!, uid!);
                               print("URL: $url");
+                              Share.share(url);
                             },
                           ),
                           IconButton(

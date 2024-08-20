@@ -70,10 +70,22 @@ class _PastEventVerificationState extends State<PastEventVerification> {
       return null;
     }
 
+    LogModel? getLogForDate(EventDataModel event, DateTime date) {
+      for (LogModel log in event.logs ?? []) {
+        print(log.date.toDate());
+        print(date.toIso8601String());
+        if (log.date != null && isSameDate(log.date.toDate(), date)) {
+          return log;
+        }
+      }
+      return null;
+    }
+
     Color color = colorMap[widget.event.groupColor] ?? Colors.pink;
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     String selectedCountryCode = '+1'; // Default country code
+    LogModel? log = getLogForDate(widget.event, widget.date);
 
     final List<String> countryCodes = ['+1', '+91', '+44', '+61', '+81'];
     return Scaffold(
@@ -135,6 +147,29 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               ),
               Text(
                 widget.event.description ?? "",
+                style: const TextStyle(fontSize: 16, color: greyColor),
+              ),
+              SizedBox(
+                height: screenHeight * 0.01,
+              ),
+              Text(
+                "Duration :- ${log?.elapsedTime}" ?? "",
+                style: const TextStyle(fontSize: 16, color: greyColor),
+              ),
+              SizedBox(
+                height: screenHeight * 0.01,
+              ),
+              Text(
+                "Start Time :- ${DateFormat('hh:mm a').format(log!.startTime.toDate())}" ??
+                    "",
+                style: const TextStyle(fontSize: 16, color: greyColor),
+              ),
+              SizedBox(
+                height: screenHeight * 0.01,
+              ),
+              Text(
+                "End Time :- ${DateFormat('hh:mm a').format(log.endTime.toDate())}" ??
+                    "",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -234,7 +269,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                           ),
                         ),
                       ),
-                      onChanged: (value){
+                      onChanged: (value) {
                         _validateInput();
                       },
 

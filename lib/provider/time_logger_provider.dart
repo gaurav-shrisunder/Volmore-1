@@ -45,6 +45,7 @@ class TimerProvider with ChangeNotifier {
   String get address => _address;
 
   DateTime get startTime => _startTime;
+  DateTime get endTime => _endTime;
   String get phoneNo => _phoneNo;
   bool get isSignatureVerified => _isSignatureVerified;
 
@@ -61,6 +62,7 @@ class TimerProvider with ChangeNotifier {
   Future<void> toggleLogging() async {
     if (_isLogging) {
       _isLogging = false;
+
       /// added the below to reset the elapsed time when going to next page
       _elapsedTime = 0;
     } else {
