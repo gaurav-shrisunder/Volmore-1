@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
+import 'package:volunterring/Screens/BottomSheet/user_profile_page.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
 
@@ -12,6 +12,8 @@ import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/TermsScreen.dart';
 import 'package:volunterring/Screens/leaderboard_screen.dart';
+import 'package:volunterring/Screens/transcript_screen.dart';
+import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
 import '../provider/theme_manager_provider.dart';
@@ -31,7 +33,7 @@ class _HomePageState extends State<HomePage>
   final List<Widget> _pages = [
     const EventPage(initialSortOption: SortOption.def),
     const LeaderboardScreen(),
-    const Text('Transcript Screen'),
+    const TranscriptScreen(),
     const UserProfilePage(),
   ];
 
@@ -183,6 +185,7 @@ class _HomePageState extends State<HomePage>
   Future<void> Logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('uid');
+    AuthMethod().signOut();
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }

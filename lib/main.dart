@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final themeManager = Provider.of<ThemeManager>(context);
     checkLocalStorage();
     return GetMaterialApp(
-      title: 'Volunteer App',
+      title: 'VOLMORE',
       debugShowCheckedModeBanner: false,
       theme: themeManager.themeData,
       home: isLoggedIn ? const HomePage() : const LoginPage(),

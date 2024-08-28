@@ -464,7 +464,7 @@ class _VolunteerConfirmationScreenState
                             children: [
                               Icon(
                                 Icons.location_on_outlined,
-                                color: log.isLocationVerified
+                                color: log.isLocationVerified!
                                     ? Colors.blue
                                     : greyColor,
                                 size: 30,
@@ -474,7 +474,7 @@ class _VolunteerConfirmationScreenState
                               ),
                               Icon(
                                 Icons.document_scanner_outlined,
-                                color: log.isSignatureVerified
+                                color: log.isSignatureVerified!
                                     ? Colors.blue
                                     : greyColor,
                                 size: 30,
@@ -484,7 +484,7 @@ class _VolunteerConfirmationScreenState
                               ),
                               Icon(
                                 Icons.timer,
-                                color: log.isTimeVerified
+                                color: log.isTimeVerified!
                                     ? Colors.blue
                                     : greyColor,
                                 size: 30,

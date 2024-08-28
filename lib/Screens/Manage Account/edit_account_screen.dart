@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:volunterring/Services/authentication.dart';
@@ -81,10 +82,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     style: const ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(headingBlue)),
                     onPressed: () {
-                      AuthMethod().changePassword(
-                          oldPassword: oldPasswordController.text,
-                          newPassword: newPasswordController.text,
-                          confirmNewPassword: confirmPasswordController.text);
+                      if(oldPasswordController.text.isNotEmpty && newPasswordController.text.isNotEmpty && confirmPasswordController.text.isNotEmpty){
+                        AuthMethod().changePassword(
+                            oldPassword: oldPasswordController.text,
+                            newPassword: newPasswordController.text,
+                            confirmNewPassword: confirmPasswordController.text);
+                      }else{
+                        Fluttertoast.showToast(msg: "Password fields cannot be empty");
+
+                      }
+
                     },
                     child: const Text(
                       "Change Password",

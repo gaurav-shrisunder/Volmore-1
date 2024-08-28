@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
+import 'package:volunterring/Screens/BottomSheet/user_profile_page.dart';
 import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
 import 'package:volunterring/Screens/Event/events_page.dart';
