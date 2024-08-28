@@ -86,11 +86,11 @@ class _VolunteerConfirmationScreenState
     return pastEvents;
   }
 
-  LogModel? FetchLog(EventDataModel event, DateTime date) {
+  LogModel? fetchLog(EventDataModel event, DateTime date) {
     if (event.logs == null) return null;
 
     for (var log in event.logs!) {
-      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+      if (log.date != null && isSameDate(log.date.toDate(), date)  && log.isSignatureVerified == false) {
         return log;
       }
     }
@@ -365,7 +365,7 @@ class _VolunteerConfirmationScreenState
             itemBuilder: (context, index) {
               EventListDataModel event = events[index];
               Color color = colorMap[event.event!.groupColor] ?? Colors.pink;
-              LogModel? log = FetchLog(event.event!, event.date);
+              LogModel? log = fetchLog(event.event!, event.date);
               if (log == null) {
                 return const SizedBox();
               }
@@ -433,7 +433,7 @@ class _VolunteerConfirmationScreenState
                         Icon(
                           Icons.location_on_outlined,
                           color:
-                              log.isLocationVerified ? Colors.blue : greyColor,
+                              log.isLocationVerified! ? Colors.blue : greyColor,
                           size: 30,
                         ),
                         const SizedBox(
@@ -442,7 +442,7 @@ class _VolunteerConfirmationScreenState
                         Icon(
                           Icons.document_scanner_outlined,
                           color:
-                              log.isSignatureVerified ? Colors.blue : greyColor,
+                              log.isSignatureVerified! ? Colors.blue : greyColor,
                           size: 30,
                         ),
                         const SizedBox(
@@ -450,7 +450,7 @@ class _VolunteerConfirmationScreenState
                         ),
                         Icon(
                           Icons.timer,
-                          color: log.isTimeVerified ? Colors.blue : greyColor,
+                          color: log.isTimeVerified! ? Colors.blue : greyColor,
                           size: 30,
                         )
                       ],

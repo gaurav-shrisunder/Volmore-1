@@ -100,6 +100,8 @@ class AuthMethod {
           password: password,
         );
 
+
+
         // Save UID to SharedPreferences
         await prefs.setString("uid", cred.user!.uid);
         res = "success";
@@ -119,6 +121,26 @@ class AuthMethod {
     final SharedPreferences prefs = await _prefs;
     await prefs.remove("uid");
   }
+
+/*  Future<String> changePassword(String currentPassword, String newPassword) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final cred = EmailAuthProvider.credential(
+        email: user!.email!, password: currentPassword);
+
+    user.reauthenticateWithCredential(cred).then((value) {
+      user.updatePassword(newPassword).then((_) {
+        return "Password changed successfully";
+        //Success, do something
+      }).catchError((error) {
+        return error.toString();
+        //Error, show something
+      });
+    }).catchError((err) {
+      return "Something went wrong";
+    });
+    return "Something went wrong";
+  }*/
+
 
   Future<String> _resetPassword(String email) async {
     var res = "Some error occurred";

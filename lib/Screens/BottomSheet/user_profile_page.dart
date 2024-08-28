@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,6 +13,9 @@ import 'package:volunterring/Screens/Manage%20Account/edit_account_screen.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/weekly_stats_chart.dart';
 
+import '../../Models/event_data_model.dart';
+import '../../Services/logService.dart';
+
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
 
@@ -19,12 +24,31 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
+
+   List<EventDataModel> _eventsFuture = [];
+  final _logMethod = LogServices();
+
   Future<UserModel> fetchUserData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? uid = prefs.getString('uid');
     DocumentSnapshot doc =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
     return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+  }
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    apiCalling();
+  }
+
+
+  apiCalling()async{
+    _eventsFuture = await _logMethod.fetchAllEventsWithLogs();
+    log("_eventsFuture :: ${_eventsFuture.toString()}");
   }
 
   @override
@@ -48,6 +72,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
               return const Center(child: Text('User not found'));
             } else {
               UserModel user = snapshot.data!;
+
+
               print(user.profileLink);
               return Padding(
                 padding: const EdgeInsets.all(25.0),
