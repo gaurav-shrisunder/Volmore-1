@@ -81,7 +81,7 @@ class AppThemes {
     ),
 
 
-textButtonTheme: TextButtonThemeData(style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color(0xFF2E4A63)))),
+textButtonTheme: TextButtonThemeData(style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color(0xFF2E4A63)))),
     buttonTheme: const ButtonThemeData(
       buttonColor: Color(0xFF0199FF), // Button color matching the Log Now button
       shape: RoundedRectangleBorder(
@@ -93,7 +93,7 @@ textButtonTheme: TextButtonThemeData(style: ButtonStyle(backgroundColor: WidgetS
 
     iconTheme: const IconThemeData(
 
-      applyTextScaling: true,
+      // applyTextScaling: true,
       color: Colors.white, // Icons inside the cards should be white
     ),
 

@@ -2,10 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
 // Assuming this is the file where fetchEventById is defined
 
 void showEventPopup(String userId, String eventId) async {
+  List<dynamic> generateDates(
+      DateTime startDate, DateTime endDate, String occurrence) {
+    List<dynamic> dates = [];
+    DateTime currentDate = startDate;
+
+    if (occurrence == 'Weekly') {
+      while (currentDate.isBefore(endDate) ||
+          currentDate.isAtSameMomentAs(endDate)) {
+        dates.add({
+          "date": currentDate,
+          "isVerified": false,
+          "isLocation": false,
+          "duration": "00:00"
+        });
+        currentDate = currentDate.add(const Duration(days: 7));
+      }
+    } else {
+      while (currentDate.isBefore(endDate) ||
+          currentDate.isAtSameMomentAs(endDate)) {
+        dates.add({
+          "date": currentDate,
+          "isVerified": false,
+          "isLocation": false,
+          "duration": "00:00"
+        });
+        currentDate = currentDate.add(const Duration(days: 1));
+      }
+    }
+
+    return dates;
+  }
+
   // Fetch event details from Firestore using eventId
   var authServices = AuthMethod();
   EventDataModel? event = await authServices.fetchEventById(userId, eventId);
@@ -31,7 +64,7 @@ void showEventPopup(String userId, String eventId) async {
             TextButton(
               onPressed: () {
                 // Handle Accept
-                acceptInvite(userId, eventId);
+                acceptInvite(event, context);
                 Navigator.of(context).pop();
               },
               child: const Text('Accept'),
@@ -39,7 +72,7 @@ void showEventPopup(String userId, String eventId) async {
             TextButton(
               onPressed: () {
                 // Handle Reject
-                rejectInvite(userId, eventId);
+
                 Navigator.of(context).pop();
               },
               child: const Text('Reject'),
@@ -70,26 +103,30 @@ void showEventPopup(String userId, String eventId) async {
   }
 }
 
-void acceptInvite(String userId, String eventId) {
+void acceptInvite(EventDataModel event, BuildContext context) async {
   // Update Firebase with the user's acceptance
-  FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('events')
-      .doc(eventId)
-      .update({
-    'acceptedUsers': FieldValue.arrayUnion([userId]),
-  });
-}
 
-void rejectInvite(String userId, String eventId) {
-  // Update Firebase with the user's rejection
-  FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('events')
-      .doc(eventId)
-      .update({
-    'rejectedUsers': FieldValue.arrayUnion([userId]),
-  });
+  String res = await AuthMethod().addEvent(
+    title: event.title ?? "",
+    description: event.description ?? "",
+    date: event.date,
+    location: event.location ?? "",
+    occurrence: event.occurence ?? "No occurence",
+    group: event.group!,
+    time: event.time ?? "",
+    endDate: event.endTime,
+    dates: event.dates!,
+  );
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(res)),
+  );
+
+  if (res == "Event added successfully") {
+    // Clear the form fields
+
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+        (route) => false);
+  }
 }
