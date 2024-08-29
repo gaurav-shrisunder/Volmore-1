@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:volunterring/Models/event_data_model.dart';
-import 'package:volunterring/Screens/BottomSheet/AccountPage.dart';
+
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
