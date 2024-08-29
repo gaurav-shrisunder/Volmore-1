@@ -31,6 +31,8 @@ class _LoginPageState extends State<LoginPage> {
     String res = await AuthMethod().loginUser(
         email: emailController.text, password: passwordController.text);
 
+
+
     if (res == "success") {
       setState(() {
         isLoading = false;
