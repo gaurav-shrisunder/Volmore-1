@@ -200,7 +200,7 @@ class AuthMethod {
   }
 
   //Events CRUD
-  Future<String> addEvent({
+  Future<dynamic> addEvent({
     required String title,
     required String description,
     required DateTime date,
@@ -214,14 +214,13 @@ class AuthMethod {
   }) async {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
-
+    String eventId = _uuid.v4();
     try {
       // Get user id
       String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;
       UserModel? user = await fetchUserData();
 
       // Generate UUID for the event
-      String eventId = _uuid.v4();
 
       print("user: ${user.toString()}");
 
@@ -251,7 +250,7 @@ class AuthMethod {
       res = e.toString();
     }
 
-    return res;
+    return {"res": res, "id": eventId};
   }
 
   Future<UserModel?> fetchUserData() async {
