@@ -25,8 +25,6 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-
     print("Event id ${event.id}");
     return Center(
       child: Stack(

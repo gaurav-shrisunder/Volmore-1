@@ -54,6 +54,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> handleDynamicLink() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
     // This handles the case when the app is started with a dynamic link
     final PendingDynamicLinkData? initialLink =
         await FirebaseDynamicLinks.instance.getInitialLink();
@@ -63,7 +65,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       final String? userId = deepLink.queryParameters['userId'];
       if (eventId != null) {
         // Show the event popup
-        showEventPopup(userId!, eventId);
+        showEventPopup(userId!, eventId, uid!);
       }
     }
 
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       final String? userId = deepLink.queryParameters['userId'];
       if (eventId != null) {
         // Show the event popup
-        showEventPopup(userId!, eventId);
+        showEventPopup(userId!, eventId, uid!);
       }
     }).onError((error) {
       print('Dynamic Link Failed: $error');

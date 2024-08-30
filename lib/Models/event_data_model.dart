@@ -54,7 +54,7 @@ August 12, 2024 at 10:06:07 PM UTC+5:30
 */
 
 class LogModel {
-   String? logId;
+  String? logId;
   String? elapsedTime;
   String? address;
   dynamic startTime;
@@ -65,25 +65,22 @@ class LogModel {
   bool? isTimeVerified;
   String? signature;
 
-   @override
+  @override
   String toString() {
     return 'LogModel{logId: $logId, elapsedTime: $elapsedTime, startTime: $startTime, endTime: $endTime, date: $date, isLocationVerified: $isLocationVerified, isSignatureVerified: $isSignatureVerified, isTimeVerified: $isTimeVerified}';
   }
 
-
-  LogModel({
-    required this.logId,
-    this.elapsedTime,
-    this.startTime,
-    this.endTime,
-    this.address,
-    required this.date,
-    this.isLocationVerified,
-    this.isSignatureVerified,
-    this.isTimeVerified,
-    this.signature
-
-  });
+  LogModel(
+      {required this.logId,
+      this.elapsedTime,
+      this.startTime,
+      this.endTime,
+      this.address,
+      required this.date,
+      this.isLocationVerified,
+      this.isSignatureVerified,
+      this.isTimeVerified,
+      this.signature});
 
   factory LogModel.fromMap(Map<String, dynamic> data, String id) {
     return LogModel(
@@ -133,6 +130,7 @@ class EventDataModel {
   String? occurence;
   String? title;
   String? host;
+  String? hostId;
   String? time;
   String? duration;
   dynamic startTime;
@@ -158,6 +156,7 @@ class EventDataModel {
       this.endDate,
       this.dates,
       this.logs,
+      this.hostId,
       this.host});
 
   EventDataModel.fromJson(Map<String, dynamic> json) {
@@ -171,6 +170,7 @@ class EventDataModel {
     occurence = json['occurrence'];
     title = json['title'];
     host = json['host'];
+    hostId = json['host_id'];
     time = json['time'];
     duration = json['duration'];
     startTime = json['startTime'];
@@ -200,6 +200,7 @@ class EventDataModel {
       address: data['address'],
       endTime: data['endTime'],
       dates: data['dates'],
+      hostId: data['host_id'],
       endDate: data['end_date'] != null
           ? (data['end_date'] as Timestamp).toDate()
           : null,
@@ -226,6 +227,7 @@ class EventDataModel {
     data['endTime'] = endTime;
     data['end_date'] = endDate;
     data['logs'] = logs;
+    data['host_id'] = hostId;
     return data;
   }
 
