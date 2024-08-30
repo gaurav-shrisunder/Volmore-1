@@ -100,8 +100,6 @@ class AuthMethod {
           password: password,
         );
 
-
-
         // Save UID to SharedPreferences
         await prefs.setString("uid", cred.user!.uid);
         res = "success";
@@ -140,7 +138,6 @@ class AuthMethod {
     });
     return "Something went wrong";
   }*/
-
 
   Future<String> _resetPassword(String email) async {
     var res = "Some error occurred";
@@ -237,6 +234,61 @@ class AuthMethod {
     String res = "Some error occurred";
     final SharedPreferences prefs = await _prefs;
     String eventId = _uuid.v4();
+    try {
+      // Get user id
+      String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;
+      UserModel? user = await fetchUserData();
+
+      // Generate UUID for the event
+
+      print("user: ${user.toString()}");
+
+      // Add event to Firestore
+      await _firestore
+          .collection("users")
+          .doc(uid)
+          .collection("events")
+          .doc(eventId)
+          .set({
+        'id': eventId,
+        'title': title,
+        'description': description,
+        'date': date,
+        'location': location,
+        'occurrence': occurrence,
+        'group': group,
+        'host': user!.name,
+        'host_id': uid,
+        'time': time,
+        'end_date': endDate ?? date,
+        'dates': dates,
+      });
+
+      res = "Event added successfully";
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return {"res": res, "id": eventId};
+  }
+
+  Future<dynamic> acceptEvent({
+    required String title,
+    required String description,
+    required DateTime date,
+    required String location,
+    required String occurrence,
+    String group = "General",
+    DateTime? endDate,
+    required String time,
+    TimeOfDay? endTime,
+    required List<dynamic> dates,
+    required eventId,
+    required hostId,
+  }) async {
+    String res = "Some error occurred";
+    final SharedPreferences prefs = await _prefs;
+
     try {
       // Get user id
       String uid = prefs.getString("uid") ?? _auth.currentUser!.uid;

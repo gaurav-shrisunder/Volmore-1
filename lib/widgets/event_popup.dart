@@ -9,44 +9,34 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 // Assuming this is the file where fetchEventById is defined
 
-void showEventPopup(String userId, String eventId) async {
-  List<dynamic> generateDates(
-      DateTime startDate, DateTime endDate, String occurrence) {
-    List<dynamic> dates = [];
-    DateTime currentDate = startDate;
-
-    if (occurrence == 'Weekly') {
-      while (currentDate.isBefore(endDate) ||
-          currentDate.isAtSameMomentAs(endDate)) {
-        dates.add({
-          "date": currentDate,
-          "isVerified": false,
-          "isLocation": false,
-          "duration": "00:00"
-        });
-        currentDate = currentDate.add(const Duration(days: 7));
-      }
-    } else {
-      while (currentDate.isBefore(endDate) ||
-          currentDate.isAtSameMomentAs(endDate)) {
-        dates.add({
-          "date": currentDate,
-          "isVerified": false,
-          "isLocation": false,
-          "duration": "00:00"
-        });
-        currentDate = currentDate.add(const Duration(days: 1));
-      }
-    }
-
-    return dates;
-  }
-
+void showEventPopup(String userId, String eventId, String uid) async {
   // Fetch event details from Firestore using eventId
   var authServices = AuthMethod();
   EventDataModel? event = await authServices.fetchEventById(userId, eventId);
 
   if (event != null) {
+    EventDataModel? alreadyeventExist =
+        await authServices.fetchEventById(uid, eventId);
+    if (alreadyeventExist != null) {
+      showDialog(
+        context: Get.context!,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Event Already Accepted"),
+            content: const Text("You have already accepted this invite."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
     showDialog(
       context: Get.context!,
       builder: (BuildContext context) {
@@ -239,17 +229,18 @@ void showEventPopup(String userId, String eventId) async {
 
 Future<void> acceptInvite(EventDataModel event, BuildContext context) async {
   // Update Firebase with the user's acceptance
-  dynamic res = await AuthMethod().addEvent(
-    title: event.title ?? "",
-    description: event.description ?? "",
-    date: event.date,
-    location: event.location ?? "",
-    occurrence: event.occurence ?? "No occurence",
-    group: event.group!,
-    time: event.time ?? "",
-    endDate: event.endTime,
-    dates: event.dates!,
-  );
+  dynamic res = await AuthMethod().acceptEvent(
+      title: event.title ?? "",
+      description: event.description ?? "",
+      date: event.date,
+      location: event.location ?? "",
+      occurrence: event.occurence ?? "No occurence",
+      group: event.group!,
+      time: event.time ?? "",
+      endDate: event.endTime,
+      dates: event.dates!,
+      eventId: event.id,
+      hostId: event.hostId);
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(content: Text(res['res'])),
