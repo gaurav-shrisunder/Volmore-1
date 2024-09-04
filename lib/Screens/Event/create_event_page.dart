@@ -1,12 +1,18 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Models/UserModel.dart';
+import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/deep_links.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:uuid/uuid.dart';
@@ -33,6 +39,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   DateTime selectedDate = DateTime.now();
   final _authMethod = AuthMethod();
   TimeOfDay? picked = TimeOfDay.now();
+
+  UserModel? user;
 
   String selectedOccurrence =
       'No occurrence'; // Initial value set to prevent null issues
@@ -82,17 +90,18 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     try {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();
-      print("querySnapshot.docs: ${querySnapshot.docs}");
+
       List<String> groupNames =
           querySnapshot.docs.map((doc) => doc['name'] as String).toList();
+      UserModel? user2 = await _authMethod.fetchUserData();
       setState(() {
         _groupNames = groupNames;
+        user = user2;
       });
     } catch (e) {
       print("Error fetching group names: $e");
     }
   }
-  
 
   Future<void> _addGroup(String name, String color) async {
     try {
@@ -198,8 +207,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
-    //  backgroundColor: Colors.white,
-      appBar: simpleAppBar(context , ""),
+      //  backgroundColor: Colors.white,
+      appBar: simpleAppBar(context, ""),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
@@ -215,7 +224,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                   //   color: headingBlue,
+                      //   color: headingBlue,
                     ),
                   ),
                 ),
@@ -225,7 +234,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                   //   color: Color(0xff0c4a6f),
+                      //   color: Color(0xff0c4a6f),
                     ),
                   ),
                 ),
@@ -261,7 +270,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
-                  //  color: headingBlue,
+                    //  color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -279,7 +288,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                   child: DropdownButtonFormField<String>(
                     value: selectedOccurrence,
-                    icon: const Icon(CupertinoIcons.chevron_down, size: 20,),
+                    icon: const Icon(
+                      CupertinoIcons.chevron_down,
+                      size: 20,
+                    ),
                     decoration: InputDecoration(
                       filled: true,
 
@@ -289,7 +301,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           fontWeight: FontWeight.w400),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 20),
-                   //   fillColor: Colors.white,
+                      //   fillColor: Colors.white,
                       focusColor: Colors.white,
 
                       enabledBorder: OutlineInputBorder(
@@ -339,7 +351,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
-                 //   color: headingBlue,
+                    //   color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -373,13 +385,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             ),
                             filled: true,
                             hintText: 'Select Date',
-                            hintStyle: TextStyle(
-                              //  color: Colors.grey[900],
+                            hintStyle: const TextStyle(
+                                //  color: Colors.grey[900],
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 20),
-                       //     fillColor: Colors.white,
+                            //     fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -426,13 +438,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           hintText: 'Time',
-                          hintStyle: TextStyle(
-                            //  color: Colors.grey[900],
+                          hintStyle: const TextStyle(
+                              //  color: Colors.grey[900],
                               fontSize: 16,
                               fontWeight: FontWeight.w400),
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 20),
-                     //     fillColor: Colors.white,
+                          //     fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(
@@ -464,7 +476,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
-                            //  color: headingBlue,
+                              //  color: headingBlue,
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -501,14 +513,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                       ),
                                       filled: true,
                                       hintText: 'Select End Date',
-                                      hintStyle: TextStyle(
-                                     //     color: Colors.grey[900],
+                                      hintStyle: const TextStyle(
+                                          //     color: Colors.grey[900],
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       contentPadding:
                                           const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 20),
-                                  //    fillColor: Colors.white,
+                                      //    fillColor: Colors.white,
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
                                         borderSide: const BorderSide(
@@ -556,13 +568,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                   decoration: InputDecoration(
                                     filled: true,
                                     hintText: 'Time',
-                                    hintStyle: TextStyle(
-                                   //     color: Colors.grey[900],
+                                    hintStyle: const TextStyle(
+                                        //     color: Colors.grey[900],
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 20, vertical: 20),
-                                 //   fillColor: Colors.white,
+                                    //   fillColor: Colors.white,
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: const BorderSide(
@@ -593,7 +605,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
-                 //   color: headingBlue,
+                    //   color: headingBlue,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -615,16 +627,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         child: DropdownButtonFormField<String>(
                           hint: const Text('Select a Group'),
                           value: _selectedGroup,
-                        //  dropdownColor: Colors.white,
+                          //  dropdownColor: Colors.white,
                           decoration: InputDecoration(
                             filled: true,
-                            hintStyle: TextStyle(
-                            //    color: Colors.grey[400],
+                            hintStyle: const TextStyle(
+                                //    color: Colors.grey[400],
                                 fontSize: 19,
                                 fontWeight: FontWeight.w400),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 20),
-                         //   fillColor: Colors.white,
+                            //   fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -670,9 +682,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-
                     titleController.text = titleController.text;
-
 
                     if (titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
@@ -685,7 +695,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       List<dynamic> allDates = generateDates(
                           selectedDate, endDate, selectedOccurrence);
 
-                      String res = await _authMethod.addEvent(
+                      dynamic res = await _authMethod.addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
                         date: selectedDate,
@@ -696,12 +706,144 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         endDate: endDate,
                         dates: allDates,
                       );
+                      // EventDataModel event = EventDataModel(
+                      //   title: titleController.text,
+                      //   description: descriptionController.text,
+                      //   date: selectedDate,
+                      //   location: locationController.text,
+                      //   occurence: selectedOccurrence,
+                      //   group: _selectedGroup!,
+                      //   time: timeController.text,
+                      //   endDate: endDate,
+                      //   dates: allDates,
+                      //   id: "",
+                      //   host: user?.name ?? "",
+                      showDialog(
+                          context: context,
+                          builder: (_) {
+                            return SimpleDialog(
+                              title: Column(
+                                children: [
+                                  const Center(
+                                    child: Text(
+                                      "Event Saved Successfully!",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Lottie.asset(
+                                      height: 380,
+                                      width: width * 0.8,
+                                      "assets/images/hurrah_lotttie.json"),
+                                ],
+                              ),
+                              children: [
+                                const Center(
+                                  child: Text(
+                                    "Want to make it a group effort? Invite your friends!",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Center(
+                                  child: GestureDetector(
+                                      onTap: () async {
+                                        print("Id: ${res['id']}");
+                                        final SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        final String? uid =
+                                            prefs.getString('uid');
+                                        String url = await createDynamicLink(
+                                            res['id'], uid!);
+                                        Share.share(url);
+                                        Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const HomePage()),
+                                            (route) => false);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 15, horizontal: 15),
+                                          decoration: BoxDecoration(
+                                            color: Colors.lightBlue[500],
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "Share",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      )),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const HomePage()),
+                                            (route) => false);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 15, horizontal: 15),
+                                          decoration: BoxDecoration(
+                                            color: const Color.fromARGB(
+                                                255, 6, 7, 7),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "Skip",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      )),
+                                ),
+                              ],
+                            );
+                          });
+
+                      // );
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(res)),
+                        SnackBar(content: Text(res['res'])),
                       );
 
-                      if (res == "Event added successfully") {
+                      if (res['res'] == "Event added successfully") {
                         // Clear the form fields
                         titleController.clear();
                         descriptionController.clear();
@@ -713,11 +855,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           selectedOccurrence = 'No occurrence';
                           _selectedGroup = null;
                         });
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage()),
-                            (route) => false);
+                        // Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => const HomePage()),
+                        //     (route) => false);
                       }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -737,7 +879,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     child: const Center(
                       child: Text(
                         'Submit Event',
-                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                     ),
                   ),
