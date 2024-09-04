@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:volunterring/Services/user_services.dart';
 
-
 import '../Models/UserModel.dart';
 
 class LeaderboardScreen extends StatefulWidget {
@@ -109,7 +108,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             }
           },
         ),
-      //  bottomNavigationBar: buildPageChanger(),
+        //  bottomNavigationBar: buildPageChanger(),
       ),
     );
   }
@@ -226,12 +225,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                     style: const TextStyle(
                                         color: Colors.black, fontSize: 16),
                                   ),
-
                                   Row(
                                     children: [
                                       Chip(
                                         side: const BorderSide(
-                                            color: Colors.transparent, width: 0),
+                                            color: Colors.transparent,
+                                            width: 0),
                                         padding: EdgeInsets.zero,
                                         label: Text(userList[index]!.state!),
                                         backgroundColor: Colors.orange.shade50,
@@ -240,7 +239,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                       Chip(
                                         padding: EdgeInsets.zero,
                                         side: const BorderSide(
-                                            color: Colors.transparent, width: 0),
+                                            color: Colors.transparent,
+                                            width: 0),
                                         label: Text(userList[index]!.gradYear!),
                                         backgroundColor: Colors.purple.shade50,
                                       ),
@@ -249,16 +249,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                 ],
                               ),
                             ),
-                          //  const Spacer(),
+                            //  const Spacer(),
                             Expanded(
                                 child: Align(
-                                  alignment: Alignment.topRight,
+                                    alignment: Alignment.topRight,
                                     child: Text(
-                              "${userList[index]!.totalMinutes!} minutes",
-                              style: const TextStyle(color: Colors.black),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ))),
+                                      "${userList[index]!.totalMinutes} Hours",
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ))),
                           ],
                         ),
                       ),
@@ -275,7 +276,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget buildPageChanger() {
     return Padding(
-      padding: const EdgeInsets.symmetric( horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
