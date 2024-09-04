@@ -1,16 +1,22 @@
 class UserModel {
-  final String uid;
-  final String name;
-  final String email;
-  final String phone;
-  final String profileLink;
+   String? uid;
+   String? name;
+   String? email;
+   String? phone;
+   String? gradYear;
+   String? state;
+   String? profileLink;
+  dynamic totalHours;
 
   UserModel({
-    required this.uid,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.profileLink,
+     this.uid,
+     this.name,
+     this.email,
+     this.phone,
+     this.gradYear,
+     this.state,
+     this.profileLink,
+    this.totalHours
   });
 
   // Factory method to create a UserModel from Firestore data
@@ -19,8 +25,28 @@ class UserModel {
       uid: data['uid'],
       name: data['name'],
       email: data['email'],
+      gradYear: data['grad_year'],
+      state: data['state'],
       phone: data['number'],
       profileLink: data['profile_link'],
+      totalHours: data['total_hours'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['uid'] = uid;
+    data['name'] = name;
+    data['email'] = email;
+    data['grad_year'] = gradYear;
+    data['state'] = state;
+    data['number'] = phone;
+    data['profile_link'] = profileLink;
+    data['total_hours'] = totalHours;
+    return data;
+  }
 }
+
+
+
+
