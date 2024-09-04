@@ -360,7 +360,7 @@ class _VolunteerConfirmationScreenState
   }
 
   Widget buildEventList(String title, List<EventListDataModel> events) {
-    print("Length ${events.length}");
+   
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -378,7 +378,7 @@ class _VolunteerConfirmationScreenState
                 child: ListView.builder(
                   itemCount: events.length,
                   itemBuilder: (context, index) {
-                    print("length");
+                   
                     print(events.length);
                     EventListDataModel event = events[index];
                     Color color =

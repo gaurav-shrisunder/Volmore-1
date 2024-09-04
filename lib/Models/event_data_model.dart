@@ -233,6 +233,6 @@ class EventDataModel {
 
   @override
   String toString() {
-    return 'EventDataModel{date: $date, description: $description, group: $group, groupColor: $groupColor, id: $id, location: $location, address: $address, occurence: $occurence, title: $title, host: $host, time: $time, duration: $duration, startTime: $startTime, endTime: $endTime, endDate: $endDate, dates: $dates, logs: ${logs?.first.toString()}';
+    return 'EventDataModel{date: $date, description: $description, group: $group, groupColor: $groupColor, id: $id, location: $location, address: $address, occurence: $occurence, title: $title, host: $host, time: $time, duration: $duration, startTime: $startTime, endTime: $endTime, endDate: $endDate, dates: $dates';
   }
 }

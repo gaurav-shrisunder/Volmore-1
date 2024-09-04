@@ -1,9 +1,8 @@
-
-
 import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -12,41 +11,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';
 
-class UserServices{
+class UserServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-
-
   Future<List<UserModel?>?> fetchAllUsers() async {
-
-
     try {
-
       List<UserModel> userList = [];
 
-      QuerySnapshot<Map<String, dynamic>> allUsers = await FirebaseFirestore.instance.collection('users').get();
+      QuerySnapshot<Map<String, dynamic>> allUsers =
+          await FirebaseFirestore.instance.collection('users').get();
       for (var user in allUsers.docs) {
         UserModel userModel = UserModel();
-   num  totalhours =  await fetchUserTotalHours(user.get("uid"));
+        // dynamic totalhours = await fetchUserTotalHours(user.get("uid"));
 
-        print('User:::: ${user.get("name")}');
+        print('User:::: ${user.data()}');
         userModel.name = user.get("name");
         userModel.state = /*user.get("state") ??*/ "Michigan";
-        userModel.gradYear = /*user.get("grad_year") ?? */"2024";
-        userModel.totalHours = totalhours.toString();
+        userModel.gradYear = /*user.get("grad_year") ?? */ "2024";
+        userModel.totalMinutes = user.get("total_minutes");
+        userModel.minutesInfluenced = user.get("minutes_influenced");
 
         userList.add(userModel);
       }
 
-
-
-      userList.sort((a, b) => (b.totalHours ?? 0).compareTo(a.totalHours ?? 0));
+      userList
+          .sort((a, b) => (b.totalMinutes ?? 0).compareTo(a.totalMinutes ?? 0));
       log('UserList:::: ${jsonEncode(userList)}');
 
       // Convert document data to UserModel
-    //  return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+      //  return UserModel.fromMap(doc.data() as Map<String, dynamic>);
       return userList;
     } catch (e) {
       print('Catch error : ${e.toString()}');
@@ -55,10 +50,8 @@ class UserServices{
       return null;
     }
   }
-  
-  
-  
- Future<num> fetchUserTotalHours(String uid) async {
+
+  Future<num> fetchUserTotalHours(String uid) async {
     int lifetimeCountedMinutes = 0;
     try {
       // Fetch all events for the user
@@ -98,23 +91,16 @@ class UserServices{
 
       // return events;
 
-      for (var event in events){
-        event.logs!.forEach((action) {
+      for (var event in events) {
+        for (var action in event.logs!) {
           lifetimeCountedMinutes = (lifetimeCountedMinutes +
-              int.parse(action.elapsedTime!.split(":")[0]))!;
-        });
+              int.parse(action.elapsedTime!.split(":")[0]));
+        }
       }
       return lifetimeCountedMinutes;
     } catch (e) {
       print(e);
       return lifetimeCountedMinutes; // Handle errors appropriately
     }
-
-   
-    
   }
-  
-  
-
-
 }

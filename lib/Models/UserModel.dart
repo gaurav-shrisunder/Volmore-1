@@ -1,22 +1,25 @@
 class UserModel {
-   String? uid;
-   String? name;
-   String? email;
-   String? phone;
-   String? gradYear;
-   String? state;
-   String? profileLink;
-  dynamic totalHours;
+  String? uid;
+  String? name;
+  String? email;
+  String? phone;
+  String? gradYear;
+  String? state;
+  String? profileLink;
+
+   int totalMinutes;
+   int minutesInfluenced;
 
   UserModel({
-     this.uid,
-     this.name,
-     this.email,
-     this.phone,
-     this.gradYear,
-     this.state,
-     this.profileLink,
-    this.totalHours
+    this.uid,
+    this.name,
+    this.email,
+    this.phone,
+    this.gradYear,
+    this.state,
+    this.profileLink,
+    this.totalMinutes = 0, // Default value is 0
+    this.minutesInfluenced = 0, // Default value is 0
   });
 
   // Factory method to create a UserModel from Firestore data
@@ -29,7 +32,8 @@ class UserModel {
       state: data['state'],
       phone: data['number'],
       profileLink: data['profile_link'],
-      totalHours: data['total_hours'],
+      totalMinutes: data['total_minutes'] ?? 0, // Default to 0 if not present
+      minutesInfluenced: data['minutes_influenced'] ?? 0,
     );
   }
 
@@ -42,11 +46,8 @@ class UserModel {
     data['state'] = state;
     data['number'] = phone;
     data['profile_link'] = profileLink;
-    data['total_hours'] = totalHours;
+    data['total_minutes'] = totalMinutes;
+    data['minutes_influenced'] = minutesInfluenced;
     return data;
   }
 }
-
-
-
-

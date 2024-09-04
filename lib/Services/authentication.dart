@@ -67,7 +67,9 @@ class AuthMethod {
           'uid': cred.user!.uid,
           'email': email,
           'number': phone,
-          'profile_link': profileLink, // Save profile link
+          'profile_link': profileLink,
+          'total_minutes': 0,
+          'minutes_influenced': 0 // Save profile link
         });
 
         // Save UID to SharedPreferences
@@ -318,6 +320,20 @@ class AuthMethod {
         'end_date': endDate ?? date,
         'dates': dates,
       });
+
+      if (uid != hostId) {
+        print("In if condition");
+        await _firestore
+            .collection("users")
+            .doc(hostId)
+            .collection("referrals")
+            .doc(eventId)
+            .set({
+          'id': uid,
+          'isLogged': false,
+          'duration': 0, //in seconds
+        });
+      }
 
       res = "Event added successfully";
     } catch (e) {

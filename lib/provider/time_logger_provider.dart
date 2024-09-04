@@ -13,6 +13,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Models/UserModel.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/Event/volunteer_confirmation_screen.dart';
 import 'package:volunterring/Screens/HomePage.dart';
@@ -20,6 +21,7 @@ import 'package:volunterring/Screens/HomePage.dart';
 class TimerProvider with ChangeNotifier {
   final Uuid _uuid = const Uuid();
   int _elapsedTime = 0;
+  int duration = 0;
   bool _isLogging = false;
   final int _points = 0;
   bool _locationTracking = false;
@@ -108,6 +110,16 @@ class TimerProvider with ChangeNotifier {
         builder: (context) {
           return Lottie.asset("assets/images/loader_lottie.json");
         });
+    DocumentSnapshot doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    UserModel currenetUser =
+        UserModel.fromMap(doc.data() as Map<String, dynamic>);
+    int totalminutes = currenetUser.totalMinutes + duration ~/ 60;
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .update({'total_minutes': totalminutes});
 
     CollectionReference logs = FirebaseFirestore.instance
         .collection('users')
@@ -118,7 +130,7 @@ class TimerProvider with ChangeNotifier {
     await logs.doc(logId).set({
       'id': logId,
       'elapsedTime(hh:mm:ss)':
-          "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600) ~/ 60}:${_elapsedTime % 60}",
+          "${duration ~/ 3600}:${(duration % 3600) ~/ 60}:${duration % 60}",
       'location': _locationData != null
           ? GeoPoint(_locationData!.latitude!, _locationData!.longitude!)
           : null,
@@ -130,9 +142,32 @@ class TimerProvider with ChangeNotifier {
       'date': date,
       'isLocationVerified': _locationData != null ? true : false,
       'isSignatureVerified': signature != null ? true : false,
-      'isTimeVerified': _elapsedTime != 0 ? true : false,
+      'isTimeVerified': duration != 0 ? true : false,
     }).then((onValue) {
       Navigator.of(context).pop();
+    });
+    DocumentSnapshot docs = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(event.hostId)
+        .get();
+
+    UserModel user = UserModel.fromMap(docs.data() as Map<String, dynamic>);
+    int referralMinutes = user.minutesInfluenced + duration ~/ 60;
+    print("Elapsed time : $referralMinutes");
+
+    FirebaseFirestore.instance.collection("users").doc(event.hostId).set(
+      {'minutes_influenced': referralMinutes},
+      SetOptions(merge: true),
+    );
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(event.hostId)
+        .collection("referrals")
+        .doc(event.id)
+        .update({
+      'isLogged': true,
+      'duration': referralMinutes,
     });
     if (selectedLogs!.isNotEmpty) {
       try {
@@ -179,7 +214,7 @@ class TimerProvider with ChangeNotifier {
                       event.address = _address;
                       event.location = _location.toString();
                       event.duration =
-                          "${_elapsedTime ~/ 3600}:${(_elapsedTime % 3600)}";
+                          "${duration ~/ 3600}:${(duration % 3600)}";
 
                       Navigator.push(
                           context,
@@ -195,7 +230,7 @@ class TimerProvider with ChangeNotifier {
           );
         });
     toggleLogging();
-
+    duration = 0;
     // _elapsedTime = 0;
     notifyListeners();
   }
@@ -204,6 +239,7 @@ class TimerProvider with ChangeNotifier {
     Future.delayed(const Duration(seconds: 1), () {
       if (_isLogging) {
         _elapsedTime++;
+        duration++;
         notifyListeners();
         _startTimer();
       }
