@@ -24,13 +24,14 @@ class UserServices {
           await FirebaseFirestore.instance.collection('users').get();
       for (var user in allUsers.docs) {
         UserModel userModel = UserModel();
-        dynamic totalhours = await fetchUserTotalHours(user.get("uid"));
+        // dynamic totalhours = await fetchUserTotalHours(user.get("uid"));
 
-        print('User:::: ${user.get("name")}');
+        print('User:::: ${user.data()}');
         userModel.name = user.get("name");
         userModel.state = /*user.get("state") ??*/ "Michigan";
         userModel.gradYear = /*user.get("grad_year") ?? */ "2024";
-        userModel.totalMinutes = totalhours;
+        userModel.totalMinutes = user.get("total_minutes");
+        userModel.minutesInfluenced = user.get("minutes_influenced");
 
         userList.add(userModel);
       }
@@ -91,10 +92,10 @@ class UserServices {
       // return events;
 
       for (var event in events) {
-        event.logs!.forEach((action) {
+        for (var action in event.logs!) {
           lifetimeCountedMinutes = (lifetimeCountedMinutes +
-              int.parse(action.elapsedTime!.split(":")[0]))!;
-        });
+              int.parse(action.elapsedTime!.split(":")[0]));
+        }
       }
       return lifetimeCountedMinutes;
     } catch (e) {
