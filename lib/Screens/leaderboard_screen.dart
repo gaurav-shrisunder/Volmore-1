@@ -194,75 +194,73 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     color: Colors.white30,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Expanded(
-                        child: Row(
-                          children: [
-                            Text(
-                              "#${index + 1}.",
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        children: [
+                          Text(
+                            "#${index + 1}.",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(width: 10),
+                          const CircleAvatar(
+                            backgroundImage: AssetImage(
+                                'assets/images/profile_avatar.png'),
+                            // Replace with actual image path
+                            radius: 30,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${userList[index]!.name}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                                Row(
+                                  children: [
+                                    Chip(
+                                      side: const BorderSide(
+                                          color: Colors.transparent,
+                                          width: 0),
+                                      padding: EdgeInsets.zero,
+                                      label: Text(userList[index]!.state!),
+                                      backgroundColor: Colors.orange.shade50,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Chip(
+                                      padding: EdgeInsets.zero,
+                                      side: const BorderSide(
+                                          color: Colors.transparent,
+                                          width: 0),
+                                      label: Text(userList[index]!.gradYear!),
+                                      backgroundColor: Colors.purple.shade50,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            const CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),
-                              // Replace with actual image path
-                              radius: 30,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${userList[index]!.name}',
-                                    maxLines: 1,
+                          ),
+                          //  const Spacer(),
+                          Expanded(
+                              child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Text(
+                                    "${userList[index]!.totalMinutes} Minutes",
+                                    style:
+                                        const TextStyle(color: Colors.black),
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Chip(
-                                        side: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0),
-                                        padding: EdgeInsets.zero,
-                                        label: Text(userList[index]!.state!),
-                                        backgroundColor: Colors.orange.shade50,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Chip(
-                                        padding: EdgeInsets.zero,
-                                        side: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0),
-                                        label: Text(userList[index]!.gradYear!),
-                                        backgroundColor: Colors.purple.shade50,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            //  const Spacer(),
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      "${userList[index]!.totalMinutes} Minutes",
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ))),
-                          ],
-                        ),
+                                  ))),
+                        ],
                       ),
                     ),
                   ),
@@ -355,75 +353,73 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     color: Colors.white30,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Expanded(
-                        child: Row(
-                          children: [
-                            Text(
-                              "#${index + 1}.",
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                      child: Row(
+                        children: [
+                          Text(
+                            "#${index + 1}.",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(width: 10),
+                          const CircleAvatar(
+                            backgroundImage: AssetImage(
+                                'assets/images/profile_avatar.png'),
+                            // Replace with actual image path
+                            radius: 30,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${userList[index]!.name}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                                Row(
+                                  children: [
+                                    Chip(
+                                      side: const BorderSide(
+                                          color: Colors.transparent,
+                                          width: 0),
+                                      padding: EdgeInsets.zero,
+                                      label: Text(userList[index]!.state!),
+                                      backgroundColor: Colors.orange.shade50,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Chip(
+                                      padding: EdgeInsets.zero,
+                                      side: const BorderSide(
+                                          color: Colors.transparent,
+                                          width: 0),
+                                      label: Text(userList[index]!.gradYear!),
+                                      backgroundColor: Colors.purple.shade50,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            const CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),
-                              // Replace with actual image path
-                              radius: 30,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${userList[index]!.name}',
-                                    maxLines: 1,
+                          ),
+                          //  const Spacer(),
+                          Expanded(
+                              child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Text(
+                                    "${userList[index]!.minutesInfluenced} Minutes",
+                                    style:
+                                        const TextStyle(color: Colors.black),
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Chip(
-                                        side: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0),
-                                        padding: EdgeInsets.zero,
-                                        label: Text(userList[index]!.state!),
-                                        backgroundColor: Colors.orange.shade50,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Chip(
-                                        padding: EdgeInsets.zero,
-                                        side: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0),
-                                        label: Text(userList[index]!.gradYear!),
-                                        backgroundColor: Colors.purple.shade50,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            //  const Spacer(),
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      "${userList[index]!.minutesInfluenced} Minutes",
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ))),
-                          ],
-                        ),
+                                  ))),
+                        ],
                       ),
                     ),
                   ),
