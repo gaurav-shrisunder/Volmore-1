@@ -148,7 +148,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder(
+        child: FutureBuilder<List<EventDataModel>>(
             future: _logMethod.fetchAllEventsWithLogs(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
@@ -156,10 +156,6 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 _eventsFuture = snapshot.data!;
                 for (var event in _eventsFuture) {
                   // log("_eventsFutureGroup :: ${event.group}");
-                  event.logs!.forEach((action) {
-                    lifetimeCountedMinutes = (lifetimeCountedMinutes +
-                        int.parse(action.elapsedTime!.split(":")[1]))!;
-                  });
                   event.logs!.forEach((action) {
                     if (event.group!.contains("Trash")) {
                       trashHours = (trashHours +

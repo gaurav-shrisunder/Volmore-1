@@ -1,7 +1,8 @@
-
-
 import 'package:flutter/material.dart';
-import 'package:volunterring/widgets/weekly_stats_chart.dart';
+import 'package:volunterring/Services/user_services.dart';
+
+
+import '../Models/UserModel.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -11,11 +12,287 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
+  final List<Map<String, String>> volunteers = [
+    {"name": "Kyle", "state": "Arizona", "class": "2024", "hours": "70 Hours"},
+    {
+      "name": "Kristin",
+      "state": "Alabama",
+      "class": "2024",
+      "hours": "70 Hours"
+    },
+    {
+      "name": "Gladys",
+      "state": "Arizona",
+      "class": "2024",
+      "hours": "70 Hours"
+    },
+    {
+      "name": "Mitchell",
+      "state": "Alabama",
+      "class": "2024",
+      "hours": "70 Hours"
+    },
+    {
+      "name": "Ronald",
+      "state": "Arizona",
+      "class": "2024",
+      "hours": "70 Hours"
+    },
+    {
+      "name": "Eduardo",
+      "state": "Alabama",
+      "class": "2024",
+      "hours": "70 Hours"
+    },
+  ];
+
+  final List<String> states = ["Arizona", "Alabama", "California", "Michigan"];
+  final List<String> graduatingClasses = ["2024", "2023", "2022", "2021"];
+  String? selectedState;
+  String? selectedGraduatingClass;
+
+  late Future<List<UserModel?>?> userListFuture;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userListFuture = UserServices().fetchAllUsers();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Leaderboard"),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        body: FutureBuilder<List<UserModel?>?>(
+          future: userListFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasData) {
+                List<UserModel?>? userList = snapshot.data;
+                return Column(
+                  children: [
+                    const TabBar(
+                      indicatorColor: Colors.blue,
+                      labelColor: Colors.blue,
+                      unselectedLabelColor: Colors.grey,
+                      tabs: [
+                        Tab(text: "Hours Volunteered"),
+                        Tab(text: "Hour Influenced"),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          buildVolunteerListView(userList),
+                          const Center(
+                              child: Text("Hour Influenced",
+                                  style: TextStyle(fontSize: 18))),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return Center(
+                  child: Text(
+                      "Something went wrong: ${snapshot.error.toString()}"),
+                );
+              }
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+              );
+            }
+          },
+        ),
+      //  bottomNavigationBar: buildPageChanger(),
+      ),
+    );
+  }
+
+  Widget buildVolunteerListView(List<UserModel?>? userList) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Top 100 Volunteers by Total Hours",
+            style: TextStyle(
+                color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // State Dropdown
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: "State",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.grey)),
+                    ),
+                    value: selectedState,
+                    items: states.map((String state) {
+                      return DropdownMenuItem<String>(
+                        value: state,
+                        child: Text(state),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedState = newValue;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: "Graduating Class",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    value: selectedGraduatingClass,
+                    items: graduatingClasses.map((String gradClass) {
+                      return DropdownMenuItem<String>(
+                        value: gradClass,
+                        child: Text(gradClass),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedGraduatingClass = newValue;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              itemCount: userList!.length,
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5.0,
+                  ),
+                  child: Container(
+                    color: Colors.white30,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Expanded(
+                        child: Row(
+                          children: [
+                            Text(
+                              "#${index + 1}.",
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(width: 10),
+                            const CircleAvatar(
+                              backgroundImage: AssetImage(
+                                  'assets/images/profile_avatar.png'),
+                              // Replace with actual image path
+                              radius: 30,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${userList[index]!.name}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: true,
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      Chip(
+                                        side: const BorderSide(
+                                            color: Colors.transparent, width: 0),
+                                        padding: EdgeInsets.zero,
+                                        label: Text(userList[index]!.state!),
+                                        backgroundColor: Colors.orange.shade50,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Chip(
+                                        padding: EdgeInsets.zero,
+                                        side: const BorderSide(
+                                            color: Colors.transparent, width: 0),
+                                        label: Text(userList[index]!.gradYear!),
+                                        backgroundColor: Colors.purple.shade50,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          //  const Spacer(),
+                            Expanded(
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                    child: Text(
+                              "${userList[index]!.totalMinutes!} minutes",
+                              style: const TextStyle(color: Colors.black),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ))),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildPageChanger() {
+    return Padding(
+      padding: const EdgeInsets.symmetric( horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
+            onPressed: () {},
+          ),
+          const Text(
+            "Page 1 of 10",
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+            onPressed: () {},
+          ),
+        ],
       ),
     );
   }
