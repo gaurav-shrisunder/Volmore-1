@@ -196,7 +196,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: headingBlue,
                       child: IconButton(
                           onPressed: () {
-                            Get.to(EditAccountScreen(user!.name, user!.phone));
+                            Get.to(EditAccountScreen(user!.name!, user!.phone!));
                           },
                           icon: const Icon(Icons.edit)))),
               const CircleAvatar(
@@ -205,12 +205,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               const SizedBox(height: 10),
               Text(
-                user!.name,
+                user!.name!,
                 style:
                     const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               Text(
-                user!.email,
+                user!.email!,
                 style: const TextStyle(
                     fontSize: 16, fontWeight: FontWeight.normal),
               ),
