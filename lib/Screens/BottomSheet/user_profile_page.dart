@@ -226,11 +226,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       child: Row(
                         children: [
                           SizedBox(
-                            width: 50,
-                            height: 50,
+                            width: 40,
+                            height: 40,
                             child: Image.asset(
                               "assets/images/timer.png",
-                              fit: BoxFit.contain,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           const SizedBox(
@@ -241,11 +241,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               Text(
                                 "${durationString.split(":")[0]} Hrs",
                                 style: const TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: headingBlue),
                               ),
-                              const Text("Lifetime Hours"),
+                              const Text("Lifetime Hours", style:  TextStyle(
+                                fontSize: 12,
+                              )),
                             ],
                           )
                         ],
@@ -260,11 +262,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       child: Row(
                         children: [
                           SizedBox(
-                            width: 50,
-                            height: 50,
+                            width: 40,
+                            height: 40,
                             child: Image.asset(
                               "assets/images/timer.png",
-                              fit: BoxFit.contain,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           const SizedBox(
@@ -275,11 +277,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               Text(
                                 "${weeklyDuration.split(":")[0]} Hrs",
                                 style: const TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: headingBlue),
                               ),
-                              const Text("This week"),
+                              const Text("This week",style:  TextStyle(
+                                  fontSize: 12,
+                                  )),
                             ],
                           )
                         ],

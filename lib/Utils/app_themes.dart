@@ -66,7 +66,7 @@ class AppThemes {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Match the card margin
+    //  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Match the card margin
     ),
 
     appBarTheme: const AppBarTheme(
