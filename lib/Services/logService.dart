@@ -162,13 +162,22 @@ class LogServices {
           'occurrence': eventData['occurrence'] ??
               "No occurence", // Default to "One-time" if not provided
           'group': eventData['group'] ?? "General",
-          'host':
-              user?.name ?? "You", // Assuming you have host data in eventData
+          'host': user?.name ?? "You",
           'host_id': uid,
-          // 'time': eventData['time'], // Ensure 'time' is in eventData
-          // Use 'endDate' if provided, else 'date'
+
           'dates': eventData['dates'], // Ensure 'dates' is in eventData
         });
+        DocumentSnapshot doc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+        UserModel currenetUser =
+            UserModel.fromMap(doc.data() as Map<String, dynamic>);
+        num totalminutes = currenetUser.totalMinutes + eventData['minutes'];
+
+        await _firestore
+            .collection("users")
+            .doc(uid)
+            .update({'total_minutes': totalminutes});
 
         CollectionReference logsCollection = _firestore
             .collection("users")

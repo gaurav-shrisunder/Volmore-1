@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
@@ -26,19 +28,20 @@ class _EventPageState extends State<EventPage>
     with SingleTickerProviderStateMixin {
   final _authMethod = AuthMethod();
   final _logMethod = LogServices();
-  late Future<List<EventDataModel>> _eventsFuture;
+ 
   late TabController _tabController;
   List<Map<String, dynamic>> _groups = [];
 
   SortOption? _selectedOption;
 
   List<EventListDataModel> mainEventList = [];
+  final eventController = Get.find<EventController>();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _eventsFuture = _logMethod.fetchAllEventsWithLogs();
+  
     _selectedOption = widget.initialSortOption;
     _fetchGroups();
   }
@@ -180,7 +183,7 @@ class _EventPageState extends State<EventPage>
     if (event.logs == null) return false;
 
     for (var log in event.logs!) {
-      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+      if (isSameDate(log.date.toDate(), date)) {
         return log.isSignatureVerified == true;
       }
     }
@@ -192,7 +195,7 @@ class _EventPageState extends State<EventPage>
     if (event.logs == null) return false;
 
     for (var log in event.logs!) {
-      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+      if (isSameDate(log.date.toDate(), date)) {
         return true;
       }
     }
@@ -209,7 +212,7 @@ class _EventPageState extends State<EventPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    //  backgroundColor: Colors.white,
+      //  backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBar(
@@ -223,74 +226,137 @@ class _EventPageState extends State<EventPage>
           ),
         ),
       ),
-      body: FutureBuilder<List<EventDataModel>>(
-        future: _eventsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFfa6513),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  textStyle: const TextStyle(fontSize: 18, color: Colors.white),
+      body: Obx(() {
+        final events = eventController.getEventList();
+        if (eventController.isLoading.isTrue) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (events.isEmpty) {
+          return Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFfa6513),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                onPressed: () {
-                  Get.to(const CreateLogScreen());
-                },
-                child: const Text(
-                  'Create Event',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
+                textStyle: const TextStyle(fontSize: 18, color: Colors.white),
               ),
-            );
-          } else {
-            List<EventListDataModel> todaysEvents = [];
-            List<EventListDataModel> upcomingEvents =
-                getUpcomingEvents(snapshot.data ?? []);
-            List<EventListDataModel> pastEvents =
-                getPastEvents(snapshot.data ?? []);
-
-            for (var event in snapshot.data!) {
-              if (containsToday(event.dates!)) {
-                todaysEvents.add(
-                    EventListDataModel(event: event, date: DateTime.now()));
-                print('_selectedOption ==$_selectedOption');
-                if (_selectedOption == SortOption.az) {
-                  todaysEvents.sort(
-                      (a, b) => a.event!.title!.compareTo(b.event!.title!));
-                } else if (_selectedOption == SortOption.za) {
-                  todaysEvents.sort(
-                      (a, b) => b.event!.title!.compareTo(a.event!.title!));
-                } else if (_selectedOption == SortOption.dateAsc) {
-                  todaysEvents
-                      .sort((a, b) => a.event!.date.compareTo(b.event!.date));
-                } else if (_selectedOption == SortOption.dateDesc) {
-                  todaysEvents
-                      .sort((a, b) => b.event!.date!.compareTo(a.event!.date));
-                }
-              }
+              onPressed: () {
+                Get.to(const CreateLogScreen());
+              },
+              child: const Text(
+                'Create Event',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+          );
+        }
+        List<EventListDataModel> todaysEvents = [];
+        List<EventListDataModel> upcomingEvents = getUpcomingEvents(events);
+        List<EventListDataModel> pastEvents = getPastEvents(events);
+        for (var event in events) {
+          if (containsToday(event.dates!)) {
+            todaysEvents
+                .add(EventListDataModel(event: event, date: DateTime.now()));
+            // Sort based on selected option
+            if (_selectedOption == SortOption.az) {
+              todaysEvents
+                  .sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+            } else if (_selectedOption == SortOption.za) {
+              todaysEvents
+                  .sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+            } else if (_selectedOption == SortOption.dateAsc) {
+              todaysEvents
+                  .sort((a, b) => a.event!.date.compareTo(b.event!.date));
+            } else if (_selectedOption == SortOption.dateDesc) {
+              todaysEvents
+                  .sort((a, b) => b.event!.date!.compareTo(a.event!.date));
             }
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                buildEventList("Today's Events", todaysEvents, isToday: true),
-                buildEventList("Upcoming Events", upcomingEvents,
-                    isUpcoming: true),
-                buildEventList("Past Events", pastEvents, isPast: true),
-              ],
-            );
           }
-        },
-      ),
+        }
+        return TabBarView(
+          controller: _tabController,
+          children: [
+            buildEventList("Today's Events", todaysEvents, isToday: true),
+            buildEventList("Upcoming Events", upcomingEvents, isUpcoming: true),
+            buildEventList("Past Events", pastEvents, isPast: true),
+          ],
+        );
+      }),
     );
+
+    //   FutureBuilder<List<EventDataModel>>(
+    //     future: _eventsFuture,
+    //     builder: (context, snapshot) {
+    //       if (snapshot.connectionState == ConnectionState.waiting) {
+    //         return const Center(child: CircularProgressIndicator());
+    //       } else if (snapshot.hasError) {
+    //         return Center(child: Text('Error: ${snapshot.error}'));
+    //       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+    //         return Center(
+    //           child: ElevatedButton(
+    //             style: ElevatedButton.styleFrom(
+    //               backgroundColor: const Color(0xFFfa6513),
+    //               padding:
+    //                   const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+    //               shape: RoundedRectangleBorder(
+    //                 borderRadius: BorderRadius.circular(6),
+    //               ),
+    //               textStyle: const TextStyle(fontSize: 18, color: Colors.white),
+    //             ),
+    //             onPressed: () {
+    //               Get.to(const CreateLogScreen());
+    //             },
+    //             child: const Text(
+    //               'Create Event',
+    //               style: TextStyle(fontSize: 18, color: Colors.white),
+    //             ),
+    //           ),
+    //         );
+    //       } else {
+    //         List<EventListDataModel> todaysEvents = [];
+    //         List<EventListDataModel> upcomingEvents =
+    //             getUpcomingEvents(snapshot.data ?? []);
+    //         List<EventListDataModel> pastEvents =
+    //             getPastEvents(snapshot.data ?? []);
+
+    //         for (var event in snapshot.data!) {
+    //           if (containsToday(event.dates!)) {
+    //             todaysEvents.add(
+    //                 EventListDataModel(event: event, date: DateTime.now()));
+    //             print('_selectedOption ==$_selectedOption');
+    //             if (_selectedOption == SortOption.az) {
+    //               todaysEvents.sort(
+    //                   (a, b) => a.event!.title!.compareTo(b.event!.title!));
+    //             } else if (_selectedOption == SortOption.za) {
+    //               todaysEvents.sort(
+    //                   (a, b) => b.event!.title!.compareTo(a.event!.title!));
+    //             } else if (_selectedOption == SortOption.dateAsc) {
+    //               todaysEvents
+    //                   .sort((a, b) => a.event!.date.compareTo(b.event!.date));
+    //             } else if (_selectedOption == SortOption.dateDesc) {
+    //               todaysEvents
+    //                   .sort((a, b) => b.event!.date!.compareTo(a.event!.date));
+    //             }
+    //           }
+    //         }
+    //         return TabBarView(
+    //           controller: _tabController,
+    //           children: [
+    //             buildEventList("Today's Events", todaysEvents, isToday: true),
+    //             buildEventList("Upcoming Events", upcomingEvents,
+    //                 isUpcoming: true),
+    //             buildEventList("Past Events", pastEvents, isPast: true),
+    //           ],
+    //         );
+    //       }
+    //     },
+    //   ),
+    // );
   }
 
   Widget buildEventList(String title, List<EventListDataModel> events,
@@ -306,7 +372,7 @@ class _EventPageState extends State<EventPage>
               Text(
                 title,
                 style: const TextStyle(
-             //     color: headingBlue,
+                  //     color: headingBlue,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
@@ -341,7 +407,7 @@ class _EventPageState extends State<EventPage>
                             SortOption? selectedOption = _selectedOption;
 
                             return SimpleDialog(
-                            //  backgroundColor: Colors.white,
+                              //  backgroundColor: Colors.white,
                               title: const Text("Sort by"),
                               children: [
                                 Column(
@@ -398,8 +464,7 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
-                                          //    events.sort((a, b) => a.event!.date.compareTo(b.event!.date));
-                                          //   _updateEventList(events); // Update the main event list
+                                        
                                         });
                                         Navigator.of(context).pop();
                                       },
@@ -412,8 +477,7 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
-                                          //    events.sort((a, b) => b.event!.date!.compareTo(a.event!.date));
-                                          //   _updateEventList(events); // Update the main event list
+                                         
                                         });
                                         Navigator.of(context).pop();
                                       },

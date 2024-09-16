@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/provider/theme_manager_provider.dart';
@@ -15,6 +17,7 @@ import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Get.put(EventController());
 
   runApp(
     MultiProvider(
@@ -37,6 +40,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool isLoggedIn = false;
+  final eventController = Get.find<EventController>();
 
   @override
   void initState() {
@@ -45,6 +49,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     // Handle dynamic link when the app is launched via a deep link
     handleDynamicLink();
+    // Fetch events once on app start
+    eventController.fetchEvents();
   }
 
   @override

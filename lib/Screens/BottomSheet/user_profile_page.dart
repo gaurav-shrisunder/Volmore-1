@@ -2,13 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Models/UserModel.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:intl/intl.dart';
 import 'package:volunterring/Screens/Manage%20Account/edit_account_screen.dart';
-import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/weekly_stats_chart.dart';
@@ -22,6 +23,7 @@ class UserProfilePage extends StatefulWidget {
 
 class _UserProfilePageState extends State<UserProfilePage> {
   bool isLoading = true;
+  final eventController = Get.find<EventController>();
   UserModel? user;
   List<double> weeklyHours = [];
   var durationString = "";
@@ -41,8 +43,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
     DocumentSnapshot doc =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
     user = UserModel.fromMap(doc.data() as Map<String, dynamic>);
-    events = await _authMethods.fetchAllEventsWithLogs();
-    durationString = calculateTotalDuration(events!);
+    events = eventController.getEventList();
+    // durationString = calculateTotalDuration(events!);
     weeklyDuration = calculateWeeklyDuration(events!);
     weeklyHours = calculateWeeklyHours(events!);
 
@@ -51,36 +53,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
     });
   }
 
-  String calculateTotalDuration(List<EventDataModel> events) {
-    int totalSeconds = 0;
-
-    for (var event in events) {
-      event.logs?.forEach((log) {
-        if (log.elapsedTime != null) {
-          List<String> parts = log.elapsedTime!.split(':');
-          if (parts.length == 3) {
-            int hours = int.parse(parts[0]);
-            int minutes = int.parse(parts[1]);
-            int seconds = int.parse(parts[2]);
-
-            totalSeconds += (hours * 3600) + (minutes * 60) + seconds;
-          }
-        }
-      });
-    }
-
-    int hours = totalSeconds ~/ 3600;
-    int minutes = (totalSeconds % 3600) ~/ 60;
-    int seconds = totalSeconds % 60;
-
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   String calculateWeeklyDuration(List<EventDataModel> events) {
     int totalSeconds = 0;
 
     DateTime now = DateTime.now();
     DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    print("Start of week $startOfWeek");
 
     for (var event in events) {
       event.logs?.forEach((log) {
@@ -104,7 +82,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     int hours = totalSeconds ~/ 3600;
     int minutes = (totalSeconds % 3600) ~/ 60;
     int seconds = totalSeconds % 60;
-
+    print("hours: $hours");
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
@@ -132,6 +110,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
       }
     }
+    print("Weekly hours $weeklyHours");
 
     return weeklyHours;
   }
@@ -196,7 +175,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: headingBlue,
                       child: IconButton(
                           onPressed: () {
-                            Get.to(EditAccountScreen(user!.name!, user!.phone!));
+                            Get.to(
+                                EditAccountScreen(user!.name!, user!.phone!));
                           },
                           icon: const Icon(Icons.edit)))),
               const CircleAvatar(
@@ -239,15 +219,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           Column(
                             children: [
                               Text(
-                                "${durationString.split(":")[0]} Hrs",
+                                "${(user!.totalMinutes / 60).toStringAsFixed(1) ?? 0} Hour",
                                 style: const TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: headingBlue),
                               ),
-                              const Text("Lifetime Hours", style:  TextStyle(
-                                fontSize: 12,
-                              )),
+                              const Text("Lifetime Hours",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  )),
                             ],
                           )
                         ],
@@ -281,8 +262,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     fontWeight: FontWeight.bold,
                                     color: headingBlue),
                               ),
-                              const Text("This week",style:  TextStyle(
-                                  fontSize: 12,
+                              const Text("This week",
+                                  style: TextStyle(
+                                    fontSize: 12,
                                   )),
                             ],
                           )
@@ -310,15 +292,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   decoration: BoxDecoration(
                     color: Colors.white, // Background color of the container
                     borderRadius: BorderRadius.circular(20), // Rounded corners
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.grey
-                    //         .withOpacity(0.2), // Grey shadow color with opacity
-                    //     spreadRadius: 3, // Spread radius of the shadow
-                    //     blurRadius: 5, // Blur radius of the shadow
-                    //     offset: const Offset(5, 2), // Offset the shadow (x, y)
-                    //   ),
-                    // ],
                   ),
                   child: WeeklyStatsChart(
                     xAxisList: const [
