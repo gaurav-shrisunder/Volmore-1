@@ -80,7 +80,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     pdf.addPage(
       pw.MultiPage(
         pageFormat: pageFormat,
-        margin: pw.EdgeInsets.all(margin),
+        margin: const pw.EdgeInsets.all(margin),
         build: (pw.Context context) {
           return [
             pw.Column(
@@ -100,9 +100,9 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 pw.SizedBox(height: 20),
                 pw.TableHelper.fromTextArray(
                   border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
-                  cellStyle: pw.TextStyle(fontSize: 10),
+                  cellStyle: const pw.TextStyle(fontSize: 10),
                   headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  headerDecoration: pw.BoxDecoration(color: PdfColors.grey300),
+                  headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
                   headers: [
                     'Group',
                     'Title',
@@ -154,6 +154,10 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
               if (snapshot.connectionState == ConnectionState.done) {
 
                 _eventsFuture = snapshot.data!;
+                print('Event liss:: ${_eventsFuture}');
+                if(_eventsFuture.isNotEmpty){
+
+
                 for (var event in _eventsFuture) {
                   // log("_eventsFutureGroup :: ${event.group}");
                   event.logs!.forEach((action) {
@@ -250,9 +254,11 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                       ),
                     ),
                   ],
-                );
+                );} else{
+                  return const Center(child: Text("No Transcript yet"));
+                }
               } else {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
             }),
       ),
@@ -270,7 +276,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: groupName.first.group!.toLowerCase().contains("trash") ? Colors.pink.shade50 : groupName.first.group!.toLowerCase().contains("hospital") ? Colors.green.shade50 : groupName.first.group!.toLowerCase().contains("food") ? Colors.orange.shade100 : Colors.grey.shade200,
               borderRadius: const BorderRadius.only(
@@ -292,12 +298,12 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: groupName.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: groupName[index].logs?.length,
                       itemBuilder: (context, i) {
@@ -314,24 +320,24 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                               DateFormat.yMMMMEEEEd().format(
                                   groupName[index].logs![i].date.toDate()),
                               style:
-                                  TextStyle(color: Colors.black, fontSize: 14),
+                                  const TextStyle(color: Colors.black, fontSize: 14),
                             ),
                             Text(
                               "${DateFormat('h:mm a').format(groupName[index].logs![i].startTime.toDate())} - ${DateFormat('h:mm a').format(groupName[index].logs![i].endTime.toDate())}",
                               style:
-                                  TextStyle(color: Colors.black, fontSize: 14),
+                                  const TextStyle(color: Colors.black, fontSize: 14),
                             ),
                             Text(
                               "Host: ${groupName[index].host!}",
                               style:
-                                  TextStyle(color: Colors.black, fontSize: 14),
+                                  const TextStyle(color: Colors.black, fontSize: 14),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   "${groupName[index].logs![i].address}",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.black, fontSize: 14),
                                 ),
                                 Row(
@@ -374,7 +380,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                 )
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             )
                           ],

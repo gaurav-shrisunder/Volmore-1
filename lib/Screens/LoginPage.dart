@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:volunterring/Screens/ForgotPasswordPage.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/SignUpPage.dart';
@@ -24,31 +25,34 @@ class _LoginPageState extends State<LoginPage> {
 
   // email and passowrd auth part
   void loginUser() async {
+
     setState(() {
       isLoading = true;
     });
     // signup user using our authmethod
     String res = await AuthMethod().loginUser(
         email: emailController.text, password: passwordController.text);
-
-
-
     if (res == "success") {
       setState(() {
         isLoading = false;
+        Navigator.pop(context);
       });
       //navigate to the home screen
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+            (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
       );
+      Fluttertoast.showToast(msg: "Login successfully",toastLength: Toast.LENGTH_LONG);
     } else {
       setState(() {
         isLoading = false;
+        Navigator.pop(context);
+
       });
       // show error
-      showSnackBar(context, res);
+      Fluttertoast.showToast(msg: res.split("]").last,toastLength: Toast.LENGTH_LONG);
+     // showSnackBar(context, res);
     }
   }
 
@@ -146,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Text(
                                   ' Forgot Password?',
                                   style: TextStyle(
-                                      fontSize: height * 0.02,
+                                      fontSize: 18,
                                       color: Colors.lightBlue[500],
                                       fontWeight: FontWeight.normal),
                                 ),
@@ -159,7 +163,15 @@ class _LoginPageState extends State<LoginPage> {
                           SizedBox(
                             height: height * 0.015,
                           ),
-                          MyButtons(onTap: loginUser, text: "Log In"),
+                          MyButtons(onTap: (){
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_){
+                              return const Center(child: CircularProgressIndicator());
+                            });
+                            loginUser();
+                          }, text: "Log In"),
                           SizedBox(
                             height: height * 0.01,
                           ),
@@ -183,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                             builder: (context) =>
                                                 const SignUpPage())),
                                     child: Text(
-                                      ' Create Acoount',
+                                      '  Create Account',
                                       style: TextStyle(
                                           fontSize: height * 0.02,
                                           color: Colors.lightBlue[500],

@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage>
                   Icons.arrow_forward_ios_outlined,
                   () => Get.to(const UserProfilePage())),
               _buildSettingsTile(
-                  'Log Out', Icons.arrow_forward_ios_outlined, Logout),
+                  'Log Out', Icons.arrow_forward_ios_outlined, logout),
             ],
           ),
         ),
@@ -182,11 +182,14 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Future<void> Logout() async {
+  Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('uid');
     AuthMethod().signOut();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+          (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
+    );
   }
 }

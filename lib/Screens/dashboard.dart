@@ -180,9 +180,16 @@ class _DashboardState extends State<Dashboard>
   Future<void> Logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('uid');
-    Navigator.push(
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
+    );
+
+  /*  Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
+    );*/
   }
 }

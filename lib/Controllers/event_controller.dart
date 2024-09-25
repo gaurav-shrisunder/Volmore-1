@@ -10,6 +10,7 @@ class EventController extends GetxController {
   @override
   void onInit() {
     fetchEvents();
+
     super.onInit();
   }
 

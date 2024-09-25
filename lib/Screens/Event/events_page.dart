@@ -44,6 +44,7 @@ class _EventPageState extends State<EventPage>
   
     _selectedOption = widget.initialSortOption;
     _fetchGroups();
+    eventController.fetchEvents();
   }
 
   @override

@@ -149,12 +149,18 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                ElevatedButton(onPressed: (){
+                                ActionChip(label:  Text("No"),onPressed: (){
                                   Navigator.pop(context);
-                                }, child: Text("No")),
-                                ElevatedButton(onPressed: (){
+                                }),
+                               /* ElevatedButton(
+                                    onPressed: (){
+                                  Navigator.pop(context);
+                                }, child: Text("No")),*/
+                                ActionChip(onPressed: (){
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(msg: "Oops! Something went wrong. Please try after sometime.");
 
-                                }, child: Text("Yes"))
+                                }, label: Text("Yes"))
                               ],
                             )
                           ],

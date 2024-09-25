@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -278,10 +279,12 @@ class _PastEventsPageState extends State<PastEventsPage> {
       'minutes': minutes
     };
     var res = await _logMethod.createPastLog(eventData);
-    ScaffoldMessenger.of(context).showSnackBar(
+    Fluttertoast.showToast(msg: res);
+   /* ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(res)),
-    );
+    );*/
     // Get.back();
+    Navigator.pop(context);
     Navigator.pop(context);
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const HomePage()));
@@ -628,7 +631,19 @@ class _PastEventsPageState extends State<PastEventsPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    submitData();
+                    if(titleController.text.isNotEmpty && descriptionController.text.isNotEmpty && locationController.text.isNotEmpty && dateControllers.isNotEmpty ){
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_){
+                            return const Center(child: CircularProgressIndicator());
+                          });
+                      submitData();
+                    }else{
+                      Fluttertoast.showToast(msg: "All fields are mandatory");
+                    }
+
+
                   },
                   child: Container(
                     width: double.infinity,
@@ -640,7 +655,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                     ),
                     child: const Center(
                       child: Text(
-                        'Submit Event',
+                        'Create Past Event',
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

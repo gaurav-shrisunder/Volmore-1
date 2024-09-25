@@ -11,39 +11,6 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
-  final List<Map<String, String>> volunteers = [
-    {"name": "Kyle", "state": "Arizona", "class": "2024", "hours": "70 Hours"},
-    {
-      "name": "Kristin",
-      "state": "Alabama",
-      "class": "2024",
-      "hours": "70 Hours"
-    },
-    {
-      "name": "Gladys",
-      "state": "Arizona",
-      "class": "2024",
-      "hours": "70 Hours"
-    },
-    {
-      "name": "Mitchell",
-      "state": "Alabama",
-      "class": "2024",
-      "hours": "70 Hours"
-    },
-    {
-      "name": "Ronald",
-      "state": "Arizona",
-      "class": "2024",
-      "hours": "70 Hours"
-    },
-    {
-      "name": "Eduardo",
-      "state": "Alabama",
-      "class": "2024",
-      "hours": "70 Hours"
-    },
-  ];
 
   final List<String> states = ["Arizona", "Alabama", "California", "Michigan"];
   final List<String> graduatingClasses = ["2024", "2023", "2022", "2021"];
@@ -186,6 +153,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 return const Divider();
               },
               itemBuilder: (context, index) {
+                userList[index]!.totalMinutes;
+                int hours = userList[index]!.totalMinutes ~/ 60; // Integer division to get hours
+                int minutes = userList[index]!.totalMinutes % 60; // Remainder to get minutes
+
+                String formattedTime = '${hours}h ${minutes}m';
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 5.0,
@@ -254,7 +226,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               child: Align(
                                   alignment: Alignment.topRight,
                                   child: Text(
-                                    "${userList[index]!.totalMinutes} Minutes",
+                                    "$formattedTime",
                                     style:
                                         const TextStyle(color: Colors.black),
                                     maxLines: 2,
@@ -345,6 +317,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 return const Divider();
               },
               itemBuilder: (context, index) {
+                int hours = userList[index]!.minutesInfluenced ~/ 60; // Integer division to get hours
+                int minutes = userList[index]!.minutesInfluenced % 60; // Remainder to get minutes
+
+                String formattedTime = '${hours}h ${minutes}m';
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 5.0,
@@ -413,7 +389,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               child: Align(
                                   alignment: Alignment.topRight,
                                   child: Text(
-                                    "${userList[index]!.minutesInfluenced} Minutes",
+                                    "$formattedTime",
                                     style:
                                         const TextStyle(color: Colors.black),
                                     maxLines: 2,
