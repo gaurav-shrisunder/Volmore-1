@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
@@ -25,6 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController numberController = TextEditingController();
 
   bool isLoading = false;
+
   void signUp() async {
     setState(() {
       isLoading = true;
@@ -41,20 +43,26 @@ class _SignUpPageState extends State<SignUpPage> {
     if (res == "success") {
       setState(() {
         isLoading = false;
+        Navigator.pop(context);
       });
 
       //navigate to the home screen
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+            (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
       );
+      Fluttertoast.showToast(
+          msg: "Account created successfully.", toastLength: Toast.LENGTH_LONG);
     } else {
       setState(() {
         isLoading = false;
+        Navigator.pop(context);
       });
       // show error
-      showSnackBar(context, res);
+      Fluttertoast.showToast(msg: res, toastLength: Toast.LENGTH_LONG);
+      //   showSnackBar(context, res);
     }
   }
 
@@ -73,9 +81,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: height * 0.02,
-                    ),
+                    SizedBox(height: 40),
                     Image.asset(
                       "assets/icons/signup.png",
                       height: height * 0.08,
@@ -84,24 +90,17 @@ class _SignUpPageState extends State<SignUpPage> {
                       height: height * 0.01,
                     ),
                     Text(
-                      'Create an Account ',
+                      'Create Account ',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           height: 1,
                           color: headingBlue,
                           letterSpacing: 1.3,
-                          fontSize: height * 0.04,
+                          fontSize: 24,
                           fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
-                      height: height * 0.01,
-                    ),
-                    Text(
-                      'Sign in to continue',
-                      style: TextStyle(
-                          fontSize: height * 0.023,
-                          color: greyColor,
-                          fontWeight: FontWeight.normal),
+                      height: 30,
                     ),
                     SizedBox(
                       height: height * 0.007,
@@ -146,12 +145,20 @@ class _SignUpPageState extends State<SignUpPage> {
                       title: 'Phone number*',
                       controller: numberController,
                       maxlines: 1,
-                      hintText: "Enter Your email",
+                      hintText: "Enter Your phone number",
                     ),
                     SizedBox(
                       height: height * 0.04,
                     ),
-                    MyButtons(onTap: signUp, text: "Sign Up"),
+                    MyButtons(onTap: (){
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_){
+                            return const Center(child: CircularProgressIndicator());
+                          });
+                      signUp();
+                    }, text: "Sign Up"),
                     SizedBox(
                       height: height * 0.01,
                     ),
@@ -165,18 +172,22 @@ class _SignUpPageState extends State<SignUpPage> {
                             Text(
                               ' Existing User?',
                               style: TextStyle(
-                                  fontSize: height * 0.023,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.normal),
                             ),
                             GestureDetector(
-                              onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginPage())),
+                              onTap: () {
+                                Navigator.pop(context);
+                               /* Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginPage()));*/
+                              },
                               child: Text(
                                 ' Log in',
                                 style: TextStyle(
-                                    fontSize: height * 0.023,
+                                    fontSize: 18,
                                     color: Colors.lightBlue[500],
                                     fontWeight: FontWeight.normal),
                               ),

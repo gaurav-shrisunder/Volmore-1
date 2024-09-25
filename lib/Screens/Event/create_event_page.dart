@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
@@ -682,6 +683,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_){
+                          return const Center(child: CircularProgressIndicator());
+                        });
                     titleController.text = titleController.text;
 
                     if (titleController.text.isNotEmpty &&
@@ -705,7 +712,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         time: timeController.text,
                         endDate: endDate,
                         dates: allDates,
-                      );
+                      ).then((onValue){
+                        Navigator.pop(context);
+                      });
                       // EventDataModel event = EventDataModel(
                       //   title: titleController.text,
                       //   description: descriptionController.text,
@@ -839,9 +848,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
                       // );
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(res['res'])),
-                      );
+
 
                       if (res['res'] == "Event added successfully") {
                         // Clear the form fields
@@ -860,12 +867,15 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         //     MaterialPageRoute(
                         //         builder: (context) => const HomePage()),
                         //     (route) => false);
+                        Fluttertoast.showToast(msg: res['res']);
                       }
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      Fluttertoast.showToast(msg:"All fields are mandatory");
+                      Navigator.pop(context);
+                     /* ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text("Please fill in all fields")),
-                      );
+                      );*/
                     }
                   },
                   child: Container(
