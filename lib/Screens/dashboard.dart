@@ -78,7 +78,7 @@ class _DashboardState extends State<Dashboard>
         shadowColor: Colors.black,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, size: 32),
+            icon: const Icon(Icons.settings_outlined, size: 30),
             onPressed: _showSettingsBottomSheet,
           ),
           const SizedBox(width: 10),

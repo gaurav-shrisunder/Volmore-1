@@ -40,7 +40,6 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
 
   Future<void> createAndSharePdf() async {
     records.clear();
-
     UserModel userDetails = await fetchUserData();
    // List<EventDataModel> data = await _logMethod.fetchAllEventsWithLogs();
     for (var action in groupTrashCleanUp) {
@@ -72,10 +71,6 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     final pdf = pw.Document();
     const pageFormat = PdfPageFormat.a4;
     const margin = 20.0;
-
-
-
-
 
     pdf.addPage(
       pw.MultiPage(
@@ -203,7 +198,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                         children: [
                           Text(
                             "Lifetime volunteer minutes: $lifetimeCountedMinutes",
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 14),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -289,7 +284,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 Text(
                   groupName.first.group!,
                   style: TextStyle(color: groupName.first.group!.toLowerCase().contains("trash") ? Colors.pink : groupName.first.group!.toLowerCase().contains("hospital") ? Colors.green : groupName.first.group!.toLowerCase().contains("food") ? Colors.orange : Colors.grey,
-                      fontSize: 18),
+                      fontSize: 16),
                 ),
                 Text("Total minutes: $totalMinutes"),
               ],
@@ -335,10 +330,15 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "${groupName[index].logs![i].address}",
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 14),
+                                Expanded(
+                                  child: Text(
+                                    "${groupName[index].logs![i].address}",
+                                    maxLines: 3,
+                                    softWrap: true,textAlign: TextAlign.left,
+                                    style: const TextStyle(
+                                  
+                                        color: Colors.black, fontSize: 14),
+                                  ),
                                 ),
                                 Row(
                                   children: [

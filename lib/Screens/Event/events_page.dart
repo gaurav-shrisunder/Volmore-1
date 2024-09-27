@@ -219,10 +219,11 @@ class _EventPageState extends State<EventPage>
         child: AppBar(
           bottom: TabBar(
             controller: _tabController,
+            labelStyle: TextStyle(fontSize: 14),
             tabs: const [
-              Tab(text: "Today's Event"),
-              Tab(text: "Upcoming Event"),
-              Tab(text: "Past Event"),
+              Tab(text: "Today's"),
+              Tab(text: "Upcoming"),
+              Tab(text: "Past"),
             ],
           ),
         ),
@@ -374,7 +375,7 @@ class _EventPageState extends State<EventPage>
                 title,
                 style: const TextStyle(
                   //     color: headingBlue,
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),

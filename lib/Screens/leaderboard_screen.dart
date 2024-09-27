@@ -93,7 +93,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -102,13 +102,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: "State",
+                      labelStyle: TextStyle(fontSize: 14),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(color: Colors.grey)),
                     ),
+                    dropdownColor: Colors.white,
                     value: selectedState,
                     items: states.map((String state) {
                       return DropdownMenuItem<String>(
+
                         value: state,
                         child: Text(state),
                       );
@@ -120,16 +123,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 10),
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: "Graduating Class",
+                      labelStyle: TextStyle(fontSize: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     value: selectedGraduatingClass,
+                    dropdownColor: Colors.white,
                     items: graduatingClasses.map((String gradClass) {
                       return DropdownMenuItem<String>(
                         value: gradClass,
@@ -148,6 +153,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           ),
           Expanded(
             child: ListView.separated(
+              shrinkWrap: true,
+              addAutomaticKeepAlives: true,
+              addRepaintBoundaries: true,
               itemCount: userList!.length,
               separatorBuilder: (context, index) {
                 return const Divider();
@@ -182,7 +190,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             backgroundImage: AssetImage(
                                 'assets/images/profile_avatar.png'),
                             // Replace with actual image path
-                            radius: 30,
+                            radius: 20,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -204,7 +212,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                           color: Colors.transparent,
                                           width: 0),
                                       padding: EdgeInsets.zero,
-                                      label: Text(userList[index]!.state!),
+                                      label: Text(userList[index]!.state!, style: TextStyle(fontSize: 12),),
                                       backgroundColor: Colors.orange.shade50,
                                     ),
                                     const SizedBox(width: 8),
@@ -213,7 +221,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                       side: const BorderSide(
                                           color: Colors.transparent,
                                           width: 0),
-                                      label: Text(userList[index]!.gradYear!),
+                                      label: Text(userList[index]!.gradYear!,  style: TextStyle(fontSize: 12),),
                                       backgroundColor: Colors.purple.shade50,
                                     ),
                                   ],
@@ -222,16 +230,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             ),
                           ),
                           //  const Spacer(),
-                          Expanded(
-                              child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Text(
-                                    "$formattedTime",
-                                    style:
-                                        const TextStyle(color: Colors.black),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ))),
+                          Align(
+                              alignment: Alignment.topRight,
+                              child: Text(
+                                formattedTime,
+                                style:
+                                    const TextStyle(color: Colors.black),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )),
                         ],
                       ),
                     ),
