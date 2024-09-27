@@ -202,12 +202,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     color: Colors.white,
                     elevation: 10,
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
                           SizedBox(
-                            width: 40,
-                            height: 40,
+                            width: 30,
+                            height: 30,
                             child: Image.asset(
                               "assets/images/timer.png",
                               fit: BoxFit.cover,
@@ -221,7 +221,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               Text(
                                 "${(user!.totalMinutes / 60).toStringAsFixed(1) ?? 0} Hour",
                                 style: const TextStyle(
-                                    fontSize: 22,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: headingBlue),
                               ),
@@ -239,12 +239,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     elevation: 10,
                     color: Colors.white,
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
                           SizedBox(
-                            width: 40,
-                            height: 40,
+                            width: 30,
+                            height: 30,
                             child: Image.asset(
                               "assets/images/timer.png",
                               fit: BoxFit.cover,
@@ -258,7 +258,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               Text(
                                 "${weeklyDuration.split(":")[0]} Hrs",
                                 style: const TextStyle(
-                                    fontSize: 22,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: headingBlue),
                               ),

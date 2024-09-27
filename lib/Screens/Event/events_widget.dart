@@ -51,7 +51,7 @@ class EventWidget extends StatelessWidget {
                   Text(
                     event.title?.capitalize ?? "",
                     style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: color),
                   ),
@@ -81,8 +81,9 @@ class EventWidget extends StatelessWidget {
                                 size: 16, color: Colors.green),
                             const SizedBox(width: 4),
                             Text(
-                              'Date: ${DateFormat.yMMMd().format(date)}',
+                              DateFormat.yMMMd().format(date),
                               style: const TextStyle(
+                                fontSize: 12,
                                   color: Colors.black,
                                   fontWeight: FontWeight.normal),
                             ),
@@ -116,6 +117,7 @@ class EventWidget extends StatelessWidget {
                               'Host by: ${event.host?.split(" ")[0] ?? "You"}',
                               softWrap: true,
                               style: const TextStyle(
+                                  fontSize: 12,
                                   color: Colors.black,
                                   fontWeight: FontWeight.normal),
                             ),
@@ -128,6 +130,7 @@ class EventWidget extends StatelessWidget {
                   Text(
                     "Event Description: ${event.description ?? "Description"}",
                     style: const TextStyle(
+                        fontSize: 14,
                         color: Colors.black, fontWeight: FontWeight.normal),
                   ),
                   const SizedBox(height: 8),

@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage>
         shadowColor: Colors.black,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, size: 32),
+            icon: const Icon(Icons.settings_outlined, size: 30),
             onPressed: _showSettingsBottomSheet,
           ),
           const SizedBox(width: 10),
@@ -91,12 +91,16 @@ class _HomePageState extends State<HomePage>
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
+
+
         backgroundColor: Colors.white,
+
         type: BottomNavigationBarType.shifting,
         showUnselectedLabels: true,
         elevation: 5,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
+            backgroundColor: Colors.white,
             icon: SvgPicture.asset("assets/icons/bottom_events_icon_light.svg"),
             label: 'Events',
           ),
