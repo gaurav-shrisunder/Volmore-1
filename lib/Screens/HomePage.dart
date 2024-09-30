@@ -91,10 +91,7 @@ class _HomePageState extends State<HomePage>
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
-
-
         backgroundColor: Colors.white,
-
         type: BottomNavigationBarType.shifting,
         showUnselectedLabels: true,
         elevation: 5,

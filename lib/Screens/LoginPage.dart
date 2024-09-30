@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Screens/ForgotPasswordPage.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/SignUpPage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/signUp_login_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
@@ -32,6 +34,8 @@ class _LoginPageState extends State<LoginPage> {
     // signup user using our authmethod
     String res = await AuthMethod().loginUser(
         email: emailController.text, password: passwordController.text);
+
+  //  SignUpResponseModel? res = await SignupLoginServices().loginUser(emailController.text, passwordController.text);
     if (res == "success") {
       setState(() {
         isLoading = false;
@@ -40,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       //navigate to the home screen
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
             (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
       );
       Fluttertoast.showToast(msg: "Login successfully",toastLength: Toast.LENGTH_LONG);
@@ -51,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
 
       });
       // show error
-      Fluttertoast.showToast(msg: res.split("]").last,toastLength: Toast.LENGTH_LONG);
+      Fluttertoast.showToast(msg: "Something went wrong!!!",toastLength: Toast.LENGTH_LONG);
      // showSnackBar(context, res);
     }
   }
