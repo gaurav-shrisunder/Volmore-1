@@ -8,6 +8,7 @@ class InputFeildWidget extends StatefulWidget {
   final int maxlines;
   final String hintText;
   final Icon? prefixicon;
+  final bool? isEnabled;
   final bool isPassword;
   final String? Function(String?)? validator;
 
@@ -17,6 +18,7 @@ class InputFeildWidget extends StatefulWidget {
     required this.controller,
     this.hintText = '',
     this.prefixicon,
+    this.isEnabled,
     this.isPassword = false,
     this.maxlines = 1,
     this.validator,
@@ -42,23 +44,15 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-         //   color: headingBlue, // Assuming headingBlue is a color
-          ),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
+
         TextFormField(
+          enabled: widget.isEnabled,
           controller: widget.controller,
           maxLines: widget.maxlines,
           obscureText: widget.isPassword,
           decoration: InputDecoration(
             filled: true,
+            labelText: widget.title,
             hintText: widget.hintText,
             hintStyle: TextStyle(
                 color: Colors.grey[400],

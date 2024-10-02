@@ -4,7 +4,7 @@ class SignUpRequestModel {
   String? emailId;
   String? passwordHash;
   int? yearOfStudy;
-  int? userRoleId;
+  String? userRoleId;
   Organization? organization;
 
   SignUpRequestModel(

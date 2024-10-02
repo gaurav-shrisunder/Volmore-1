@@ -32,11 +32,11 @@ class _LoginPageState extends State<LoginPage> {
       isLoading = true;
     });
     // signup user using our authmethod
-    String res = await AuthMethod().loginUser(
-        email: emailController.text, password: passwordController.text);
+    // String res = await AuthMethod().loginUser(
+    //     email: emailController.text, password: passwordController.text);
 
-  //  SignUpResponseModel? res = await SignupLoginServices().loginUser(emailController.text, passwordController.text);
-    if (res == "success") {
+    SignUpResponseModel? res = await SignupLoginServices().loginUser(emailController.text, passwordController.text);
+    if (res?.data?.user != null) {
       setState(() {
         isLoading = false;
         Navigator.pop(context);
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
 
       });
       // show error
-      Fluttertoast.showToast(msg: "Something went wrong!!!",toastLength: Toast.LENGTH_LONG);
+      Fluttertoast.showToast(msg:res?.message ?? "Something went wrong!!",toastLength: Toast.LENGTH_LONG);
      // showSnackBar(context, res);
     }
   }

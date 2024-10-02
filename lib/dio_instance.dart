@@ -7,7 +7,6 @@ import 'Utils/shared_prefs.dart';
 
 class DioInstance {
   static Dio? _instance;
-  static int _callCount = 0;
 
   static Future<Dio> createInstance() async {
     if (_instance == null) {
@@ -96,7 +95,7 @@ class DioInstance {
     return skipAuthPaths.contains(path);
   }
 
-  static Future<void> _saveTokens(
+  static Future<void> saveTokens(
       String accessToken, String refreshToken) async {
     await setBearerToken(accessToken);
     await setRefreshToken(refreshToken);
