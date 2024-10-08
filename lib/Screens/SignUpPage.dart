@@ -57,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
     //     phone: numberController.text);
 
     SignupLoginServices signupServices = SignupLoginServices();
-  SignUpResponseModel? res = await signupServices.signUpUser(requestBody);
+  SignUpLoginResponseModel? res = await signupServices.signUpUser(requestBody);
 
     if (res?.data?.user != null) {
       setState(() {
@@ -83,6 +83,14 @@ class _SignUpPageState extends State<SignUpPage> {
       Fluttertoast.showToast(msg: res?.message ?? "Something went wrong!!!", toastLength: Toast.LENGTH_LONG);
       //   showSnackBar(context, res);
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    nameController.dispose();
+
   }
 
   @override

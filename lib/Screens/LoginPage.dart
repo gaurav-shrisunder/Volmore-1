@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     // String res = await AuthMethod().loginUser(
     //     email: emailController.text, password: passwordController.text);
 
-    SignUpResponseModel? res = await SignupLoginServices().loginUser(emailController.text, passwordController.text);
+    SignUpLoginResponseModel? res = await SignupLoginServices().loginUser(emailController.text, passwordController.text);
     if (res?.data?.user != null) {
       setState(() {
         isLoading = false;

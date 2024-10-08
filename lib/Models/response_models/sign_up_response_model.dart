@@ -1,10 +1,10 @@
-class SignUpResponseModel {
+class SignUpLoginResponseModel {
   Data? data;
   String? message;
 
-  SignUpResponseModel({this.data, this.message});
+  SignUpLoginResponseModel({this.data, this.message});
 
-  SignUpResponseModel.fromJson(Map<String, dynamic> json) {
+  SignUpLoginResponseModel.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ?  Data.fromJson(json['data']) : null;
     message = json['message'];
   }
@@ -47,13 +47,17 @@ class User {
   String? userId;
   String? userName;
   String? emailId;
+  String? organizationName;
+  String? yearOfStudy;
 
-  User({this.userId, this.userName, this.emailId});
+  User({this.userId, this.userName, this.emailId, this.organizationName, this.yearOfStudy});
 
   User.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     userName = json['userName'];
     emailId = json['emailId'];
+    organizationName = json['organizationName'];
+    yearOfStudy = json['yearOfStudy'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,6 +65,8 @@ class User {
     data['userId'] = userId;
     data['userName'] = userName;
     data['emailId'] = emailId;
+    data['organizationName'] = organizationName;
+    data['yearOfStudy'] = yearOfStudy;
     return data;
   }
 }

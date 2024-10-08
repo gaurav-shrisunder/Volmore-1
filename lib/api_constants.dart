@@ -11,3 +11,4 @@
  const String rolesApi = "api/v1/roles";
  const String organisationListApi = "api/v1/organizations";
  const String eventCategoryListApi = "api/v1/events/eventCategory";
+ const String leaderboardApi = "api/v1/leaderboard";
