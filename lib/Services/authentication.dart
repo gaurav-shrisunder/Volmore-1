@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -16,7 +16,8 @@ class AuthMethod {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  final ImagePicker _picker = ImagePicker();
+
+
   final Uuid _uuid = const Uuid();
 
   // Sign Up User

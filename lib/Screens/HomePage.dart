@@ -16,6 +16,7 @@ import 'package:volunterring/Screens/transcript_screen.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
+import '../Utils/shared_prefs.dart';
 import '../provider/theme_manager_provider.dart';
 import 'CreateLogScreen.dart';
 
@@ -91,10 +92,7 @@ class _HomePageState extends State<HomePage>
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
-
-
         backgroundColor: Colors.white,
-
         type: BottomNavigationBarType.shifting,
         showUnselectedLabels: true,
         elevation: 5,
@@ -187,8 +185,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('uid');
+    clearPreferences();
     AuthMethod().signOut();
     Navigator.pushAndRemoveUntil(
       context,

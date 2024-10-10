@@ -9,6 +9,7 @@ import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
+import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/Services/authentication.dart';
@@ -28,6 +29,7 @@ class _EventPageState extends State<EventPage>
     with SingleTickerProviderStateMixin {
   final _authMethod = AuthMethod();
   final _logMethod = LogServices();
+  final EventsServices _eventsServices = EventsServices();
  
   late TabController _tabController;
   List<Map<String, dynamic>> _groups = [];

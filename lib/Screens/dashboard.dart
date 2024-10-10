@@ -8,7 +8,9 @@ import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
 import 'package:volunterring/Screens/Event/events_page.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/Screens/TermsScreen.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 
+import '../Services/authentication.dart';
 import '../Utils/Colors.dart';
 
 class Dashboard extends StatefulWidget {
@@ -148,7 +150,7 @@ class _DashboardState extends State<Dashboard>
                   Icons.arrow_forward_ios_outlined,
                   () => Get.to(const UserProfilePage())),
               _buildSettingsTile(
-                  'Log Out', Icons.arrow_forward_ios_outlined, Logout),
+                  'Log Out', Icons.arrow_forward_ios_outlined, logoutUser),
             ],
           ),
         ),
@@ -177,13 +179,12 @@ class _DashboardState extends State<Dashboard>
     );
   }
 
-  Future<void> Logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('uid');
-
+  Future<void> logoutUser() async {
+    clearPreferences();
+    AuthMethod().signOut();
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
           (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
     );
 
