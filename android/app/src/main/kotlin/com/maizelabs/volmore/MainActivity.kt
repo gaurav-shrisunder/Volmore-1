@@ -1,4 +1,4 @@
-package com.maizelabs.volunterring
+package com.maizelabs.volmore
 
 import io.flutter.embedding.android.FlutterActivity
 

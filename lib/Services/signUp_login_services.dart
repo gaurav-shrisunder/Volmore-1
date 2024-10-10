@@ -1,9 +1,12 @@
 
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/request_models/sign_up_request_model.dart';
 import 'package:volunterring/Models/response_models/user_role_response_model.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
 import 'package:volunterring/api_handler.dart';
 import 'package:volunterring/dio_instance.dart';
@@ -18,7 +21,8 @@ class SignupLoginServices{
     Response? response = await apiHandler.post(signUpApi,requestBody );
     if (response != null && response.statusCode == 201) {
       final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-      await  DioInstance.saveTokens(userModel.data!.accessToken!, userModel.data!.refreshToken!);
+      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, userModel.userDetails!.refreshToken!);
+      await setUserId(userModel.userDetails!.user!.userId!);
       return userModel;
     } else {
       if (kDebugMode) {
@@ -38,8 +42,12 @@ class SignupLoginServices{
     };
     Response? response = await apiHandler.post(loginApi,requestBody );
     if (response != null && response.statusCode == 200) {
-      final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-      await  DioInstance.saveTokens(userModel.data!.accessToken!, userModel.data!.refreshToken!);
+       SignUpLoginResponseModel? userModel = SignUpLoginResponseModel.fromJson(response.data);
+       print('UserModel::: ${jsonEncode(userModel)}');
+
+      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, userModel.userDetails!.refreshToken!);
+        await setUserId(userModel.userDetails!.user!.userId!);
+
       return userModel;
     } else {
       if (kDebugMode) {
@@ -72,7 +80,7 @@ class SignupLoginServices{
     Response? response = await apiHandler.post(refreshToken,requestBody );
     if (response != null && response.statusCode == 200) {
       final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-      await  DioInstance.saveTokens(userModel.data!.accessToken!, refreshToken);
+      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, refreshToken);
       return userModel;
     } else {
       if (kDebugMode) {

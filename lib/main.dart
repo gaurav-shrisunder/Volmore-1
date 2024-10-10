@@ -16,7 +16,15 @@ import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    // Replace with actual values
+    // options: const FirebaseOptions(
+    //   apiKey: "AIzaSyDGbdwmUAMhURhEyHTFH6Hb4o5s7CenVbw",
+    //   appId: "com.maizelabs.volmore",
+    //   messagingSenderId: "com.maizelabs.volmore",
+    //   projectId: "volunteering-9e75b",
+    // ),
+  );
   Get.put(EventController());
 
   runApp(

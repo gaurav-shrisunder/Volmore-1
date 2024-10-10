@@ -1,44 +1,46 @@
 class SignUpLoginResponseModel {
-  Data? data;
   String? message;
+  UserDetails? userDetails;
 
-  SignUpLoginResponseModel({this.data, this.message});
+  SignUpLoginResponseModel({this.message, this.userDetails});
 
   SignUpLoginResponseModel.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ?  Data.fromJson(json['data']) : null;
     message = json['message'];
+    userDetails = json['userDetails'] != null
+        ? new UserDetails.fromJson(json['userDetails'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  <String, dynamic>{};
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['message'] = this.message;
+    if (this.userDetails != null) {
+      data['userDetails'] = this.userDetails!.toJson();
     }
-    data['message'] = message;
     return data;
   }
 }
 
-class Data {
+class UserDetails {
   User? user;
   String? accessToken;
   String? refreshToken;
 
-  Data({this.user, this.accessToken, this.refreshToken});
+  UserDetails({this.user, this.accessToken, this.refreshToken});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  UserDetails.fromJson(Map<String, dynamic> json) {
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
     accessToken = json['accessToken'];
     refreshToken = json['refreshToken'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (user != null) {
-      data['user'] = user!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
     }
-    data['accessToken'] = accessToken;
-    data['refreshToken'] = refreshToken;
+    data['accessToken'] = this.accessToken;
+    data['refreshToken'] = this.refreshToken;
     return data;
   }
 }
@@ -48,9 +50,16 @@ class User {
   String? userName;
   String? emailId;
   String? organizationName;
-  String? yearOfStudy;
+  int? yearOfStudy;
+  String? profilePicture;
 
-  User({this.userId, this.userName, this.emailId, this.organizationName, this.yearOfStudy});
+  User(
+      {this.userId,
+        this.userName,
+        this.emailId,
+        this.organizationName,
+        this.yearOfStudy,
+        this.profilePicture});
 
   User.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -58,15 +67,17 @@ class User {
     emailId = json['emailId'];
     organizationName = json['organizationName'];
     yearOfStudy = json['yearOfStudy'];
+    profilePicture = json['profilePicture'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  <String, dynamic>{};
-    data['userId'] = userId;
-    data['userName'] = userName;
-    data['emailId'] = emailId;
-    data['organizationName'] = organizationName;
-    data['yearOfStudy'] = yearOfStudy;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['userId'] = this.userId;
+    data['userName'] = this.userName;
+    data['emailId'] = this.emailId;
+    data['organizationName'] = this.organizationName;
+    data['yearOfStudy'] = this.yearOfStudy;
+    data['profilePicture'] = this.profilePicture;
     return data;
   }
 }

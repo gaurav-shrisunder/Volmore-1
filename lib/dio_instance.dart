@@ -42,8 +42,10 @@ class DioInstance {
           onRequest: (options, handler) async {
             if (!_shouldSkipAuth(options.path)) {
               var token = await getBearerToken();
+              var userId = await getUserId();
               if (token != null) {
                 options.headers['Authorization'] = 'Bearer $token';
+                options.headers['x-userid'] =userId;
               }
             }
             return handler.next(options);
@@ -58,7 +60,9 @@ class DioInstance {
 
               if (await _refreshToken()) {
                 var newToken = await getBearerToken();
+                var userId = await getUserId();
                 options.headers['Authorization'] = 'Bearer $newToken';
+                options.headers['x-userid'] =userId;
                 final cloneReq = await _instance!.request(
                   options.path,
                   options: Options(

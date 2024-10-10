@@ -36,12 +36,13 @@ class _LoginPageState extends State<LoginPage> {
     //     email: emailController.text, password: passwordController.text);
 
     SignUpLoginResponseModel? res = await SignupLoginServices().loginUser(emailController.text, passwordController.text);
-    if (res?.data?.user != null) {
+    if (res?.userDetails?.user != null) {
       setState(() {
         isLoading = false;
         Navigator.pop(context);
       });
       //navigate to the home screen
+      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),

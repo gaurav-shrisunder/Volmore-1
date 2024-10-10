@@ -59,7 +59,7 @@ class _SignUpPageState extends State<SignUpPage> {
     SignupLoginServices signupServices = SignupLoginServices();
   SignUpLoginResponseModel? res = await signupServices.signUpUser(requestBody);
 
-    if (res?.data?.user != null) {
+    if (res?.userDetails?.user != null) {
       setState(() {
         isLoading = false;
         Navigator.pop(context);

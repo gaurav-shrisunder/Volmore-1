@@ -39,10 +39,8 @@ dependencies:
   firebase_auth: ^4.16.0
   shared_preferences: ^2.2.3
   get: ^4.6.6
-  url_launcher: ^6.2.4
+  url_launcher:
   cached_network_image: ^3.3.1
-  firebase_storage: ^11.6.0
-  image_picker: ^1.0.8
   syncfusion_flutter_datepicker: ^21.1.39
   intl: ^0.19.0
   omni_datetime_picker: ^1.1.0
@@ -59,12 +57,13 @@ dependencies:
   signature:
   fl_chart: ^0.64.0
   fluttertoast:
-  firebase_dynamic_links: ^5.4.8
+  firebase_dynamic_links:
   pdf:
   printing:
   share_plus: ^7.2.2
   dio:
   pretty_dio_logger: ^1.4.0
+  change_app_package_name: ^1.4.0
 
 dev_dependencies:
   flutter_test:

@@ -43,3 +43,20 @@ getRefreshToken() async {
   print('refreshToken get to $refreshToken');
   return refreshToken;
 }
+
+Future<void> setUserId(String? userId) async {
+  SharedPreferences token = await SharedPreferences.getInstance();
+  token.setString('userId', userId ?? "0");
+  if (kDebugMode) {
+    log('userId setting to ${await getUserId()}');
+  }
+}
+
+getUserId() async {
+  SharedPreferences token = await SharedPreferences.getInstance();
+  String userId = token.getString('userId') ?? "0";
+  // String oldRefreshToken = await getRefreshToken();
+
+  print('BearerToken get to $userId');
+  return userId;
+}
