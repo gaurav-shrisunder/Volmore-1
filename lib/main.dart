@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/provider/theme_manager_provider.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/Utils/app_themes.dart';
@@ -59,6 +60,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     handleDynamicLink();
     // Fetch events once on app start
     eventController.fetchEvents();
+    checkLocalStorage();
   }
 
   @override
@@ -100,7 +102,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context);
-    checkLocalStorage();
+
     return GetMaterialApp(
       title: 'VOLMORE',
       debugShowCheckedModeBanner: false,
@@ -110,8 +112,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> checkLocalStorage() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? uid = prefs.getString('uid');
+    String? uid = await getUserId();
     if (uid != null) {
       setState(() {
         isLoggedIn = true;

@@ -5,16 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Models/response_models/events_data_response_model.dart';
 import 'package:volunterring/Screens/CreateLogScreen.dart';
 import 'package:volunterring/Screens/Event/log_now_page.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
 import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Services/logService.dart';
+import 'package:volunterring/Services/signUp_login_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/Services/authentication.dart';
 
-enum SortOption { def, az, za, dateAsc, dateDesc }
+import '../../Utils/shared_prefs.dart';
+
+// enum SortOption { def, az, za, dateAsc, dateDesc }
 
 class EventPage extends StatefulWidget {
   final SortOption initialSortOption;
@@ -30,6 +34,7 @@ class _EventPageState extends State<EventPage>
   final _authMethod = AuthMethod();
   final _logMethod = LogServices();
   final EventsServices _eventsServices = EventsServices();
+  EventsDataResponseModel pastEvent = EventsDataResponseModel();
  
   late TabController _tabController;
   List<Map<String, dynamic>> _groups = [];
@@ -43,7 +48,6 @@ class _EventPageState extends State<EventPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  
     _selectedOption = widget.initialSortOption;
     _fetchGroups();
     eventController.fetchEvents();
@@ -56,7 +60,9 @@ class _EventPageState extends State<EventPage>
   }
 
   Future<void> _fetchGroups() async {
+
     try {
+
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();
       print("querySnapshot.docs: ${querySnapshot.docs}");
@@ -261,7 +267,10 @@ class _EventPageState extends State<EventPage>
         }
         List<EventListDataModel> todaysEvents = [];
         List<EventListDataModel> upcomingEvents = getUpcomingEvents(events);
-        List<EventListDataModel> pastEvents = getPastEvents(events);
+         List<EventListDataModel> pastEvents = getPastEvents(events);
+
+      //  EventsDataResponseModel? pastEvent =  _eventsServices.getEventsData("past")
+
         for (var event in events) {
           if (containsToday(event.dates!)) {
             todaysEvents

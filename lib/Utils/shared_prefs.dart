@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum SortOption { def, az, za, dateAsc, dateDesc }
+
 Future<void> clearPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.clear();
@@ -57,6 +59,6 @@ getUserId() async {
   String userId = token.getString('userId') ?? "0";
   // String oldRefreshToken = await getRefreshToken();
 
-  print('BearerToken get to $userId');
+  print('userId get to $userId');
   return userId;
 }
