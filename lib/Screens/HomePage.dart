@@ -7,6 +7,7 @@ import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
 
 import 'package:volunterring/Screens/Event/events_page.dart';
+import 'package:volunterring/Screens/Event/events_screen.dart';
 
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,7 +33,8 @@ class _HomePageState extends State<HomePage>
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const EventPage(initialSortOption: SortOption.def),
+   // const EventPage(initialSortOption: SortOption.def),
+    const EventsScreen(initialSortOption: SortOption.def),
     const LeaderboardScreen(),
     const TranscriptScreen(),
     const UserProfilePage(),
