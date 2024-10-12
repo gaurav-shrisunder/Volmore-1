@@ -16,11 +16,8 @@ const String updateProfileApi = "api/v1/users/1/profile";
 const String createEventCategoryListApi = "api/v1/events/eventCategory";
 const String eventParticipantsApi = "api/v1/events/eventParticipant";
 const String createEventApi = "api/v1/events/event";
-const String getEventCategoryApi = "api/v1/events/eventCategory/1";
-const String getUpcomingEventApi = "api/v1/events/1/upcoming";
-const String getPastEventApi = "api/v1/events/1/past";
-const String getTodayEventApi = "api/v1/events/";
-
+const String getEventCategoryApi = "api/v1/events/eventCategory/";
+const String getEventApi = "api/v1/events/";
 
 
 

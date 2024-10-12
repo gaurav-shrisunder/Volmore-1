@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/request_models/sign_up_request_model.dart';
+import 'package:volunterring/Models/response_models/referesh_token_response_model.dart';
 import 'package:volunterring/Models/response_models/user_role_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
@@ -72,21 +73,22 @@ class SignupLoginServices{
 
   }
 
-   refreshTokenApi(String refreshToken) async {
+   refreshTokenService(String refreshToken) async {
     var requestBody = {
       "refreshToken":refreshToken
     };
 
-    Response? response = await apiHandler.post(refreshToken,requestBody );
+    Response? response = await apiHandler.post(refreshTokenApi,requestBody );
     if (response != null && response.statusCode == 200) {
-      final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, refreshToken);
-      return userModel;
+      final RefreshTokenResponseModel tokenModel = RefreshTokenResponseModel.fromJson(response.data);
+      await setBearerToken(tokenModel.token!.accessToken!);
+      // await  DioInstance.saveTokens(tokenModel.userDetails!.accessToken!, refreshToken);
+      return tokenModel;
     } else {
       if (kDebugMode) {
-        print('Failed to load user data');
+        print('Failed to load token data');
       }
-      return SignUpLoginResponseModel(message: response?.data["message"]);
+      return RefreshTokenResponseModel(message: response?.data["message"]);
     }
 
   }
