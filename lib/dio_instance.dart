@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Services/signUp_login_services.dart';
 import 'package:volunterring/api_constants.dart';
 
+import 'Models/response_models/referesh_token_response_model.dart';
 import 'Utils/shared_prefs.dart';
 
 class DioInstance {
@@ -75,10 +77,28 @@ class DioInstance {
                 return handler.resolve(cloneReq);
               }
             } else if (error.response?.statusCode == 403) {
+              RequestOptions options = error.requestOptions;
+              if (await _refreshToken()) {
+                var newToken = await getBearerToken();
+                var userId = await getUserId();
+                options.headers['Authorization'] = 'Bearer $newToken';
+                options.headers['x-userid'] =userId;
+                final cloneReq = await _instance!.request(
+                  options.path,
+                  options: Options(
+                    method: options.method,
+                    headers: options.headers,
+                  ),
+                  data: options.data,
+                  queryParameters: options.queryParameters,
+                );
+                return handler.resolve(cloneReq);
+              }
+           /*   await _refreshToken();
               // Handle the 403 response here
               print('403 Forbidden: ${error.response?.data}');
               // Process the response as needed and return it
-              return handler.resolve(error.response!); // Return the response
+              return handler.resolve(error.response!); */// Return the response
             } else {
               return handler.next(error);
             }
@@ -111,18 +131,17 @@ class DioInstance {
       return false;
     }
 
-  /*  try {
-      RefreshTokenResponseModel? newTokens =
-      await LoginApi().refreshAccessTokenApi(oldRefreshToken);
+    try {
+      RefreshTokenResponseModel? newTokens = await SignupLoginServices().refreshTokenService(oldRefreshToken);
       if (newTokens != null &&
-          newTokens.access != null &&
-          newTokens.refresh != null) {
-        await _saveTokens(newTokens.access!, newTokens.refresh!);
+          newTokens.token?.accessToken != null ) {
+        await setBearerToken(newTokens.token!.accessToken!);
+        // await _saveTokens(newTokens.access!, newTokens.refresh!);
         return true;
       }
     } catch (e) {
       print('Failed to refresh token: $e');
-    }*/
+    }
 
     return false;
   }
