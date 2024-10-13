@@ -113,7 +113,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<void> checkLocalStorage() async {
     String? uid = await getUserId();
-    if (uid != null) {
+    if (uid != null && uid != "0") {
       setState(() {
         isLoggedIn = true;
       });
