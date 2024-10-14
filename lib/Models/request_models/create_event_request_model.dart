@@ -57,7 +57,9 @@ class Recurrence {
     eventStartDateTime = json['eventStartDateTime'];
     eventEndDateTime = json['eventEndDateTime'];
     recurFrequency = json['recurFrequency'];
-    weekdays = json['weekdays'];
+    if(json['weekdays'] != null){
+      weekdays = json['weekdays'];
+    }
     recurInterval = json['recurInterval'];
   }
 
@@ -66,7 +68,10 @@ class Recurrence {
     data['eventStartDateTime'] = eventStartDateTime;
     data['eventEndDateTime'] = eventEndDateTime;
     data['recurFrequency'] = recurFrequency;
-    data['weekdays'] = weekdays;
+    if(weekdays != null){
+      data['weekdays'] = weekdays;
+    }
+
     data['recurInterval'] = recurInterval;
     return data;
   }

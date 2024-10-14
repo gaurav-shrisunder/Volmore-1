@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/request_models/create_event_request_model.dart';
@@ -58,7 +60,8 @@ class EventsServices {
   }
 
 
-  createEventData(CreateEventRequestModel requestPayload) async {
+  Future<EventCategoryResponseModel> createEventData(CreateEventRequestModel requestPayload) async {
+    print('Payload::: ${jsonEncode(requestPayload)}');
     Response? response = await apiHandler.post(createEventApi,requestPayload);
     if (response != null && response.statusCode == 201) {
       print('Event Created:::${response.data}');
@@ -68,7 +71,7 @@ class EventsServices {
       if (kDebugMode) {
         print('Failed to load create Event data');
       }
-      return EventCategoryResponseModel(message: response?.data["message"]);
+      return EventCategoryResponseModel(message: response?.data["message"].toString());
     }
 
   }
