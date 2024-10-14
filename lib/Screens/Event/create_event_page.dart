@@ -488,21 +488,22 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      
-                      style: ButtonStyle(
-                        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                      style: const ButtonStyle(
+                          padding: MaterialStatePropertyAll(
+                              EdgeInsets.symmetric(horizontal: 12)),
                           backgroundColor:
-                              WidgetStatePropertyAll(Colors.white),
-                          elevation: WidgetStatePropertyAll(0),
-                      shadowColor: WidgetStatePropertyAll(Colors.white),
-                      side: WidgetStatePropertyAll(BorderSide(width: 1))),
+                              MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
                       onPressed: () => _selectStartDate(context),
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
-                              '${DateFormat('yyyy/MM/dd  hh:mm a').format(DateTime.parse(startUtcDateTime).toLocal())}',
+                              DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                  DateTime.parse(startUtcDateTime).toLocal()),
                               textAlign: TextAlign.center,
                             )
-                          : Icon(Icons.calendar_month_rounded),
+                          : const Icon(Icons.calendar_month_rounded),
                     ),
                     /* Container(
                       width: width * 0.25,
@@ -556,34 +557,39 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ],
                 ),
                 selectedOccurrence == 'No occurrence'
-                    ?  Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'End Date & Time:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        //   color: headingBlue,
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
-                          backgroundColor:
-                          WidgetStatePropertyAll(Colors.white),
-                          elevation: WidgetStatePropertyAll(0),
-                          shadowColor: WidgetStatePropertyAll(Colors.white),
-                          side: WidgetStatePropertyAll(BorderSide(width: 1))),
-                      onPressed: () => _selectEndDate(context),
-                      child: endUtcDateTime.isNotEmpty
-                          ? Text(
-                        '${DateFormat('yyyy/MM/dd  hh:mm a').format(DateTime.parse(endUtcDateTime).toLocal())}',
-                        textAlign: TextAlign.center,
-                      )
-                          : Icon(Icons.calendar_month_rounded),
-                    ),
-                    /* Container(
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'End Date & Time:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              //   color: headingBlue,
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: const ButtonStyle(
+                                padding: MaterialStatePropertyAll(
+                                    EdgeInsets.symmetric(horizontal: 12)),
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.white),
+                                elevation: MaterialStatePropertyAll(0),
+                                shadowColor:
+                                    MaterialStatePropertyAll(Colors.white),
+                                side: MaterialStatePropertyAll(
+                                    BorderSide(width: 1))),
+                            onPressed: () => _selectEndDate(context),
+                            child: endUtcDateTime.isNotEmpty
+                                ? Text(
+                                    DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                        DateTime.parse(endUtcDateTime)
+                                            .toLocal()),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : const Icon(Icons.calendar_month_rounded),
+                          ),
+                          /* Container(
                       width: width * 0.25,
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -632,8 +638,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         ),
                       ),
                     )*/
-                  ],
-                )
+                        ],
+                      )
                     : const SizedBox(),
                 const SizedBox(height: 20),
                 const Text(
@@ -755,16 +761,22 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       requestModel.recurrence?.eventStartDateTime =
                           endUtcDateTime;
                       requestModel.recurrence?.recurInterval = 1;
-                      requestModel.recurrence?.weekdays = _selectedGroup == "Weekly"? DateFormat('EEEE').format(DateTime.parse(startUtcDateTime).toLocal()) : null;
+                      requestModel.recurrence?.weekdays =
+                          _selectedGroup == "Weekly"
+                              ? DateFormat('EEEE').format(
+                                  DateTime.parse(startUtcDateTime).toLocal())
+                              : null;
 
                       requestModel.recurrence?.recurFrequency =
                           _selectedGroup == "No occurrence"
                               ? "none"
                               : _selectedGroup?.toLowerCase();
 
-                    await  EventsServices().createEventData(requestModel).then((onValue) {
-                      Navigator.pop(context);
-                    });
+                      await EventsServices()
+                          .createEventData(requestModel)
+                          .then((onValue) {
+                        Navigator.pop(context);
+                      });
 
                       dynamic res = await _authMethod
                           .addEvent(
