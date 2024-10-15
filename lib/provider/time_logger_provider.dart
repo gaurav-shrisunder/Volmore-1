@@ -82,11 +82,11 @@ class TimerProvider with ChangeNotifier {
   }
 
   Future<void> endLogging(
-      BuildContext context, Event event,) async {
+      BuildContext context, Event event, String eventInstanceId,) async {
     _endTime = DateTime.now();
     toggleLogging();
     notifyListeners();
-    event.eventParticipatedDuration = "${formatTime(startTime.toIso8601String())} to ${formatTime(endTime.toIso8601String())}";
+    event.eventParticipatedDuration = "${startTime.toIso8601String()+""+endTime.toIso8601String()}";
     log('time is: ${startTime.toIso8601String()} :: ${endTime.toIso8601String()}');
 
     ///Navigating to Confirmation form screen with the Event data
@@ -94,7 +94,8 @@ class TimerProvider with ChangeNotifier {
         context,
         MaterialPageRoute(
             builder: (context) => VolunteerConfirmationScreen(
-                  event: event,
+                  event,eventInstanceId
+
                 )));
   }
 

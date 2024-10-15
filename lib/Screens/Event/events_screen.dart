@@ -406,8 +406,8 @@ class _EventsScreenState extends State<EventsScreen>
                                              disabledColor: Colors.grey.withOpacity(0.6),
                                              padding: const EdgeInsets.symmetric(
                                                  horizontal: 7, vertical: 5),
-                                             label: const Text(
-                                               "Log Now",
+                                             label:  Text(
+                                               buttonText,
                                                style: TextStyle(
                                                    color: /*isEnabled*/false ? Colors.white : Colors.black,
                                                    fontSize: 16),
@@ -419,7 +419,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                    context,
                                                    MaterialPageRoute(
                                                      builder: (context) => LogNowPage(
-                                                       snapshot.data!.eventDetails!.events![index].event!,
+                                                       snapshot.data!.eventDetails!.events![index].event!,snapshot.data!.eventDetails!.events![index].eventInstance!.eventInstanceId!
                                                      ),
                                                    ),
                                                  );

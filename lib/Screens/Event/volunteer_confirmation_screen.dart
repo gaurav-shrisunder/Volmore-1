@@ -11,24 +11,29 @@ import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 
 import '../../Models/response_models/events_data_response_model.dart';
 import '../../Services/logService.dart';
+import '../../Utils/common_utils.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
  // final EventDataModel event;
   final Event event;
+  final String eventInstanceId;
 
   // final DateTime date;
-  const VolunteerConfirmationScreen(
-      {super.key, required this.event,});
+  const VolunteerConfirmationScreen(this.event,this.eventInstanceId,
+      {super.key});
 
   @override
   State<VolunteerConfirmationScreen> createState() =>
@@ -40,6 +45,7 @@ class _VolunteerConfirmationScreenState
   final _authMethod = AuthMethod();
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
   final LogServices _logMethod = LogServices();
 
   String? _errorMessage;
@@ -214,7 +220,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    "${widget.event.eventParticipatedDuration!}" ?? "",
+                    "${formatTime(widget.event.eventParticipatedDuration!.split("::").first)} to ${formatTime(widget.event.eventParticipatedDuration!.split("::").last)}" ?? "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -245,6 +251,41 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.03,
               ),
+
+              TextFormField(
+                controller: _notesController,
+                keyboardType: TextInputType.text,
+                maxLines: 3,
+                maxLength: 100,
+                decoration: InputDecoration(
+                  labelText: 'Notes(Optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  // Display the error message
+                ),
+                onChanged: (value) {
+                },
+
+                // validator: phoneValidator,
+              ),
+              const SizedBox(width: 10),
               const Text(
                 "Volunteer Seeker's Phone Number",
                 style: TextStyle(fontSize: 18, color: headingBlue),
@@ -252,6 +293,7 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.007,
               ),
+
               Row(
                 children: [
                   Container(
@@ -278,6 +320,8 @@ class _VolunteerConfirmationScreenState
                       },
                     ),
                   ),
+
+
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
@@ -322,6 +366,7 @@ class _VolunteerConfirmationScreenState
                   ),
                 ],
               ),
+
               SizedBox(
                 height: screenHeight * 0.03,
               ),
@@ -357,7 +402,73 @@ class _VolunteerConfirmationScreenState
                         child: buildEventList("Past Events", pastEvents),
                       );*/
                     }
-                  })
+                  }),
+              GestureDetector(
+                onTap: () async {
+                  if (_errorMessage != null) {
+                    Fluttertoast.showToast(
+                        msg: "Enter valid phone number",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  } else {
+                    LogEventRequestModel requestBody = LogEventRequestModel();
+
+                    /*
+                     "hostInformation": {
+        "eventId": "9",
+        "hostId": "1",
+        "hours": 4
+    },
+    "userEarnPoints": 0,
+    "verifierSignatureHash": "someHashValue2",
+    "verifierInformation": "Verifier details here2", // name | phone |
+    "verifierNotes": "Some notes from the verifier2"
+                    * */
+
+                    requestBody.userId= await getUserId();
+                    requestBody.eventInstanceId = widget.eventInstanceId;
+                    requestBody.userStartDateTime = widget.event.eventParticipatedDuration?.split("::").first;
+                    requestBody.userEndDateTime = widget.event.eventParticipatedDuration?.split("::").last;
+                    requestBody.userLocationName = widget.event.eventLocationName;
+                    requestBody.userNotes = _notesController.text;
+                    requestBody.userHours = 4;
+                    requestBody.userEarnPoints = 4;
+                    requestBody.verifierSignatureHash = _signatureController.toString();
+                    requestBody.verifierInformation = "Verifier name";
+                    requestBody.verifierNotes = _notesController.text;
+                    HostInformation hostInfo = HostInformation();
+                    hostInfo.eventId = widget.event.eventId;
+                    hostInfo.hostId = widget.event.hostId;
+                    hostInfo.hours = 4;
+                    requestBody.hostInformation = hostInfo;
+
+
+
+
+                   await EventsServices().logEventData(requestBody);
+                   // submitEvent(context, _phoneNumberController.text);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.lightBlue[500],
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Center(
+                      child: Text(
+                        "Submit Event",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      )),
+                ),
+              ),
             ],
           ),
         ),

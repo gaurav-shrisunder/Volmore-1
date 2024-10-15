@@ -15,8 +15,9 @@ import '../../provider/time_logger_provider.dart';
 class LogNowPage extends StatefulWidget {
   // final EventDataModel eventModel;
    final Event eventModel;
+   final String eventInstanceId;
 
-  const LogNowPage( this.eventModel, {super.key});
+  const LogNowPage( this.eventModel, this.eventInstanceId ,{super.key});
 
   @override
   State<LogNowPage> createState() => _LogNowPageState();
@@ -173,7 +174,7 @@ class _LogNowPageState extends State<LogNowPage> {
                       GestureDetector(
                           onTap: () {
                             timerProvider.endLogging(
-                                context, widget.eventModel);
+                                context, widget.eventModel, widget.eventInstanceId);
                           },
                           child: Column(
                             children: [

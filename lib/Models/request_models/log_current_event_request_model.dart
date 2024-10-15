@@ -1,6 +1,4 @@
-
-
-class LogCurrentEventRequestModel {
+class LogEventRequestModel {
   String? userId;
   String? eventInstanceId;
   String? userStartDateTime;
@@ -14,7 +12,7 @@ class LogCurrentEventRequestModel {
   String? verifierInformation;
   String? verifierNotes;
 
-  LogCurrentEventRequestModel(
+  LogEventRequestModel(
       {this.userId,
         this.eventInstanceId,
         this.userStartDateTime,
@@ -28,7 +26,7 @@ class LogCurrentEventRequestModel {
         this.verifierInformation,
         this.verifierNotes});
 
-  LogCurrentEventRequestModel.fromJson(Map<String, dynamic> json) {
+  LogEventRequestModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     eventInstanceId = json['eventInstanceId'];
     userStartDateTime = json['userStartDateTime'];
@@ -47,20 +45,20 @@ class LogCurrentEventRequestModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userId'] = userId;
-    data['eventInstanceId'] = eventInstanceId;
-    data['userStartDateTime'] = userStartDateTime;
-    data['userEndDateTime'] = userEndDateTime;
-    data['userLocationName'] = userLocationName;
-    data['userNotes'] = userNotes;
-    data['userHours'] = userHours;
-    if (hostInformation != null) {
-      data['hostInformation'] = hostInformation!.toJson();
+    data['userId'] = this.userId;
+    data['eventInstanceId'] = this.eventInstanceId;
+    data['userStartDateTime'] = this.userStartDateTime;
+    data['userEndDateTime'] = this.userEndDateTime;
+    data['userLocationName'] = this.userLocationName;
+    data['userNotes'] = this.userNotes;
+    data['userHours'] = this.userHours;
+    if (this.hostInformation != null) {
+      data['hostInformation'] = this.hostInformation!.toJson();
     }
-    data['userEarnPoints'] = userEarnPoints;
-    data['verifierSignatureHash'] = verifierSignatureHash;
-    data['verifierInformation'] = verifierInformation;
-    data['verifierNotes'] = verifierNotes;
+    data['userEarnPoints'] = this.userEarnPoints;
+    data['verifierSignatureHash'] = this.verifierSignatureHash;
+    data['verifierInformation'] = this.verifierInformation;
+    data['verifierNotes'] = this.verifierNotes;
     return data;
   }
 }
@@ -80,9 +78,9 @@ class HostInformation {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['eventId'] = eventId;
-    data['hostId'] = hostId;
-    data['hours'] = hours;
+    data['eventId'] = this.eventId;
+    data['hostId'] = this.hostId;
+    data['hours'] = this.hours;
     return data;
   }
 }

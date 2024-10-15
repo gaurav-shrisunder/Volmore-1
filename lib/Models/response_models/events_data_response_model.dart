@@ -214,8 +214,8 @@ class EventInstance {
 
 class EventParticipant {
   String? userId;
-  Null? userStartDateTime;
-  Null? userEndDateTime;
+  String? userStartDateTime;
+  String? userEndDateTime;
   String? userLocationName;
   String? userNotes;
   int? userHours;
@@ -238,7 +238,10 @@ class EventParticipant {
 
   EventParticipant.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
-    userStartDateTime = json['userStartDateTime'];
+    if(json['userStartDateTime'] != null){
+      userStartDateTime = json['userStartDateTime'];
+    }
+
     userEndDateTime = json['userEndDateTime'];
     userLocationName = json['userLocationName'];
     userNotes = json['userNotes'];
