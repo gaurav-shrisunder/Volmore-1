@@ -42,7 +42,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _authMethod = AuthMethod();
+ 
   TimeOfDay? picked = TimeOfDay.now();
 
   UserModel? user;
@@ -303,37 +303,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  /* Future<void> _selectDate(
-      BuildContext context, TextEditingController controller,
-      {bool isEndDate = false}) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isEndDate) {
-          controller.text = DateFormat('dd/MM/yyyy').format(picked);
-        } else {
-          selectedDate = picked;
-          controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-        }
-      });
-    }
-  }
-
-  _selectTime(BuildContext context, TextEditingController controller) async {
-    picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    setState(() {
-      controller.text = picked!.format(context);
-    });
-  }*/
-
+  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
