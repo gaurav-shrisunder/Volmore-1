@@ -42,7 +42,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _authMethod = AuthMethod();
+ 
   TimeOfDay? picked = TimeOfDay.now();
 
   UserModel? user;
@@ -154,6 +154,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
       // Convert to UTC and ISO 8601 format
       setState(() {
+        print(' before setting:: ${combinedDateTime.toUtc()}');
         endUtcDateTime = combinedDateTime.toUtc().toIso8601String();
       });
     }
@@ -302,37 +303,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  /* Future<void> _selectDate(
-      BuildContext context, TextEditingController controller,
-      {bool isEndDate = false}) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isEndDate) {
-          controller.text = DateFormat('dd/MM/yyyy').format(picked);
-        } else {
-          selectedDate = picked;
-          controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-        }
-      });
-    }
-  }
-
-  _selectTime(BuildContext context, TextEditingController controller) async {
-    picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    setState(() {
-      controller.text = picked!.format(context);
-    });
-  }*/
-
+  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -488,21 +459,22 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      
-                      style: ButtonStyle(
-                        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                      style: const ButtonStyle(
+                          padding: MaterialStatePropertyAll(
+                              EdgeInsets.symmetric(horizontal: 12)),
                           backgroundColor:
-                              WidgetStatePropertyAll(Colors.white),
-                          elevation: WidgetStatePropertyAll(0),
-                      shadowColor: WidgetStatePropertyAll(Colors.white),
-                      side: WidgetStatePropertyAll(BorderSide(width: 1))),
+                              MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
                       onPressed: () => _selectStartDate(context),
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
-                              '${DateFormat('yyyy/MM/dd  hh:mm a').format(DateTime.parse(startUtcDateTime).toLocal())}',
+                              DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                  DateTime.parse(startUtcDateTime).toLocal()),
                               textAlign: TextAlign.center,
                             )
-                          : Icon(Icons.calendar_month_rounded),
+                          : const Icon(Icons.calendar_month_rounded),
                     ),
                     /* Container(
                       width: width * 0.25,
@@ -555,7 +527,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     )*/
                   ],
                 ),
-                selectedOccurrence == 'No occurrence'
+              /*  selectedOccurrence == 'No occurrence'*/ true
                     ?  Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -569,12 +541,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                     ElevatedButton(
                       style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                          padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
                           backgroundColor:
-                          WidgetStatePropertyAll(Colors.white),
-                          elevation: WidgetStatePropertyAll(0),
-                          shadowColor: WidgetStatePropertyAll(Colors.white),
-                          side: WidgetStatePropertyAll(BorderSide(width: 1))),
+                          MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
                       onPressed: () => _selectEndDate(context),
                       child: endUtcDateTime.isNotEmpty
                           ? Text(
@@ -632,8 +604,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         ),
                       ),
                     )*/
-                  ],
-                )
+                        ],
+                      )
                     : const SizedBox(),
                 const SizedBox(height: 20),
                 const Text(
@@ -731,12 +703,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&
                         selectedOccurrence.isNotEmpty) {
-                      DateTime endDate = selectedOccurrence == 'No occurrence'
+                    /*  DateTime endDate = selectedOccurrence == 'No occurrence'
                           ? selectedDate
                           : DateFormat('dd/MM/yyyy')
                               .parse(endDateController.text);
                       List<dynamic> allDates = generateDates(
-                          selectedDate, endDate, selectedOccurrence);
+                          selectedDate, endDate, selectedOccurrence);*/
 
                       CreateEventRequestModel requestModel =
                           CreateEventRequestModel();
@@ -750,23 +722,28 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           .first
                           .eventCategoryId;
                       requestModel.createdBy = await getUserId();
-                      requestModel.recurrence?.eventStartDateTime =
+                      Recurrence recurrence = Recurrence();
+                     recurrence.eventStartDateTime =
                           startUtcDateTime;
-                      requestModel.recurrence?.eventStartDateTime =
+                      print(' Payload ::: ${endUtcDateTime}');
+                      recurrence.eventEndDateTime =
                           endUtcDateTime;
-                      requestModel.recurrence?.recurInterval = 1;
-                      requestModel.recurrence?.weekdays = _selectedGroup == "Weekly"? DateFormat('EEEE').format(DateTime.parse(startUtcDateTime).toLocal()) : null;
+                     recurrence.recurInterval = 1;
+                      recurrence.weekdays = _selectedGroup == "Weekly"? DateFormat('EEEE').format(DateTime.parse(startUtcDateTime).toLocal()) : null;
 
-                      requestModel.recurrence?.recurFrequency =
-                          _selectedGroup == "No occurrence"
+                      recurrence.recurFrequency =
+                          selectedOccurrence == "No occurrence"
                               ? "none"
-                              : _selectedGroup?.toLowerCase();
+                              : selectedOccurrence.toLowerCase();
 
-                    await  EventsServices().createEventData(requestModel).then((onValue) {
-                      Navigator.pop(context);
-                    });
+                      requestModel.recurrence = recurrence;
 
-                      dynamic res = await _authMethod
+                      print('Payload');
+
+                      EventCategoryResponseModel? eventCreatedResponse = await  EventsServices().createEventData(requestModel);
+                   //   Navigator.pop(context);
+
+                     /* dynamic res = await _authMethod
                           .addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
@@ -780,7 +757,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       )
                           .then((onValue) {
                         Navigator.pop(context);
-                      });
+                      });*/
                       // EventDataModel event = EventDataModel(
                       //   title: titleController.text,
                       //   description: descriptionController.text,
@@ -793,6 +770,25 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       //   dates: allDates,
                       //   id: "",
                       //   host: user?.name ?? "",
+
+                    if ( eventCreatedResponse!.message!.contains("successfully")){
+                      // Clear the form fields
+                      titleController.clear();
+                      descriptionController.clear();
+                      locationController.clear();
+                      setState(() {
+                        dateController.clear();
+                        endDateController.clear();
+                        selectedDate = DateTime.now();
+                        selectedOccurrence = 'No occurrence';
+                        _selectedGroup = null;
+                      });
+                      // Navigator.pushAndRemoveUntil(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const HomePage()),
+                      //     (route) => false);
+                      Fluttertoast.showToast(msg: eventCreatedResponse.message!);
                       showDialog(
                           context: context,
                           builder: (_) {
@@ -801,7 +797,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 children: [
                                   const Center(
                                     child: Text(
-                                      "Event Saved Successfully!",
+                                      "Event created successfully!",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 22,
@@ -830,21 +826,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 Center(
                                   child: GestureDetector(
                                       onTap: () async {
-                                        print("Id: ${res['id']}");
+
                                         final SharedPreferences prefs =
-                                            await SharedPreferences
-                                                .getInstance();
-                                        final String? uid =
-                                            prefs.getString('uid');
+                                        await SharedPreferences
+                                            .getInstance();
+                                        final String? uid = await getUserId();
                                         String url = await createDynamicLink(
-                                            res['id'], uid!);
+                                            "event_id", uid!);
                                         Share.share(url);
                                         Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const HomePage()),
-                                            (route) => false);
+                                                const HomePage()),
+                                                (route) => false);
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -856,7 +851,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                           decoration: BoxDecoration(
                                             color: Colors.lightBlue[500],
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                            BorderRadius.circular(10),
                                           ),
                                           child: const Center(
                                             child: Text(
@@ -876,12 +871,18 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 Center(
                                   child: GestureDetector(
                                       onTap: () {
-                                        Navigator.pushAndRemoveUntil(
+                                        /* Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     const HomePage()),
-                                            (route) => false);
+                                            (route) => false);*/
+
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                const HomePage()));
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -894,7 +895,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                             color: const Color.fromARGB(
                                                 255, 6, 7, 7),
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                            BorderRadius.circular(10),
                                           ),
                                           child: const Center(
                                             child: Text(
@@ -911,28 +912,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               ],
                             );
                           });
-
+                    }  else {
+                      Fluttertoast.showToast(msg: "Something went wrong. Pls try again later");
+                      Navigator.pop(context);
+                      /* ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Please fill in all fields")),
+                      );*/
+                    }
                       // );
 
-                      if (res['res'] == "Event added successfully") {
-                        // Clear the form fields
-                        titleController.clear();
-                        descriptionController.clear();
-                        locationController.clear();
-                        setState(() {
-                          dateController.clear();
-                          endDateController.clear();
-                          selectedDate = DateTime.now();
-                          selectedOccurrence = 'No occurrence';
-                          _selectedGroup = null;
-                        });
-                        // Navigator.pushAndRemoveUntil(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => const HomePage()),
-                        //     (route) => false);
-                        Fluttertoast.showToast(msg: res['res']);
-                      }
                     } else {
                       Fluttertoast.showToast(msg: "All fields are mandatory");
                       Navigator.pop(context);
