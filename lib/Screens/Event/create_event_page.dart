@@ -42,7 +42,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _authMethod = AuthMethod();
+ 
   TimeOfDay? picked = TimeOfDay.now();
 
   UserModel? user;
@@ -303,37 +303,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  /* Future<void> _selectDate(
-      BuildContext context, TextEditingController controller,
-      {bool isEndDate = false}) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isEndDate) {
-          controller.text = DateFormat('dd/MM/yyyy').format(picked);
-        } else {
-          selectedDate = picked;
-          controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-        }
-      });
-    }
-  }
-
-  _selectTime(BuildContext context, TextEditingController controller) async {
-    picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    setState(() {
-      controller.text = picked!.format(context);
-    });
-  }*/
-
+  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -489,21 +459,22 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      
-                      style: ButtonStyle(
-                        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                      style: const ButtonStyle(
+                          padding: MaterialStatePropertyAll(
+                              EdgeInsets.symmetric(horizontal: 12)),
                           backgroundColor:
-                              WidgetStatePropertyAll(Colors.white),
-                          elevation: WidgetStatePropertyAll(0),
-                      shadowColor: WidgetStatePropertyAll(Colors.white),
-                      side: WidgetStatePropertyAll(BorderSide(width: 1))),
+                              MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
                       onPressed: () => _selectStartDate(context),
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
-                              '${DateFormat('yyyy/MM/dd  hh:mm a').format(DateTime.parse(startUtcDateTime).toLocal())}',
+                              DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                  DateTime.parse(startUtcDateTime).toLocal()),
                               textAlign: TextAlign.center,
                             )
-                          : Icon(Icons.calendar_month_rounded),
+                          : const Icon(Icons.calendar_month_rounded),
                     ),
                     /* Container(
                       width: width * 0.25,
@@ -570,12 +541,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                     ElevatedButton(
                       style: ButtonStyle(
-                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                          padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
                           backgroundColor:
-                          WidgetStatePropertyAll(Colors.white),
-                          elevation: WidgetStatePropertyAll(0),
-                          shadowColor: WidgetStatePropertyAll(Colors.white),
-                          side: WidgetStatePropertyAll(BorderSide(width: 1))),
+                          MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
                       onPressed: () => _selectEndDate(context),
                       child: endUtcDateTime.isNotEmpty
                           ? Text(
@@ -633,8 +604,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         ),
                       ),
                     )*/
-                  ],
-                )
+                        ],
+                      )
                     : const SizedBox(),
                 const SizedBox(height: 20),
                 const Text(

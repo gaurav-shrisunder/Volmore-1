@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_is_empty
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,18 +16,18 @@ import '../CreateLogScreen.dart';
 import 'events_widget.dart';
 import 'log_now_page.dart';
 
-
 //enum SortOption { def, az, za, dateAsc, dateDesc }
 
 class EventsScreen extends StatefulWidget {
   final SortOption initialSortOption;
-  const EventsScreen({super.key,  required this.initialSortOption});
+  const EventsScreen({super.key, required this.initialSortOption});
 
   @override
   State<EventsScreen> createState() => _EventsScreenState();
 }
 
-class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderStateMixin {
+class _EventsScreenState extends State<EventsScreen>
+    with SingleTickerProviderStateMixin {
   final EventsServices _eventsServices = EventsServices();
   EventsDataResponseModel pastEvent = EventsDataResponseModel();
   SortOption? _selectedOption;
@@ -34,7 +35,6 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
   late Future<EventsDataResponseModel?> pastEventFuture;
   late Future<EventsDataResponseModel?> upcomingEventFuture;
   late Future<EventsDataResponseModel?> todayEventFuture;
-
 
   @override
   void initState() {
@@ -45,9 +45,9 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
   }
 
   apiCalling() async {
-    pastEventFuture =  _eventsServices.getEventsData("past");
-    upcomingEventFuture =  _eventsServices.getEventsData("upcoming");
-    todayEventFuture =  _eventsServices.getEventsData("today");
+    pastEventFuture = _eventsServices.getEventsData("past");
+    upcomingEventFuture = _eventsServices.getEventsData("upcoming");
+    todayEventFuture = _eventsServices.getEventsData("today");
   }
 
   @override
@@ -64,23 +64,22 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
               Tab(text: "Upcoming"),
               Tab(text: "Past"),
             ],
-
           ),
         ),
       ),
-       body: TabBarView(
-         controller: _tabController,
-         children: [
-           buildEventsFutureBuilder("Today Event",todayEventFuture),
-           buildEventsFutureBuilder("Upcoming Event",upcomingEventFuture),
-           buildEventsFutureBuilder("Past Event",pastEventFuture),
-
-         ],
-       ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          buildEventsFutureBuilder("Today Event", todayEventFuture),
+          buildEventsFutureBuilder("Upcoming Event", upcomingEventFuture),
+          buildEventsFutureBuilder("Past Event", pastEventFuture),
+        ],
+      ),
     );
   }
 
-  FutureBuilder<EventsDataResponseModel?> buildEventsFutureBuilder(String tabName, Future<EventsDataResponseModel?> eventFuture) {
+  FutureBuilder<EventsDataResponseModel?> buildEventsFutureBuilder(
+      String tabName, Future<EventsDataResponseModel?> eventFuture) {
     return FutureBuilder<EventsDataResponseModel?>(
            future: eventFuture,
            builder: (context, snapshot) {
@@ -89,77 +88,82 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                return Column(
                  children: [
                 //   const SizedBox(height: 15),
-                   Padding(
-                     padding: const EdgeInsets.all(10.0),
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                          Text(
-                           tabName,
-                           style: const TextStyle(
-                             //     color: headingBlue,
-                             fontSize: 20,
-                             fontWeight: FontWeight.bold,
-                           ),
-                         ),
-                         Row(
-                           children: [
-                             if (tabName.contains("Today Event"))
-                               ElevatedButton(
-                                 style: ElevatedButton.styleFrom(
-                                   backgroundColor: const Color(0xFFfa6513),
-                                   padding: const EdgeInsets.symmetric(
-                                       vertical: 10, horizontal: 16),
-                                   shape: RoundedRectangleBorder(
-                                     borderRadius: BorderRadius.circular(6),
-                                   ),
-                                   textStyle:
-                                   const TextStyle(fontSize: 18, color: Colors.white),
-                                 ),
-                                 onPressed: () {
-                                   Get.to(const CreateLogScreen());
-                                 },
-                                 child: const Text(
-                                   'Create Event',
-                                   style: TextStyle(fontSize: 16, color: Colors.white),
-                                 ),
-                               ),
-                             IconButton(
-                                 onPressed: () {
-                                   showDialog(
-                                     context: context,
-                                     builder: (_) {
-                                       SortOption? selectedOption = _selectedOption;
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        tabName,
+                        style: const TextStyle(
+                          //     color: headingBlue,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          if (tabName.contains("Today Event"))
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFfa6513),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                textStyle: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                              onPressed: () {
+                                Get.to(const CreateLogScreen());
+                              },
+                              child: const Text(
+                                'Create Event',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                          IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) {
+                                    SortOption? selectedOption =
+                                        _selectedOption;
 
-                                       return SimpleDialog(
-                                         //  backgroundColor: Colors.white,
-                                         title: const Text("Sort by"),
-                                         children: [
-                                           Column(
-                                             mainAxisSize: MainAxisSize.min,
-                                             children: [
-                                               RadioListTile<SortOption>(
-                                                 title: const Text('Default: By Name'),
-                                                 value: SortOption.def,
-                                                 groupValue: selectedOption,
-                                                 onChanged: (SortOption? value) {
-                                                   setState(() {
-                                                     selectedOption = value;
-                                                     _selectedOption = selectedOption;
-                                                     //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                                                     // Update the main event list
-                                                   });
-                                                   Navigator.of(context).pop();
-                                                 },
-                                               ),
-                                               RadioListTile<SortOption>(
-                                                 title: const Text('A-Z'),
-                                                 value: SortOption.az,
-                                                 groupValue: selectedOption,
-                                                 onChanged: (SortOption? value) {
-                                                   setState(() {
-                                                     selectedOption = value;
-                                                     _selectedOption = selectedOption;
+                                    return SimpleDialog(
+                                      //  backgroundColor: Colors.white,
+                                      title: const Text("Sort by"),
+                                      children: [
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            RadioListTile<SortOption>(
+                                              title: const Text(
+                                                  'Default: By Name'),
+                                              value: SortOption.def,
+                                              groupValue: selectedOption,
+                                              onChanged: (SortOption? value) {
+                                                setState(() {
+                                                  selectedOption = value;
+                                                  _selectedOption =
+                                                      selectedOption;
+                                                  //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                                                  // Update the main event list
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            RadioListTile<SortOption>(
+                                              title: const Text('A-Z'),
+                                              value: SortOption.az,
+                                              groupValue: selectedOption,
+                                              onChanged: (SortOption? value) {
+                                                setState(() {
+                                                  selectedOption = value;
+                                                  _selectedOption =
+                                                      selectedOption;
 
                                                      //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
                                                      //   _updateEventList(events); // Update the main event list
@@ -237,7 +241,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                          // DateTime date = DateTime.parse(snapshot.data!.events![index].eventInstance!.eventStartDateTime!);
 
 
-                           //  Color color =colorMap[getGroupColor(event!)] ?? Colors.pink;
+                            //  Color color =colorMap[getGroupColor(event!)] ?? Colors.pink;
 
                        bool isEnabled = false;
                        String buttonText = "";
@@ -480,7 +484,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
   }
 
 /*  bool isLogSignatureVerified(EventParticipant event, DateTime date) {
-  *//*  if (event. == null) return false;*//*
+  */ /*  if (event. == null) return false;*/ /*
 
     for (var log in event.logs!) {
       if (isSameDate(log.date.toDate(), date)) {
@@ -508,5 +512,3 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
         date1.day == date2.day;
   }
 }
-
-

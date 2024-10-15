@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:volunterring/Models/response_models/leaderboard_influenced_response_model.dart';
+import 'package:volunterring/Services/leaderboard_service.dart';
 import 'package:volunterring/Services/user_services.dart';
 
 import '../Models/UserModel.dart';
@@ -11,19 +13,33 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
+  final LeaderboardServices leaderboardServices = LeaderboardServices();
 
   final List<String> states = ["Arizona", "Alabama", "California", "Michigan"];
   final List<String> graduatingClasses = ["2024", "2023", "2022", "2021"];
   String? selectedState;
   String? selectedGraduatingClass;
 
-  late Future<List<UserModel?>?> userListFuture;
+  List<LeaderboardUser?>? userList = [];
+  List<LeaderboardUser?>? influencedList = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    userListFuture = UserServices().fetchAllUsers();
+    apiCalling();
+  }
+
+  apiCalling() async {
+    LeaderboardInfluencedResponseModel? leaderboardData =
+        await leaderboardServices.getInflucendLeaderboard("influenceBoard");
+    LeaderboardInfluencedResponseModel? leaderboardDatatotal =
+        await leaderboardServices.getInflucendLeaderboard("participationBoard");
+
+    setState(() {
+      userList = leaderboardDatatotal?.leaderBoardDetails?.users ?? [];
+      influencedList = leaderboardData?.leaderBoardDetails?.users ?? [];
+    });
   }
 
   @override
@@ -31,57 +47,40 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: FutureBuilder<List<UserModel?>?>(
-          future: userListFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                List<UserModel?>? userList = snapshot.data;
-                List<UserModel?>? influencedList = List.from(userList ?? [])
-                  ..sort((a, b) => (b?.minutesInfluenced ?? 0)
-                      .compareTo(a?.minutesInfluenced ?? 0));
-                return Column(
-                  children: [
-                    const TabBar(
-                      indicatorColor: Colors.blue,
-                      labelColor: Colors.blue,
-                      unselectedLabelColor: Colors.grey,
-                      tabs: [
-                        Tab(text: "Hours Volunteered"),
-                        Tab(text: "Hour Influenced"),
+        body: userList != null
+            ? Column(
+                children: [
+                  const TabBar(
+                    indicatorColor: Colors.blue,
+                    labelColor: Colors.blue,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: [
+                      Tab(text: "Hours Volunteered"),
+                      Tab(text: "Hour Influenced"),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        buildVolunteerListView(userList),
+                        buildHoursInfluencedListView(influencedList),
+                        // buildHoursInfluencedListView(influencedList),
                       ],
                     ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          buildVolunteerListView(userList),
-                          buildHoursInfluencedListView(influencedList),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                return Center(
-                  child: Text(
-                      "Something went wrong: ${snapshot.error.toString()}"),
-                );
-              }
-            } else {
-              return const Center(
+                  ),
+                ],
+              )
+            : const Center(
                 child: CircularProgressIndicator(
                   color: Colors.black,
                 ),
-              );
-            }
-          },
-        ),
+              ),
         //  bottomNavigationBar: buildPageChanger(),
       ),
     );
   }
 
-  Widget buildVolunteerListView(List<UserModel?>? userList) {
+  Widget buildVolunteerListView(List<LeaderboardUser?>? userList) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -102,7 +101,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: "State",
-                      labelStyle: TextStyle(fontSize: 14),
+                      labelStyle: const TextStyle(fontSize: 14),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(color: Colors.grey)),
@@ -111,7 +110,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     value: selectedState,
                     items: states.map((String state) {
                       return DropdownMenuItem<String>(
-
                         value: state,
                         child: Text(state),
                       );
@@ -128,7 +126,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   child: DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: "Graduating Class",
-                      labelStyle: TextStyle(fontSize: 14),
+                      labelStyle: const TextStyle(fontSize: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -161,9 +159,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 return const Divider();
               },
               itemBuilder: (context, index) {
-                userList[index]!.totalMinutes;
-                int hours = userList[index]!.totalMinutes ~/ 60; // Integer division to get hours
-                int minutes = userList[index]!.totalMinutes % 60; // Remainder to get minutes
+                userList[index]!.hostInfluenceHours;
+                int hours = userList[index]!.hostInfluenceHours ?? 0;
+                // Integer division to get hours
+                int minutes = userList[index]!.hostInfluenceHours ??
+                    0 % 60; // Remainder to get minutes
 
                 String formattedTime = '${hours}h ${minutes}m';
                 return Padding(
@@ -187,8 +187,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           ),
                           const SizedBox(width: 10),
                           const CircleAvatar(
-                            backgroundImage: AssetImage(
-                                'assets/images/profile_avatar.png'),
+                            backgroundImage:
+                                AssetImage('assets/images/profile_avatar.png'),
                             // Replace with actual image path
                             radius: 20,
                           ),
@@ -198,34 +198,45 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${userList[index]!.name}',
+                                  '${userList[index]!.userName}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: true,
                                   style: const TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
-                                Row(
-                                  children: [
-                                    Chip(
-                                      side: const BorderSide(
-                                          color: Colors.transparent,
-                                          width: 0),
-                                      padding: EdgeInsets.zero,
-                                      label: Text(userList[index]!.state!, style: TextStyle(fontSize: 12),),
-                                      backgroundColor: Colors.orange.shade50,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Chip(
-                                      padding: EdgeInsets.zero,
-                                      side: const BorderSide(
-                                          color: Colors.transparent,
-                                          width: 0),
-                                      label: Text(userList[index]!.gradYear!,  style: TextStyle(fontSize: 12),),
-                                      backgroundColor: Colors.purple.shade50,
-                                    ),
-                                  ],
-                                ),
+                                userList[index]!.yearOfStudy != 0
+                                    ? Row(
+                                        children: [
+                                          Chip(
+                                            side: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0),
+                                            padding: EdgeInsets.zero,
+                                            label: Text(
+                                              userList[index]!
+                                                  .yearOfStudy
+                                                  .toString(),
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                            ),
+                                            backgroundColor:
+                                                Colors.orange.shade50,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          // Chip(
+                                          //   padding: EdgeInsets.zero,
+                                          //   side: const BorderSide(
+                                          //       color: Colors.transparent, width: 0),
+                                          //   label: Text(
+                                          //     userList[index]!.gradYear!,
+                                          //     style: const TextStyle(fontSize: 12),
+                                          //   ),
+                                          //   backgroundColor: Colors.purple.shade50,
+                                          // ),
+                                        ],
+                                      )
+                                    : const SizedBox(),
                               ],
                             ),
                           ),
@@ -234,8 +245,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               alignment: Alignment.topRight,
                               child: Text(
                                 formattedTime,
-                                style:
-                                    const TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Colors.black),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               )),
@@ -252,7 +262,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget buildHoursInfluencedListView(List<UserModel?>? userList) {
+  Widget buildHoursInfluencedListView(List<LeaderboardUser?>? userList) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -324,8 +334,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 return const Divider();
               },
               itemBuilder: (context, index) {
-                int hours = userList[index]!.minutesInfluenced ~/ 60; // Integer division to get hours
-                int minutes = userList[index]!.minutesInfluenced % 60; // Remainder to get minutes
+                int hours = userList[index]!
+                    .participantHours!; // Integer division to get hours
+                int minutes = userList[index]!.participantHours! %
+                    60; // Remainder to get minutes
 
                 String formattedTime = '${hours}h ${minutes}m';
                 return Padding(
@@ -349,8 +361,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           ),
                           const SizedBox(width: 10),
                           const CircleAvatar(
-                            backgroundImage: AssetImage(
-                                'assets/images/profile_avatar.png'),
+                            backgroundImage:
+                                AssetImage('assets/images/profile_avatar.png'),
                             // Replace with actual image path
                             radius: 30,
                           ),
@@ -360,34 +372,38 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${userList[index]!.name}',
+                                  '${userList[index]!.userName}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: true,
                                   style: const TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
-                                Row(
-                                  children: [
-                                    Chip(
-                                      side: const BorderSide(
-                                          color: Colors.transparent,
-                                          width: 0),
-                                      padding: EdgeInsets.zero,
-                                      label: Text(userList[index]!.state!),
-                                      backgroundColor: Colors.orange.shade50,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Chip(
-                                      padding: EdgeInsets.zero,
-                                      side: const BorderSide(
-                                          color: Colors.transparent,
-                                          width: 0),
-                                      label: Text(userList[index]!.gradYear!),
-                                      backgroundColor: Colors.purple.shade50,
-                                    ),
-                                  ],
-                                ),
+                                userList[index]!.yearOfStudy != 0
+                                    ? Row(
+                                        children: [
+                                          // Chip(
+                                          //   side: const BorderSide(
+                                          //       color: Colors.transparent, width: 0),
+                                          //   padding: EdgeInsets.zero,
+                                          //   label: Text(userList[index]!.state!),
+                                          //   backgroundColor: Colors.orange.shade50,
+                                          // ),
+                                          const SizedBox(width: 8),
+                                          Chip(
+                                            padding: EdgeInsets.zero,
+                                            side: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0),
+                                            label: Text(userList[index]!
+                                                .yearOfStudy
+                                                .toString()),
+                                            backgroundColor:
+                                                Colors.purple.shade50,
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox(),
                               ],
                             ),
                           ),
@@ -396,9 +412,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               child: Align(
                                   alignment: Alignment.topRight,
                                   child: Text(
-                                    "$formattedTime",
-                                    style:
-                                        const TextStyle(color: Colors.black),
+                                    formattedTime,
+                                    style: const TextStyle(color: Colors.black),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ))),
