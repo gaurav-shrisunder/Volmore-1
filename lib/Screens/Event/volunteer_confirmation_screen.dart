@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 import 'package:volunterring/Models/event_data_model.dart';
@@ -18,13 +19,16 @@ import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 
+import '../../Models/response_models/events_data_response_model.dart';
 import '../../Services/logService.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
-  final EventDataModel event;
-  final DateTime date;
+ // final EventDataModel event;
+  final Event event;
+
+  // final DateTime date;
   const VolunteerConfirmationScreen(
-      {super.key, required this.event, required this.date});
+      {super.key, required this.event,});
 
   @override
   State<VolunteerConfirmationScreen> createState() =>
@@ -68,7 +72,7 @@ class _VolunteerConfirmationScreenState
     }
   }
 
-  List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
+/*  List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
     DateTime today = DateTime.now().subtract(const Duration(days: 1));
     List<EventListDataModel> pastEvents = [];
     for (var event in events) {
@@ -86,9 +90,9 @@ class _VolunteerConfirmationScreenState
       }
     }
     return pastEvents;
-  }
+  }*/
 
-  LogModel? FetchLog(EventDataModel event, DateTime date) {
+  LogModel? fetchLog(EventDataModel event, DateTime date) {
     if (event.logs == null) return null;
 
     for (var log in event.logs!) {
@@ -109,7 +113,7 @@ class _VolunteerConfirmationScreenState
   List<Map<String, String>> selectedEvents = [];
   @override
   Widget build(BuildContext context) {
-    Color color = colorMap[widget.event.groupColor] ?? Colors.pink;
+    Color color = HexColor(widget.event.eventColorCode!);
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -137,7 +141,7 @@ class _VolunteerConfirmationScreenState
         actions: [
           GestureDetector(
             onTap: () {
-              final timerProvider =
+           /*   final timerProvider =
                   Provider.of<TimerProvider>(context, listen: false);
               timerProvider
                   .createSingleLog(context, widget.event, widget.date, null,
@@ -145,7 +149,7 @@ class _VolunteerConfirmationScreenState
                   .then((onValue) {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (_) => const HomePage()));
-              });
+              });*/
             },
             child: Text(
               "Skip",
@@ -168,14 +172,15 @@ class _VolunteerConfirmationScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.event.title.toString().capitalize ?? "",
+                widget.event.eventTitle.toString().capitalize ?? "",
                 style: TextStyle(fontSize: 24, color: color),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                DateFormat.yMMMMEEEEd().format(widget.date),
+                 DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.event.reccurencePattern!.eventStartDateTime!)),
+
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -191,7 +196,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    widget.event.location ?? "",
+                    widget.event.eventLocationName ?? "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -209,7 +214,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    "${widget.event.time}" ?? "",
+                    "${widget.event.eventParticipatedDuration!}" ?? "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -344,12 +349,13 @@ class _VolunteerConfirmationScreenState
                         ),
                       );
                     } else {
-                      List<EventListDataModel> pastEvents =
+                      return SizedBox();
+                     /* List<EventListDataModel> pastEvents =
                           getPastEvents(snapshot.data ?? []);
                       return SizedBox(
                         height: screenHeight * 0.4, // Adjust as needed
                         child: buildEventList("Past Events", pastEvents),
-                      );
+                      );*/
                     }
                   })
             ],
@@ -383,7 +389,7 @@ class _VolunteerConfirmationScreenState
                     EventListDataModel event = events[index];
                     Color color =
                         colorMap[event.event!.groupColor] ?? Colors.pink;
-                    LogModel? log = FetchLog(event.event!, event.date);
+                    LogModel? log = fetchLog(event.event!, event.date);
                     if (log == null) {
                       return const SizedBox();
                     }
@@ -547,7 +553,7 @@ class _VolunteerConfirmationScreenState
       );
       return;
     }
-    timerProvider.createSingleLog(context, widget.event, widget.date,
-        signatureString, number, selectedEvents);
+   /* timerProvider.createSingleLog(context, widget.event, widget.date,
+        signatureString, number, selectedEvents);*/
   }
 }

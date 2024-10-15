@@ -17,6 +17,9 @@ import 'package:volunterring/Models/UserModel.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:volunterring/Screens/Event/volunteer_confirmation_screen.dart';
 import 'package:volunterring/Screens/HomePage.dart';
+import 'package:volunterring/Utils/common_utils.dart';
+
+import '../Models/response_models/events_data_response_model.dart';
 
 class TimerProvider with ChangeNotifier {
   final Uuid _uuid = const Uuid();
@@ -79,18 +82,19 @@ class TimerProvider with ChangeNotifier {
   }
 
   Future<void> endLogging(
-      BuildContext context, EventDataModel event, DateTime date) async {
+      BuildContext context, Event event,) async {
     _endTime = DateTime.now();
     toggleLogging();
-
     notifyListeners();
-    log('time is: ${event.toString()}');
+    event.eventParticipatedDuration = "${formatTime(startTime.toIso8601String())} to ${formatTime(endTime.toIso8601String())}";
+    log('time is: ${startTime.toIso8601String()} :: ${endTime.toIso8601String()}');
+
+    ///Navigating to Confirmation form screen with the Event data
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => VolunteerConfirmationScreen(
                   event: event,
-                  date: date,
                 )));
   }
 

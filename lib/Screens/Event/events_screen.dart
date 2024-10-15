@@ -85,6 +85,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
            future: eventFuture,
            builder: (context, snapshot) {
              if(ConnectionState.done == snapshot.connectionState){
+
                return Column(
                  children: [
                 //   const SizedBox(height: 15),
@@ -219,7 +220,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                        ],
                      ),
                    ),
-                   snapshot.data?.events?.length == 0
+                   snapshot.data?.eventDetails?.events?.length == 0
                        ? const Expanded(
                      child: Center(
                        child: Text(
@@ -230,16 +231,17 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                    )
                        : Expanded(
                      child: ListView.builder(
-                       itemCount: snapshot.data?.events?.length,
+                       itemCount: snapshot.data?.eventDetails?.events?.length,
                        itemBuilder: (context, index) {
                             // EventDataModel? event = events[index].event;
-                       DateTime date = DateTime.parse(snapshot.data!.events![index].eventInstance!.eventStartDateTime!);
+                         // DateTime date = DateTime.parse(snapshot.data!.events![index].eventInstance!.eventStartDateTime!);
+
 
                            //  Color color =colorMap[getGroupColor(event!)] ?? Colors.pink;
 
                        bool isEnabled = false;
                        String buttonText = "";
-                       bool isVerified = snapshot.data!.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
+                    //   bool isVerified = snapshot.data!.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
                        if (tabName.contains("Today")) {
                          isEnabled = true;
                          buttonText = "Log Now";
@@ -247,7 +249,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                          isEnabled = false;
                          buttonText = "Log Now";
                        } else {
-                         bool isVerified = snapshot.data!.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
+                         bool isVerified = snapshot.data!.eventDetails?.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
                          if (isVerified) {
                            isEnabled = false;
                            buttonText = "Verify";
@@ -257,7 +259,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                          }
                        }
 
-                         return snapshot.data?.events?[index].eventParticipant?.verifierSignatureHash != "" /*&& isToday*/
+                         return snapshot.data?.eventDetails?.events?[index].eventParticipant?.verifierSignatureHash != "" /*&& isToday*/
                              ? const SizedBox()
                              : Center(
                            child: Stack(
@@ -282,11 +284,11 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                                      crossAxisAlignment: CrossAxisAlignment.start,
                                      children: [
                                        Text(
-                                         snapshot.data?.events?[index].event?.eventTitle?.capitalize ?? "",
+                                         snapshot.data?.eventDetails?.events?[index].event?.eventTitle?.capitalize ?? "",
                                          style: TextStyle(
                                              fontSize: 18,
                                              fontWeight: FontWeight.bold,
-                                             color:HexColor(snapshot.data!.events![index].event!.eventColorCode!)
+                                             color:HexColor(snapshot.data!.eventDetails!.events![index].event!.eventColorCode!)
                                               ),
                                        ),
                                        const SizedBox(height: 8),
@@ -315,7 +317,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                                                      size: 16, color: Colors.green),
                                                  const SizedBox(width: 4),
                                                  Text(
-                                                   DateFormat.yMMMd().format(DateTime.parse(snapshot.data!.events![index].eventInstance!.eventStartDateTime!)),
+                                                   DateFormat.yMMMd().format(DateTime.parse(snapshot.data!.eventDetails!.events![index].event!.reccurencePattern!.eventStartDateTime!)),
                                                    style: const TextStyle(
                                                        fontSize: 12,
                                                        color: Colors.black,
@@ -348,7 +350,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                                                      size: 16, color: Colors.blue),
                                                  const SizedBox(width: 4),
                                                  Text(
-                                                   'Host by: ${snapshot.data!.events![index].event?.hostName}',
+                                                   'Host by: ${snapshot.data!.eventDetails!.events![index].event?.hostName}',
                                                    softWrap: true,
                                                    style: const TextStyle(
                                                        fontSize: 12,
@@ -362,7 +364,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                                        ),
                                        const SizedBox(height: 8),
                                        Text(
-                                         "Event Description: ${snapshot.data!.events![index].event?.eventDescription ?? "Description"}",
+                                         "Event Description: ${snapshot.data!.eventDetails!.events![index].event?.eventDescription ?? "Description"}",
                                          style: const TextStyle(
                                              fontSize: 14,
                                              color: Colors.black, fontWeight: FontWeight.normal),
@@ -379,7 +381,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
 
                                                    final String? uid = await getUserId();
                                                    String url =
-                                                   await createDynamicLink(snapshot.data!.events![index].eventInstance!.eventInstanceId!, uid!);
+                                                   await createDynamicLink(snapshot.data!.eventDetails!.events![index].eventInstance!.eventInstanceId!, uid!);
                                                    print("URL: $url");
                                                    Share.share(url);
                                                  },
@@ -409,15 +411,14 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                                              onPressed:isEnabled
                                                  ? () {
                                                if (tabName.contains("Today")) {
-                                              /*   Navigator.push(
+                                                 Navigator.push(
                                                    context,
                                                    MaterialPageRoute(
                                                      builder: (context) => LogNowPage(
-                                                       snapshot.data.events[index].event,
-                                                       date: date,
+                                                       snapshot.data!.eventDetails!.events![index].event!,
                                                      ),
                                                    ),
-                                                 );*/
+                                                 );
                                                }
                                                if (tabName.contains("Past")) {
                                               /*   Navigator.push(
@@ -452,7 +453,7 @@ class _EventsScreenState extends State<EventsScreen>  with SingleTickerProviderS
                                    child: Container(
                                      width: 5,
                                      decoration: BoxDecoration(
-                                       color: HexColor(snapshot.data!.events![index].event!.eventColorCode!),
+                                       color: HexColor(snapshot.data!.eventDetails!.events![index].event!.eventColorCode!),
                                        borderRadius: const BorderRadius.only(
                                          topLeft: Radius.circular(8),
                                          bottomLeft: Radius.circular(8),

@@ -60,6 +60,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     handleDynamicLink();
     // Fetch events once on app start
     eventController.fetchEvents();
+   // clearPreferences();
     checkLocalStorage();
   }
 
