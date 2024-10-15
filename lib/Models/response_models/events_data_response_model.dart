@@ -1,24 +1,51 @@
 class EventsDataResponseModel {
   String? message;
-  List<Events>? events;
+  EventDetails? eventDetails;
 
-  EventsDataResponseModel({this.message, this.events});
+  EventsDataResponseModel({this.message, this.eventDetails});
 
   EventsDataResponseModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
+    eventDetails = json['eventDetails'] != null
+        ? new EventDetails.fromJson(json['eventDetails'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['message'] = this.message;
+    if (this.eventDetails != null) {
+      data['eventDetails'] = this.eventDetails!.toJson();
+    }
+    return data;
+  }
+}
+
+class EventDetails {
+  List<Events>? events;
+  Pagination? pagination;
+
+  EventDetails({this.events, this.pagination});
+
+  EventDetails.fromJson(Map<String, dynamic> json) {
     if (json['events'] != null) {
       events = <Events>[];
       json['events'].forEach((v) {
         events!.add(new Events.fromJson(v));
       });
     }
+    pagination = json['pagination'] != null
+        ? new Pagination.fromJson(json['pagination'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['message'] = this.message;
     if (this.events != null) {
       data['events'] = this.events!.map((v) => v.toJson()).toList();
+    }
+    if (this.pagination != null) {
+      data['pagination'] = this.pagination!.toJson();
     }
     return data;
   }
@@ -66,6 +93,7 @@ class Event {
   String? eventCategoryId;
   String? eventCategoryName;
   String? eventColorCode;
+  String? eventParticipatedDuration;
   ReccurencePattern? reccurencePattern;
 
   Event(
@@ -78,6 +106,7 @@ class Event {
         this.eventCategoryId,
         this.eventCategoryName,
         this.eventColorCode,
+        this.eventParticipatedDuration,
         this.reccurencePattern});
 
   Event.fromJson(Map<String, dynamic> json) {
@@ -90,6 +119,7 @@ class Event {
     eventCategoryId = json['eventCategoryId'];
     eventCategoryName = json['eventCategoryName'];
     eventColorCode = json['eventColorCode'];
+    eventParticipatedDuration = json['eventParticipatedDuration'];
     reccurencePattern = json['reccurencePattern'] != null
         ? new ReccurencePattern.fromJson(json['reccurencePattern'])
         : null;
@@ -106,6 +136,7 @@ class Event {
     data['eventCategoryId'] = this.eventCategoryId;
     data['eventCategoryName'] = this.eventCategoryName;
     data['eventColorCode'] = this.eventColorCode;
+    data['eventParticipatedDuration'] = this.eventParticipatedDuration;
     if (this.reccurencePattern != null) {
       data['reccurencePattern'] = this.reccurencePattern!.toJson();
     }
@@ -183,8 +214,8 @@ class EventInstance {
 
 class EventParticipant {
   String? userId;
-  Null? userStartDateTime;
-  Null? userEndDateTime;
+  String? userStartDateTime;
+  String? userEndDateTime;
   String? userLocationName;
   String? userNotes;
   int? userHours;
@@ -207,7 +238,10 @@ class EventParticipant {
 
   EventParticipant.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
-    userStartDateTime = json['userStartDateTime'];
+    if(json['userStartDateTime'] != null){
+      userStartDateTime = json['userStartDateTime'];
+    }
+
     userEndDateTime = json['userEndDateTime'];
     userLocationName = json['userLocationName'];
     userNotes = json['userNotes'];
@@ -230,6 +264,28 @@ class EventParticipant {
     data['verifierSignatureHash'] = this.verifierSignatureHash;
     data['verifierInformation'] = this.verifierInformation;
     data['verifierNotes'] = this.verifierNotes;
+    return data;
+  }
+}
+
+class Pagination {
+  int? currentPage;
+  int? totalPages;
+  int? totalCount;
+
+  Pagination({this.currentPage, this.totalPages, this.totalCount});
+
+  Pagination.fromJson(Map<String, dynamic> json) {
+    currentPage = json['currentPage'];
+    totalPages = json['totalPages'];
+    totalCount = json['totalCount'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['currentPage'] = this.currentPage;
+    data['totalPages'] = this.totalPages;
+    data['totalCount'] = this.totalCount;
     return data;
   }
 }

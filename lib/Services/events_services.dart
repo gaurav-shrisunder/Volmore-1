@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/request_models/create_event_request_model.dart';
+import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
 import 'package:volunterring/Models/request_models/log_past_event_request_model.dart';
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Models/response_models/events_data_response_model.dart';
@@ -86,6 +87,23 @@ class EventsServices {
       print('Event Created:::${response.data}');
       final EventCategoryResponseModel eventCategory =
           EventCategoryResponseModel.fromJson(response.data);
+      return response.data;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load create Event data');
+      }
+      return response?.data ?? "";
+    }
+  }
+
+  Future<LogEventRequestModel> logEventData(
+      LogEventRequestModel requestPayload) async {
+    print('Payload::: ${jsonEncode(requestPayload)}');
+    Response? response = await apiHandler.post(eventParticipantsApi, requestPayload);
+    if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+      print('Event Created:::${response.data}');
+      final EventCategoryResponseModel eventCategory =
+      EventCategoryResponseModel.fromJson(response.data);
       return response.data;
     } else {
       if (kDebugMode) {

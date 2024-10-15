@@ -557,7 +557,7 @@ class _EventPageState extends State<EventPage>
                             onPressed: isEnabled
                                 ? () {
                                     if (isToday) {
-                                      Navigator.push(
+                                   /*   Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LogNowPage(
@@ -565,7 +565,7 @@ class _EventPageState extends State<EventPage>
                                             date: date,
                                           ),
                                         ),
-                                      );
+                                      );*/
                                     }
                                     if (isPast) {
                                       Navigator.push(
