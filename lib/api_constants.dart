@@ -19,3 +19,6 @@ const String getEventApi = "api/v1/events/";
 
 const String leaderboardApi = "api/v1/leaderboard";
 const String leaderboardRankingApi = "api/v1/leaderboard/influenceBoard";
+
+//Profile related Endpoint
+const String getWeeklyStat = "api/v1/eventStatistics/";

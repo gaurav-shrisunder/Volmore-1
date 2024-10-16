@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -14,16 +12,19 @@ import 'package:volunterring/dio_instance.dart';
 
 import '../Models/response_models/sign_up_response_model.dart';
 
-class SignupLoginServices{
+class SignupLoginServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
 
-
-  Future<SignUpLoginResponseModel?> signUpUser(SignUpRequestModel requestBody) async {
-    Response? response = await apiHandler.post(signUpApi,requestBody );
+  Future<SignUpLoginResponseModel?> signUpUser(
+      SignUpRequestModel requestBody) async {
+    Response? response = await apiHandler.post(signUpApi, requestBody);
     if (response != null && response.statusCode == 201) {
-      final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, userModel.userDetails!.refreshToken!);
+      final SignUpLoginResponseModel userModel =
+          SignUpLoginResponseModel.fromJson(response.data);
+      await DioInstance.saveTokens(userModel.userDetails!.accessToken!,
+          userModel.userDetails!.refreshToken!);
       await setUserId(userModel.userDetails!.user!.userId!);
+      await setUser(userModel.userDetails!.user!);
       return userModel;
     } else {
       if (kDebugMode) {
@@ -32,22 +33,21 @@ class SignupLoginServices{
       //  response.statusMessage
       return SignUpLoginResponseModel(message: response?.data["message"]);
     }
-
   }
 
-
-  Future<SignUpLoginResponseModel?> loginUser(String email, String password) async {
-    var requestBody = {
-      "emailId":email,
-      "password":password
-    };
-    Response? response = await apiHandler.post(loginApi,requestBody );
+  Future<SignUpLoginResponseModel?> loginUser(
+      String email, String password) async {
+    var requestBody = {"emailId": email, "password": password};
+    Response? response = await apiHandler.post(loginApi, requestBody);
     if (response != null && response.statusCode == 200) {
-       SignUpLoginResponseModel? userModel = SignUpLoginResponseModel.fromJson(response.data);
-       print('UserModel::: ${jsonEncode(userModel)}');
+      SignUpLoginResponseModel? userModel =
+          SignUpLoginResponseModel.fromJson(response.data);
+      print('UserModel::: ${jsonEncode(userModel)}');
 
-      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, userModel.userDetails!.refreshToken!);
-        await setUserId(userModel.userDetails!.user!.userId!);
+      await DioInstance.saveTokens(userModel.userDetails!.accessToken!,
+          userModel.userDetails!.refreshToken!);
+      await setUserId(userModel.userDetails!.user!.userId!);
+      await setUser(userModel.userDetails!.user!);
 
       return userModel;
     } else {
@@ -56,13 +56,13 @@ class SignupLoginServices{
       }
       return SignUpLoginResponseModel(message: response?.data["message"]);
     }
-
   }
 
   Future<UserRoleResponseModel?> getUserRoles() async {
     Response? response = await apiHandler.get(rolesApi);
     if (response != null && response.statusCode == 200) {
-      final UserRoleResponseModel userRole = UserRoleResponseModel.fromJson(response.data);
+      final UserRoleResponseModel userRole =
+          UserRoleResponseModel.fromJson(response.data);
       return userRole;
     } else {
       if (kDebugMode) {
@@ -70,17 +70,15 @@ class SignupLoginServices{
       }
       return UserRoleResponseModel(message: response?.data["message"]);
     }
-
   }
 
-   refreshTokenService(String refreshToken) async {
-    var requestBody = {
-      "refreshToken":refreshToken
-    };
+  refreshTokenService(String refreshToken) async {
+    var requestBody = {"refreshToken": refreshToken};
 
-    Response? response = await apiHandler.post(refreshTokenApi,requestBody );
+    Response? response = await apiHandler.post(refreshTokenApi, requestBody);
     if (response != null && response.statusCode == 200) {
-      final RefreshTokenResponseModel tokenModel = RefreshTokenResponseModel.fromJson(response.data);
+      final RefreshTokenResponseModel tokenModel =
+          RefreshTokenResponseModel.fromJson(response.data);
       await setBearerToken(tokenModel.token!.accessToken!);
       // await  DioInstance.saveTokens(tokenModel.userDetails!.accessToken!, refreshToken);
       return tokenModel;
@@ -90,7 +88,5 @@ class SignupLoginServices{
       }
       return RefreshTokenResponseModel(message: response?.data["message"]);
     }
-
   }
-
 }

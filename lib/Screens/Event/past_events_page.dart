@@ -7,10 +7,10 @@ import 'package:uuid/uuid.dart';
 import 'package:volunterring/Models/request_models/log_past_event_request_model.dart';
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Services/authentication.dart';
+
 import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Services/logService.dart';
-import 'package:volunterring/Utils/Colors.dart';
+
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
@@ -27,15 +27,13 @@ class _PastEventsPageState extends State<PastEventsPage> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-  final _nameController = TextEditingController();
-  final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _logMethod = LogServices();
+
   TimeOfDay? picked = TimeOfDay.now();
   List<String> _groupNames = [];
 
   String? _selectedGroup;
-  final Uuid _uuid = const Uuid();
+
   List<EventCategories> eventCategoriesList = [];
 
   DateTime? startDate;
@@ -87,8 +85,6 @@ class _PastEventsPageState extends State<PastEventsPage> {
 
   Future<void> _fetchGroupNames() async {
     try {
-      /* QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('groups').get();*/
       EventCategoryResponseModel? eventCategoryResponseModel =
           await EventsServices().getEventsCategoryData();
 
@@ -295,7 +291,12 @@ class _PastEventsPageState extends State<PastEventsPage> {
         dates: datesList);
     try {
       var res = await EventsServices().logPastEventData(requestModel);
-      Fluttertoast.showToast(msg: res["message"] ?? "Success");
+      if (res == true) {
+        Fluttertoast.showToast(msg: "Past Hours Logged Successfully");
+      } else {
+        Fluttertoast.showToast(msg: "Some error occured Try again later");
+      }
+
       Navigator.pop(context);
 
       Navigator.pushReplacement(

@@ -9,9 +9,13 @@ import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Models/UserModel.dart';
 import 'package:volunterring/Models/event_data_model.dart';
 import 'package:intl/intl.dart';
+import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
+import 'package:volunterring/Models/response_models/weekly_stats_response_model.dart';
 import 'package:volunterring/Screens/Manage%20Account/edit_account_screen.dart';
 import 'package:volunterring/Services/logService.dart';
+import 'package:volunterring/Services/profile_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/weekly_stats_chart.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -23,118 +27,42 @@ class UserProfilePage extends StatefulWidget {
 
 class _UserProfilePageState extends State<UserProfilePage> {
   bool isLoading = true;
-  final eventController = Get.find<EventController>();
-  UserModel? user;
-  List<double> weeklyHours = [];
-  var durationString = "";
-  var weeklyDuration = "";
-  List<EventDataModel>? events;
-  final _authMethods = LogServices();
+  WeeklyStatsResponseModel? weeklyStats;
+  ProfileServices profileServices = ProfileServices();
+  User? user;
+
+  void fetchWeeklyStats() async {
+    WeeklyStatsResponseModel? temp = await profileServices.getWeeklyStats();
+    user = await getUser();
+    if (temp != null) {
+      setState(() {
+        weeklyStats = temp;
+        isLoading = false;
+        user = user;
+      });
+    }
+  }
 
   @override
   void initState() {
+    fetchWeeklyStats();
     super.initState();
-    fetchData();
   }
 
-  Future<void> fetchData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? uid = prefs.getString('uid');
-    DocumentSnapshot doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    user = UserModel.fromMap(doc.data() as Map<String, dynamic>);
-    events = eventController.getEventList();
-    // durationString = calculateTotalDuration(events!);
-    weeklyDuration = calculateWeeklyDuration(events!);
-    weeklyHours = calculateWeeklyHours(events!);
-
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  String calculateWeeklyDuration(List<EventDataModel> events) {
-    int totalSeconds = 0;
-
-    DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    print("Start of week $startOfWeek");
-
-    for (var event in events) {
-      event.logs?.forEach((log) {
-        if (log.elapsedTime != null) {
-          DateTime logDate = log.date.toDate();
-          if (logDate.isAfter(startOfWeek) &&
-              logDate.isBefore(startOfWeek.add(const Duration(days: 7)))) {
-            List<String> parts = log.elapsedTime!.split(':');
-            if (parts.length == 3) {
-              int hours = int.parse(parts[0]);
-              int minutes = int.parse(parts[1]);
-              int seconds = int.parse(parts[2]);
-
-              totalSeconds += (hours * 3600) + (minutes * 60) + seconds;
-            }
-          }
-        }
-      });
-    }
-
-    int hours = totalSeconds ~/ 3600;
-    int minutes = (totalSeconds % 3600) ~/ 60;
-    int seconds = totalSeconds % 60;
-    print("hours: $hours");
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
-  List<double> calculateWeeklyHours(List<EventDataModel> events) {
-    List<double> weeklyHours = List.filled(7, 0);
-
-    DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-
-    for (var event in events) {
-      if (event.logs != null) {
-        for (var log in event.logs!) {
-          DateTime logDate = log.date.toDate();
-          if (logDate.isAfter(startOfWeek) &&
-              logDate.isBefore(startOfWeek.add(const Duration(days: 7)))) {
-            int dayIndex = logDate.weekday - 1;
-
-            List<String> timeParts = log.elapsedTime!.split(':');
-            int hours = int.parse(timeParts[0]);
-            int minutes = int.parse(timeParts[1]);
-
-            weeklyHours[dayIndex] +=
-                hours.toDouble() + (minutes / 60).round().toDouble();
-          }
-        }
-      }
-    }
-    print("Weekly hours $weeklyHours");
-
-    return weeklyHours;
-  }
-
-  List<DataRow> generateWeeklyLogRows(List<EventDataModel> events) {
+  List<DataRow> generateWeeklyLogRows(List<EventDetail> events) {
     List<DataRow> logRows = [];
 
     DateTime now = DateTime.now();
     DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
 
     for (var event in events) {
-      event.logs?.forEach((log) {
-        DateTime logDate = log.date.toDate();
-        if (logDate.isAfter(startOfWeek) &&
-            logDate.isBefore(startOfWeek.add(const Duration(days: 7)))) {
-          logRows.add(
-            DataRow(cells: [
-              DataCell(Text(event.title ?? "")),
-              DataCell(Text(DateFormat.yMMMd().format(logDate))),
-              DataCell(Text(event.location ?? "No location")),
-            ]),
-          );
-        }
-      });
+      logRows.add(
+        DataRow(cells: [
+          DataCell(Text(event.title ?? "")),
+          DataCell(Text(DateFormat.yMMMd().format(DateTime.parse(event.date)))),
+          DataCell(Text(event.location ?? "No location")),
+        ]),
+      );
     }
 
     if (logRows.isEmpty) {
@@ -175,8 +103,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: headingBlue,
                       child: IconButton(
                           onPressed: () {
-                            Get.to(
-                                EditAccountScreen(user!.name!, user!.phone!));
+                            // Get.to(
+                            // EditAccountScreen(user!.name!, user!.phone!));
                           },
                           icon: const Icon(Icons.edit)))),
               const CircleAvatar(
@@ -185,12 +113,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               const SizedBox(height: 10),
               Text(
-                user!.name!,
+                user?.userName ?? "User",
                 style:
                     const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               Text(
-                user!.email!,
+                user?.emailId ?? "user@gmail.com",
                 style: const TextStyle(
                     fontSize: 16, fontWeight: FontWeight.normal),
               ),
@@ -219,7 +147,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           Column(
                             children: [
                               Text(
-                                "${(user!.totalMinutes / 60).toStringAsFixed(1) ?? 0} Hour",
+                                "${weeklyStats!.lifeTimeHours.toString()} Hour",
                                 style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -256,7 +184,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           Column(
                             children: [
                               Text(
-                                "${weeklyDuration.split(":")[0]} Hrs",
+                                "${weeklyStats?.weekTotalHour.toString() ?? "0"} Hrs",
                                 style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -303,7 +231,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       "Sat",
                       "Sun"
                     ],
-                    yAxisList: weeklyHours,
+                    yAxisList: [
+                      weeklyStats?.userHoursByDay?.monday.toDouble() ?? 0.0,
+                      weeklyStats?.userHoursByDay?.tuesday.toDouble() ?? 0.0,
+                      weeklyStats?.userHoursByDay?.wednesday.toDouble() ?? 0.0,
+                      weeklyStats?.userHoursByDay?.thursday.toDouble() ?? 0.0,
+                      weeklyStats?.userHoursByDay?.friday.toDouble() ?? 0.0,
+                      weeklyStats?.userHoursByDay?.saturday.toDouble() ?? 0.0,
+                      weeklyStats?.userHoursByDay?.sunday.toDouble() ?? 0.0,
+                    ],
                     xAxisName: "",
                     yAxisName: "",
                     interval: 1,
@@ -333,7 +269,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     DataColumn(label: Text('Date')),
                     DataColumn(label: Text('Location')),
                   ],
-                  rows: generateWeeklyLogRows(events!),
+                  rows: generateWeeklyLogRows(weeklyStats!.eventDetails!),
                 ),
               ),
             ],
