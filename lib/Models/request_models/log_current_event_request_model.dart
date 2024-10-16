@@ -49,16 +49,28 @@ class LogEventRequestModel {
     data['eventInstanceId'] = this.eventInstanceId;
     data['userStartDateTime'] = this.userStartDateTime;
     data['userEndDateTime'] = this.userEndDateTime;
-    data['userLocationName'] = this.userLocationName;
-    data['userNotes'] = this.userNotes;
+    if (this.userLocationName != null) {
+      data['userLocationName'] = this.userLocationName;
+    }
+    if (this.userNotes != null){
+      data['userNotes'] = this.userNotes;
+    }
     data['userHours'] = this.userHours;
     if (this.hostInformation != null) {
       data['hostInformation'] = this.hostInformation!.toJson();
     }
-    data['userEarnPoints'] = this.userEarnPoints;
-    data['verifierSignatureHash'] = this.verifierSignatureHash;
-    data['verifierInformation'] = this.verifierInformation;
-    data['verifierNotes'] = this.verifierNotes;
+    if (this.userEarnPoints != null){
+      data['userEarnPoints'] = this.userEarnPoints;
+    }
+    if (this.verifierSignatureHash != null){
+      data['verifierSignatureHash'] = this.verifierSignatureHash;
+    }
+    if (this.verifierInformation != null){
+      data['verifierInformation'] = this.verifierInformation;
+    }
+    if (this.verifierNotes != null){
+      data['verifierNotes'] = this.verifierNotes;
+    }
     return data;
   }
 }
