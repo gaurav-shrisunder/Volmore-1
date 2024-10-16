@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +9,7 @@ import 'dart:typed_data';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
@@ -29,10 +32,10 @@ import '../../Utils/common_utils.dart';
 class VolunteerConfirmationScreen extends StatefulWidget {
  // final EventDataModel event;
   final Event event;
-  final String eventInstanceId;
+  final EventInstance eventInstance;
 
   // final DateTime date;
-  const VolunteerConfirmationScreen(this.event,this.eventInstanceId,
+  const VolunteerConfirmationScreen(this.event,this.eventInstance,
       {super.key});
 
   @override
@@ -46,6 +49,8 @@ class _VolunteerConfirmationScreenState
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _verifierNameController = TextEditingController();
+  final TextEditingController _verifierContactInfoController = TextEditingController();
   final LogServices _logMethod = LogServices();
 
   String? _errorMessage;
@@ -147,6 +152,7 @@ class _VolunteerConfirmationScreenState
         actions: [
           GestureDetector(
             onTap: () {
+              Navigator.pop(context);
            /*   final timerProvider =
                   Provider.of<TimerProvider>(context, listen: false);
               timerProvider
@@ -158,7 +164,7 @@ class _VolunteerConfirmationScreenState
               });*/
             },
             child: Text(
-              "Skip",
+              "Back",
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -185,7 +191,7 @@ class _VolunteerConfirmationScreenState
                 height: screenHeight * 0.01,
               ),
               Text(
-                 DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.event.reccurencePattern!.eventStartDateTime!)),
+                 DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.eventInstance.eventStartDateTime!)),
 
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
@@ -201,8 +207,11 @@ class _VolunteerConfirmationScreenState
                   const SizedBox(
                     width: 5,
                   ),
-                  Text(
+                  widget.event.eventLocationName != "" ?  Text(
                     widget.event.eventLocationName ?? "",
+                    style: const TextStyle(fontSize: 16, color: greyColor),
+                  ) : Text(
+                    "Location not shared",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -228,30 +237,73 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              const Text(
-                "Signature",
-                style: TextStyle(fontSize: 18, color: headingBlue),
-              ),
-              SizedBox(
-                height: screenHeight * 0.007,
-              ),
-              Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(9)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(9),
-                  child: Signature(
-                    controller: _signatureController,
-                    height: screenHeight * 0.1,
-                    backgroundColor: Colors.grey[200]!,
-                    dynamicPressureSupported: true,
+              TextFormField(
+                controller: _verifierNameController,
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  labelText: 'Verifier Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
                   ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  // Display the error message
                 ),
+                onChanged: (value) {
+                },
+
+                // validator: phoneValidator,
               ),
-              SizedBox(
-                height: screenHeight * 0.03,
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _verifierContactInfoController,
+                keyboardType: TextInputType.text,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  labelText: 'Email/Phone(Optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  // Display the error message
+                ),
+                onChanged: (value) {
+                },
+
+                // validator: phoneValidator,
               ),
 
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _notesController,
                 keyboardType: TextInputType.text,
@@ -285,8 +337,7 @@ class _VolunteerConfirmationScreenState
 
                 // validator: phoneValidator,
               ),
-              const SizedBox(width: 10),
-              const Text(
+           /*   const Text(
                 "Volunteer Seeker's Phone Number",
                 style: TextStyle(fontSize: 18, color: headingBlue),
               ),
@@ -365,11 +416,34 @@ class _VolunteerConfirmationScreenState
                     ),
                   ),
                 ],
+              ),*/
+
+              const SizedBox(height: 10),
+              const Text(
+                "Signature",
+                style: TextStyle(fontSize: 16, color: headingBlue),
+              ),
+              SizedBox(
+                height: screenHeight * 0.007,
+              ),
+              Container(
+                decoration:
+                BoxDecoration(borderRadius: BorderRadius.circular(9)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(9),
+                  child: Signature(
+                    controller: _signatureController,
+                    height: screenHeight * 0.1,
+                    backgroundColor: Colors.grey[200]!,
+                    dynamicPressureSupported: true,
+                  ),
+                ),
               ),
 
               SizedBox(
                 height: screenHeight * 0.03,
               ),
+
               const Text(
                 "Sign for all previous events too",
                 style: TextStyle(fontSize: 18, color: Colors.black),
@@ -403,73 +477,86 @@ class _VolunteerConfirmationScreenState
                       );*/
                     }
                   }),
-              GestureDetector(
-                onTap: () async {
-                  if (_errorMessage != null) {
-                    Fluttertoast.showToast(
-                        msg: "Enter valid phone number",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
-                  } else {
-                    LogEventRequestModel requestBody = LogEventRequestModel();
 
-                    /*
-                     "hostInformation": {
-        "eventId": "9",
-        "hostId": "1",
-        "hours": 4
-    },
-    "userEarnPoints": 0,
-    "verifierSignatureHash": "someHashValue2",
-    "verifierInformation": "Verifier details here2", // name | phone |
-    "verifierNotes": "Some notes from the verifier2"
-                    * */
-
-                    requestBody.userId= await getUserId();
-                    requestBody.eventInstanceId = widget.eventInstanceId;
-                    requestBody.userStartDateTime = widget.event.eventParticipatedDuration?.split("::").first;
-                    requestBody.userEndDateTime = widget.event.eventParticipatedDuration?.split("::").last;
-                    requestBody.userLocationName = widget.event.eventLocationName;
-                    requestBody.userNotes = _notesController.text;
-                    requestBody.userHours = 4;
-                    requestBody.userEarnPoints = 4;
-                    requestBody.verifierSignatureHash = _signatureController.toString();
-                    requestBody.verifierInformation = "Verifier name";
-                    requestBody.verifierNotes = _notesController.text;
-                    HostInformation hostInfo = HostInformation();
-                    hostInfo.eventId = widget.event.eventId;
-                    hostInfo.hostId = widget.event.hostId;
-                    hostInfo.hours = 4;
-                    requestBody.hostInformation = hostInfo;
-
-
-
-
-                   await EventsServices().logEventData(requestBody);
-                   // submitEvent(context, _phoneNumberController.text);
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Colors.lightBlue[500],
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                      child: Text(
-                        "Submit Event",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      )),
-                ),
-              ),
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        child:  GestureDetector(
+          onTap: () async {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return Lottie.asset(
+                    "assets/images/loader_lottie.json");
+              });
+
+            if (_errorMessage != null) {
+              Fluttertoast.showToast(
+                  msg: "Enter valid phone number",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            } else {
+              LogEventRequestModel requestBody = LogEventRequestModel();
+              requestBody.userId= await getUserId();
+              requestBody.eventInstanceId = widget.eventInstance.eventInstanceId;
+              requestBody.userStartDateTime = widget.event.eventParticipatedDuration?.split("::").first;
+              requestBody.userEndDateTime = widget.event.eventParticipatedDuration?.split("::").last;
+              requestBody.userLocationName = widget.event.eventLocationName!.isNotEmpty ? widget.event.eventLocationName : null;
+              requestBody.userNotes = _notesController.text.isNotEmpty ? _notesController.text : null;
+              requestBody.userHours = 4;
+              requestBody.userEarnPoints = 4;
+              String signatureString = await _exportSignatureAsString();
+              log("SignatureHash::: $signatureString");
+              requestBody.verifierSignatureHash = signatureString.isNotEmpty ? signatureString : null;
+              requestBody.verifierInformation = _verifierNameController.text.isNotEmpty ? _verifierNameController.text : null;
+              requestBody.verifierNotes = (_verifierNameController.text.isNotEmpty && _verifierContactInfoController.text.isNotEmpty) ? "${_verifierNameController.text} | ${_verifierContactInfoController.text}" : null;
+              HostInformation hostInfo = HostInformation();
+              hostInfo.eventId = widget.event.eventId;
+              hostInfo.hostId = widget.event.hostId;
+              hostInfo.hours = 4;
+              requestBody.hostInformation = hostInfo;
+              log("Payload:::: ${jsonEncode(requestBody)}");
+              await EventsServices().logEventData(requestBody).then((onValue){
+                print('OnLog::: ${(onValue)}');
+                if(onValue.toString().contains("failed")){
+                  Navigator.pop(context);
+                  Fluttertoast.showToast(msg: onValue.toString(),toastLength: Toast.LENGTH_LONG);
+                }else{
+                  Navigator.pop(context);
+                  Fluttertoast.showToast(msg: onValue.toString(),toastLength: Toast.LENGTH_LONG);
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const HomePage()),
+                          (route) => false);
+                }
+
+              });
+              // submitEvent(context, _phoneNumberController.text);
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.lightBlue[500],
+                borderRadius: BorderRadius.circular(10)),
+            child: const Center(
+                child: Text(
+                  "Submit Event",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                )),
           ),
         ),
       ),
