@@ -7,6 +7,12 @@ import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/deep_links.dart';
 
 import '../../Models/event_data_model.dart';
+import '../../Utils/shared_prefs.dart';
+import '../CreateLogScreen.dart';
+
+
+
+
 
 class EventWidget extends StatelessWidget {
   final EventDataModel event;
@@ -207,3 +213,5 @@ class EventWidget extends StatelessWidget {
     );
   }
 }
+
+

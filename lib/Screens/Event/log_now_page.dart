@@ -9,24 +9,35 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 
+import '../../Models/response_models/events_data_response_model.dart';
 import '../../provider/time_logger_provider.dart';
 
 class LogNowPage extends StatefulWidget {
-  final EventDataModel eventModel;
-  final DateTime date;
-  const LogNowPage( this.eventModel, {super.key, required this.date});
+  // final EventDataModel eventModel;
+   final Event eventModel;
+   final String eventInstanceId;
+
+  const LogNowPage( this.eventModel, this.eventInstanceId ,{super.key});
 
   @override
   State<LogNowPage> createState() => _LogNowPageState();
 }
 
 class _LogNowPageState extends State<LogNowPage> {
+
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    
-    
 
     return Scaffold(
       appBar: simpleAppBar(context, ""),
@@ -99,7 +110,7 @@ class _LogNowPageState extends State<LogNowPage> {
                     height: 30,
                   ),
                   Text(
-                    widget.eventModel.title!,
+                    widget.eventModel.eventTitle!,
                     style: TextStyle(
                         fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
@@ -163,7 +174,7 @@ class _LogNowPageState extends State<LogNowPage> {
                       GestureDetector(
                           onTap: () {
                             timerProvider.endLogging(
-                                context, widget.eventModel,widget.date);
+                                context, widget.eventModel, widget.eventInstanceId);
                           },
                           child: Column(
                             children: [

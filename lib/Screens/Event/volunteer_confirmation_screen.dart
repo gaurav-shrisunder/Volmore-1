@@ -7,24 +7,33 @@ import 'dart:typed_data';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
 import 'package:volunterring/Screens/Event/events_widget.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Utils/Colormap.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 
+import '../../Models/response_models/events_data_response_model.dart';
 import '../../Services/logService.dart';
+import '../../Utils/common_utils.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
-  final EventDataModel event;
-  final DateTime date;
-  const VolunteerConfirmationScreen(
-      {super.key, required this.event, required this.date});
+ // final EventDataModel event;
+  final Event event;
+  final String eventInstanceId;
+
+  // final DateTime date;
+  const VolunteerConfirmationScreen(this.event,this.eventInstanceId,
+      {super.key});
 
   @override
   State<VolunteerConfirmationScreen> createState() =>
@@ -36,6 +45,7 @@ class _VolunteerConfirmationScreenState
   final _authMethod = AuthMethod();
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
   final LogServices _logMethod = LogServices();
 
   String? _errorMessage;
@@ -68,7 +78,7 @@ class _VolunteerConfirmationScreenState
     }
   }
 
-  List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
+/*  List<EventListDataModel> getPastEvents(List<EventDataModel> events) {
     DateTime today = DateTime.now().subtract(const Duration(days: 1));
     List<EventListDataModel> pastEvents = [];
     for (var event in events) {
@@ -86,9 +96,9 @@ class _VolunteerConfirmationScreenState
       }
     }
     return pastEvents;
-  }
+  }*/
 
-  LogModel? FetchLog(EventDataModel event, DateTime date) {
+  LogModel? fetchLog(EventDataModel event, DateTime date) {
     if (event.logs == null) return null;
 
     for (var log in event.logs!) {
@@ -109,7 +119,7 @@ class _VolunteerConfirmationScreenState
   List<Map<String, String>> selectedEvents = [];
   @override
   Widget build(BuildContext context) {
-    Color color = colorMap[widget.event.groupColor] ?? Colors.pink;
+    Color color = HexColor(widget.event.eventColorCode!);
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -137,7 +147,7 @@ class _VolunteerConfirmationScreenState
         actions: [
           GestureDetector(
             onTap: () {
-              final timerProvider =
+           /*   final timerProvider =
                   Provider.of<TimerProvider>(context, listen: false);
               timerProvider
                   .createSingleLog(context, widget.event, widget.date, null,
@@ -145,7 +155,7 @@ class _VolunteerConfirmationScreenState
                   .then((onValue) {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (_) => const HomePage()));
-              });
+              });*/
             },
             child: Text(
               "Skip",
@@ -168,14 +178,15 @@ class _VolunteerConfirmationScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.event.title.toString().capitalize ?? "",
+                widget.event.eventTitle.toString().capitalize ?? "",
                 style: TextStyle(fontSize: 24, color: color),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                DateFormat.yMMMMEEEEd().format(widget.date),
+                 DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.event.reccurencePattern!.eventStartDateTime!)),
+
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -191,7 +202,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    widget.event.location ?? "",
+                    widget.event.eventLocationName ?? "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -209,7 +220,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    "${widget.event.time}" ?? "",
+                    "${formatTime(widget.event.eventParticipatedDuration!.split("::").first)} to ${formatTime(widget.event.eventParticipatedDuration!.split("::").last)}" ?? "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -240,6 +251,41 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.03,
               ),
+
+              TextFormField(
+                controller: _notesController,
+                keyboardType: TextInputType.text,
+                maxLines: 3,
+                maxLength: 100,
+                decoration: InputDecoration(
+                  labelText: 'Notes(Optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  // Display the error message
+                ),
+                onChanged: (value) {
+                },
+
+                // validator: phoneValidator,
+              ),
+              const SizedBox(width: 10),
               const Text(
                 "Volunteer Seeker's Phone Number",
                 style: TextStyle(fontSize: 18, color: headingBlue),
@@ -247,6 +293,7 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.007,
               ),
+
               Row(
                 children: [
                   Container(
@@ -273,6 +320,8 @@ class _VolunteerConfirmationScreenState
                       },
                     ),
                   ),
+
+
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
@@ -317,6 +366,7 @@ class _VolunteerConfirmationScreenState
                   ),
                 ],
               ),
+
               SizedBox(
                 height: screenHeight * 0.03,
               ),
@@ -344,14 +394,81 @@ class _VolunteerConfirmationScreenState
                         ),
                       );
                     } else {
-                      List<EventListDataModel> pastEvents =
+                      return SizedBox();
+                     /* List<EventListDataModel> pastEvents =
                           getPastEvents(snapshot.data ?? []);
                       return SizedBox(
                         height: screenHeight * 0.4, // Adjust as needed
                         child: buildEventList("Past Events", pastEvents),
-                      );
+                      );*/
                     }
-                  })
+                  }),
+              GestureDetector(
+                onTap: () async {
+                  if (_errorMessage != null) {
+                    Fluttertoast.showToast(
+                        msg: "Enter valid phone number",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  } else {
+                    LogEventRequestModel requestBody = LogEventRequestModel();
+
+                    /*
+                     "hostInformation": {
+        "eventId": "9",
+        "hostId": "1",
+        "hours": 4
+    },
+    "userEarnPoints": 0,
+    "verifierSignatureHash": "someHashValue2",
+    "verifierInformation": "Verifier details here2", // name | phone |
+    "verifierNotes": "Some notes from the verifier2"
+                    * */
+
+                    requestBody.userId= await getUserId();
+                    requestBody.eventInstanceId = widget.eventInstanceId;
+                    requestBody.userStartDateTime = widget.event.eventParticipatedDuration?.split("::").first;
+                    requestBody.userEndDateTime = widget.event.eventParticipatedDuration?.split("::").last;
+                    requestBody.userLocationName = widget.event.eventLocationName;
+                    requestBody.userNotes = _notesController.text;
+                    requestBody.userHours = 4;
+                    requestBody.userEarnPoints = 4;
+                    requestBody.verifierSignatureHash = _signatureController.toString();
+                    requestBody.verifierInformation = "Verifier name";
+                    requestBody.verifierNotes = _notesController.text;
+                    HostInformation hostInfo = HostInformation();
+                    hostInfo.eventId = widget.event.eventId;
+                    hostInfo.hostId = widget.event.hostId;
+                    hostInfo.hours = 4;
+                    requestBody.hostInformation = hostInfo;
+
+
+
+
+                   await EventsServices().logEventData(requestBody);
+                   // submitEvent(context, _phoneNumberController.text);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.lightBlue[500],
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Center(
+                      child: Text(
+                        "Submit Event",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      )),
+                ),
+              ),
             ],
           ),
         ),
@@ -383,7 +500,7 @@ class _VolunteerConfirmationScreenState
                     EventListDataModel event = events[index];
                     Color color =
                         colorMap[event.event!.groupColor] ?? Colors.pink;
-                    LogModel? log = FetchLog(event.event!, event.date);
+                    LogModel? log = fetchLog(event.event!, event.date);
                     if (log == null) {
                       return const SizedBox();
                     }
@@ -547,7 +664,7 @@ class _VolunteerConfirmationScreenState
       );
       return;
     }
-    timerProvider.createSingleLog(context, widget.event, widget.date,
-        signatureString, number, selectedEvents);
+   /* timerProvider.createSingleLog(context, widget.event, widget.date,
+        signatureString, number, selectedEvents);*/
   }
 }

@@ -7,6 +7,7 @@ import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
 import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
 
 import 'package:volunterring/Screens/Event/events_page.dart';
+import 'package:volunterring/Screens/Event/events_screen.dart';
 
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ import 'package:volunterring/Screens/transcript_screen.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
+import '../Utils/shared_prefs.dart';
 import '../provider/theme_manager_provider.dart';
 import 'CreateLogScreen.dart';
 
@@ -31,7 +33,8 @@ class _HomePageState extends State<HomePage>
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const EventPage(initialSortOption: SortOption.def),
+    // const EventPage(initialSortOption: SortOption.def),
+    const EventsScreen(initialSortOption: SortOption.def),
     const LeaderboardScreen(),
     const TranscriptScreen(),
     const UserProfilePage(),
@@ -91,10 +94,7 @@ class _HomePageState extends State<HomePage>
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
-
-
         backgroundColor: Colors.white,
-
         type: BottomNavigationBarType.shifting,
         showUnselectedLabels: true,
         elevation: 5,
@@ -187,13 +187,13 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('uid');
+    clearPreferences();
     AuthMethod().signOut();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginPage()),
-          (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
+      (Route<dynamic> route) =>
+          false, // This condition makes sure all the routes are removed.
     );
   }
 }

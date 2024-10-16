@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/provider/theme_manager_provider.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/Utils/app_themes.dart';
@@ -16,7 +17,15 @@ import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    // Replace with actual values
+    // options: const FirebaseOptions(
+    //   apiKey: "AIzaSyDGbdwmUAMhURhEyHTFH6Hb4o5s7CenVbw",
+    //   appId: "com.maizelabs.volmore",
+    //   messagingSenderId: "com.maizelabs.volmore",
+    //   projectId: "volunteering-9e75b",
+    // ),
+  );
   Get.put(EventController());
 
   runApp(
@@ -51,6 +60,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     handleDynamicLink();
     // Fetch events once on app start
     eventController.fetchEvents();
+   // clearPreferences();
+    checkLocalStorage();
   }
 
   @override
@@ -92,7 +103,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final themeManager = Provider.of<ThemeManager>(context);
-    checkLocalStorage();
+
     return GetMaterialApp(
       title: 'VOLMORE',
       debugShowCheckedModeBanner: false,
@@ -102,9 +113,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> checkLocalStorage() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? uid = prefs.getString('uid');
-    if (uid != null) {
+    String? uid = await getUserId();
+    if (uid != null && uid != "0") {
       setState(() {
         isLoggedIn = true;
       });

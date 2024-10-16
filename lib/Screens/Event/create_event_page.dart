@@ -10,11 +10,15 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Models/UserModel.dart';
 import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Models/request_models/create_event_request_model.dart';
+import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/dashboard.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/deep_links.dart';
+import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:uuid/uuid.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
@@ -38,7 +42,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _authMethod = AuthMethod();
+ 
   TimeOfDay? picked = TimeOfDay.now();
 
   UserModel? user;
@@ -46,8 +50,115 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   String selectedOccurrence =
       'No occurrence'; // Initial value set to prevent null issues
   List<String> _groupNames = [];
+
   String? _selectedGroup;
   final Uuid _uuid = const Uuid();
+  List<EventCategories> eventCategoriesList = [];
+
+  DateTime? startDate;
+  TimeOfDay? startTime;
+  DateTime? endDate;
+  TimeOfDay? endTime;
+
+  String startUtcDateTime = "";
+  String endUtcDateTime = "";
+
+  // Function to pick the start date
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != startDate) {
+      setState(() {
+        startDate = picked;
+      });
+      _selectStartTime(context); // Pick time after date
+    }
+  }
+
+  // Function to pick the start time
+  Future<void> _selectStartTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != startTime) {
+      setState(() {
+        startTime = picked;
+        _combineStartDateTime(); // Combine date and time
+      });
+    }
+  }
+
+  // Function to pick the end date
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != endDate) {
+      setState(() {
+        endDate = picked;
+      });
+      _selectEndTime(context); // Pick time after date
+    }
+  }
+
+  // Function to pick the end time
+  Future<void> _selectEndTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != endTime) {
+      setState(() {
+        endTime = picked;
+        _combineEndDateTime(); // Combine date and time
+      });
+    }
+  }
+
+  // Combine date and time for the start and convert to ISO 8601 format
+  void _combineStartDateTime() {
+    if (startDate != null && startTime != null) {
+      final DateTime combinedDateTime = DateTime(
+        startDate!.year,
+        startDate!.month,
+        startDate!.day,
+        startTime!.hour,
+        startTime!.minute,
+      );
+
+      // Convert to UTC and ISO 8601 format
+      setState(() {
+        startUtcDateTime = combinedDateTime.toUtc().toIso8601String();
+      });
+    }
+  }
+
+  // Combine date and time for the end and convert to ISO 8601 format
+  void _combineEndDateTime() {
+    if (endDate != null && endTime != null) {
+      final DateTime combinedDateTime = DateTime(
+        endDate!.year,
+        endDate!.month,
+        endDate!.day,
+        endTime!.hour,
+        endTime!.minute,
+      );
+
+      // Convert to UTC and ISO 8601 format
+      setState(() {
+        print(' before setting:: ${combinedDateTime.toUtc()}');
+        endUtcDateTime = combinedDateTime.toUtc().toIso8601String();
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -89,31 +200,48 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
   Future<void> _fetchGroupNames() async {
     try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('groups').get();
+      /* QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('groups').get();*/
+      EventCategoryResponseModel? eventCategoryResponseModel =
+          await EventsServices().getEventsCategoryData();
 
-      List<String> groupNames =
-          querySnapshot.docs.map((doc) => doc['name'] as String).toList();
-      UserModel? user2 = await _authMethod.fetchUserData();
+      List<String> groupNames = [];
+      eventCategoryResponseModel?.eventCategories?.forEach((action) {
+        groupNames.add(action.eventCategoryName!);
+      });
+
       setState(() {
+        eventCategoriesList = eventCategoryResponseModel!.eventCategories!;
         _groupNames = groupNames;
-        user = user2;
       });
     } catch (e) {
       print("Error fetching group names: $e");
     }
   }
 
-  Future<void> _addGroup(String name, String color) async {
+  Future<String> _addGroup(String name, String color) async {
+    var userId = await getUserId();
+
+    var req = {
+      "eventCategoryName": name,
+      "eventColorCode": color,
+      "createdBy": userId
+    };
+
     try {
-      String id = _uuid.v4();
+      EventCategoryResponseModel responseModel =
+          await EventsServices().createEventCategoryData(req);
+
+      /*  String id = _uuid.v4();
       await FirebaseFirestore.instance.collection('groups').doc(id).set({
         'name': name,
         'color': color,
-      });
+      });*/
       _fetchGroupNames();
+      return responseModel.message ?? "Group added successfully";
     } catch (e) {
       print("Error adding group: $e");
+      return "Something went wrong! Please try again later";
     }
   }
 
@@ -155,11 +283,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 String name = _nameController.text;
                 String color = _colorController.text;
                 if (name.isNotEmpty && color.isNotEmpty) {
-                  _addGroup(name, color);
+                  await _addGroup(name, color).then((onValue) {
+                    Fluttertoast.showToast(msg: onValue);
+                  });
                   _nameController.clear();
                   _colorController.clear();
                   Navigator.of(context).pop();
@@ -173,37 +303,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller,
-      {bool isEndDate = false}) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isEndDate) {
-          controller.text = DateFormat('dd/MM/yyyy').format(picked);
-        } else {
-          selectedDate = picked;
-          controller.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-        }
-      });
-    }
-  }
-
-  _selectTime(BuildContext context, TextEditingController controller) async {
-    picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    setState(() {
-      controller.text = picked!.format(context);
-    });
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -347,75 +447,36 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Date',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    //   color: headingBlue,
-                  ),
-                ),
-                const SizedBox(height: 5),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 0.4,
-
-                              blurRadius: 10,
-                              offset: const Offset(
-                                  0, 3), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: dateController,
-
-                          onTap: () => _selectDate(context, dateController),
-                          readOnly: true,
-
-                          // Prevent keyboard from appearing
-                          decoration: InputDecoration(
-                            suffixIcon: const Icon(
-                              Icons.calendar_today,
-                              color: greyColor,
-                            ),
-                            filled: true,
-                            hintText: 'Select Date',
-                            hintStyle: const TextStyle(
-                                //  color: Colors.grey[900],
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
-                            //     fillColor: Colors.white,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 213, 215, 215),
-                                width: 1.0,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey[
-                                    400]!, // Change this to your desired color
-                                width: 2.0,
-                              ),
-                            ),
-                          ),
-                        ),
+                    const Text(
+                      'Start Date & Time:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        //   color: headingBlue,
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
+                    ElevatedButton(
+                      style: const ButtonStyle(
+                          padding: MaterialStatePropertyAll(
+                              EdgeInsets.symmetric(horizontal: 12)),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
+                      onPressed: () => _selectStartDate(context),
+                      child: startUtcDateTime.isNotEmpty
+                          ? Text(
+                              DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                  DateTime.parse(startUtcDateTime).toLocal()),
+                              textAlign: TextAlign.center,
+                            )
+                          : const Icon(Icons.calendar_month_rounded),
                     ),
-                    Container(
+                    /* Container(
                       width: width * 0.25,
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -463,140 +524,86 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           ),
                         ),
                       ),
-                    )
+                    )*/
                   ],
                 ),
-                selectedOccurrence != 'No occurrence'
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 20),
-                          const Text(
-                            'End Date',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              //  color: headingBlue,
+              /*  selectedOccurrence == 'No occurrence'*/ true
+                    ?  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'End Date & Time:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        //   color: headingBlue,
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                          padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                          backgroundColor:
+                          MaterialStatePropertyAll(Colors.white),
+                          elevation: MaterialStatePropertyAll(0),
+                          shadowColor: MaterialStatePropertyAll(Colors.white),
+                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
+                      onPressed: () => _selectEndDate(context),
+                      child: endUtcDateTime.isNotEmpty
+                          ? Text(
+                        '${DateFormat('yyyy/MM/dd  hh:mm a').format(DateTime.parse(endUtcDateTime).toLocal())}',
+                        textAlign: TextAlign.center,
+                      )
+                          : Icon(Icons.calendar_month_rounded),
+                    ),
+                    /* Container(
+                      width: width * 0.25,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 0.4,
+
+                            blurRadius: 10,
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: timeController,
+
+                        onTap: () => _selectTime(context, timeController),
+                        readOnly: true,
+
+                        // Prevent keyboard from appearing
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: 'Time',
+                          hintStyle: const TextStyle(
+                              //  color: Colors.grey[900],
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
+                          //     fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color.fromARGB(255, 213, 215, 215),
+                              width: 1.0,
                             ),
                           ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 0.4,
-
-                                        blurRadius: 10,
-                                        offset: const Offset(
-                                            0, 3), // changes position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: TextField(
-                                    controller: endDateController,
-
-                                    onTap: () => _selectDate(
-                                        context, endDateController,
-                                        isEndDate: true),
-
-                                    readOnly: true,
-
-                                    // Prevent keyboard from appearing
-                                    decoration: InputDecoration(
-                                      suffixIcon: const Icon(
-                                        Icons.calendar_today,
-                                        color: greyColor,
-                                      ),
-                                      filled: true,
-                                      hintText: 'Select End Date',
-                                      hintStyle: const TextStyle(
-                                          //     color: Colors.grey[900],
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 20),
-                                      //    fillColor: Colors.white,
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                          color: Color.fromARGB(
-                                              255, 213, 215, 215),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[
-                                              400]!, // Change this to your desired color
-                                          width: 2.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Container(
-                                width: width * 0.25,
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 0.4,
-                                      blurRadius: 10,
-                                      offset: const Offset(
-                                          0, 3), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: TextField(
-                                  controller: endTimeController,
-
-                                  onTap: () =>
-                                      _selectTime(context, endTimeController),
-                                  readOnly: true,
-
-                                  // Prevent keyboard from appearing
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    hintText: 'Time',
-                                    hintStyle: const TextStyle(
-                                        //     color: Colors.grey[900],
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 20),
-                                    //   fillColor: Colors.white,
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color:
-                                            Color.fromARGB(255, 213, 215, 215),
-                                        width: 1.0,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Colors.grey[
-                                            400]!, // Change this to your desired color
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.grey[
+                                  400]!, // Change this to your desired color
+                              width: 2.0,
+                            ),
                           ),
+                        ),
+                      ),
+                    )*/
                         ],
                       )
                     : const SizedBox(),
@@ -686,8 +693,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (_){
-                          return const Center(child: CircularProgressIndicator());
+                        builder: (_) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         });
                     titleController.text = titleController.text;
 
@@ -695,14 +703,48 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&
                         selectedOccurrence.isNotEmpty) {
-                      DateTime endDate = selectedOccurrence == 'No occurrence'
+                    /*  DateTime endDate = selectedOccurrence == 'No occurrence'
                           ? selectedDate
                           : DateFormat('dd/MM/yyyy')
                               .parse(endDateController.text);
                       List<dynamic> allDates = generateDates(
-                          selectedDate, endDate, selectedOccurrence);
+                          selectedDate, endDate, selectedOccurrence);*/
 
-                      dynamic res = await _authMethod.addEvent(
+                      CreateEventRequestModel requestModel =
+                          CreateEventRequestModel();
+                      requestModel.eventTitle = titleController.text;
+                      requestModel.eventDescription =
+                          descriptionController.text;
+                      requestModel.eventLocationName = locationController.text;
+                      requestModel.eventCategoryId = eventCategoriesList
+                          .where((test) =>
+                              test.eventCategoryName == _selectedGroup)
+                          .first
+                          .eventCategoryId;
+                      requestModel.createdBy = await getUserId();
+                      Recurrence recurrence = Recurrence();
+                     recurrence.eventStartDateTime =
+                          startUtcDateTime;
+                      print(' Payload ::: ${endUtcDateTime}');
+                      recurrence.eventEndDateTime =
+                          endUtcDateTime;
+                     recurrence.recurInterval = 1;
+                      recurrence.weekdays = _selectedGroup == "Weekly"? DateFormat('EEEE').format(DateTime.parse(startUtcDateTime).toLocal()) : null;
+
+                      recurrence.recurFrequency =
+                          selectedOccurrence == "No occurrence"
+                              ? "none"
+                              : selectedOccurrence.toLowerCase();
+
+                      requestModel.recurrence = recurrence;
+
+                      print('Payload');
+
+                      EventCategoryResponseModel? eventCreatedResponse = await  EventsServices().createEventData(requestModel);
+                   //   Navigator.pop(context);
+
+                     /* dynamic res = await _authMethod
+                          .addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
                         date: selectedDate,
@@ -712,9 +754,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         time: timeController.text,
                         endDate: endDate,
                         dates: allDates,
-                      ).then((onValue){
+                      )
+                          .then((onValue) {
                         Navigator.pop(context);
-                      });
+                      });*/
                       // EventDataModel event = EventDataModel(
                       //   title: titleController.text,
                       //   description: descriptionController.text,
@@ -727,6 +770,25 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       //   dates: allDates,
                       //   id: "",
                       //   host: user?.name ?? "",
+
+                    if ( eventCreatedResponse!.message!.contains("successfully")){
+                      // Clear the form fields
+                      titleController.clear();
+                      descriptionController.clear();
+                      locationController.clear();
+                      setState(() {
+                        dateController.clear();
+                        endDateController.clear();
+                        selectedDate = DateTime.now();
+                        selectedOccurrence = 'No occurrence';
+                        _selectedGroup = null;
+                      });
+                      // Navigator.pushAndRemoveUntil(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const HomePage()),
+                      //     (route) => false);
+                      Fluttertoast.showToast(msg: eventCreatedResponse.message!);
                       showDialog(
                           context: context,
                           builder: (_) {
@@ -735,7 +797,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 children: [
                                   const Center(
                                     child: Text(
-                                      "Event Saved Successfully!",
+                                      "Event created successfully!",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 22,
@@ -764,21 +826,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 Center(
                                   child: GestureDetector(
                                       onTap: () async {
-                                        print("Id: ${res['id']}");
+
                                         final SharedPreferences prefs =
-                                            await SharedPreferences
-                                                .getInstance();
-                                        final String? uid =
-                                            prefs.getString('uid');
+                                        await SharedPreferences
+                                            .getInstance();
+                                        final String? uid = await getUserId();
                                         String url = await createDynamicLink(
-                                            res['id'], uid!);
+                                            "event_id", uid!);
                                         Share.share(url);
                                         Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const HomePage()),
-                                            (route) => false);
+                                                const HomePage()),
+                                                (route) => false);
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -790,7 +851,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                           decoration: BoxDecoration(
                                             color: Colors.lightBlue[500],
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                            BorderRadius.circular(10),
                                           ),
                                           child: const Center(
                                             child: Text(
@@ -810,12 +871,18 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 Center(
                                   child: GestureDetector(
                                       onTap: () {
-                                        Navigator.pushAndRemoveUntil(
+                                        /* Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     const HomePage()),
-                                            (route) => false);
+                                            (route) => false);*/
+
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                const HomePage()));
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -828,7 +895,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                             color: const Color.fromARGB(
                                                 255, 6, 7, 7),
                                             borderRadius:
-                                                BorderRadius.circular(10),
+                                            BorderRadius.circular(10),
                                           ),
                                           child: const Center(
                                             child: Text(
@@ -845,34 +912,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               ],
                             );
                           });
-
+                    }  else {
+                      Fluttertoast.showToast(msg: "Something went wrong. Pls try again later");
+                      Navigator.pop(context);
+                      /* ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Please fill in all fields")),
+                      );*/
+                    }
                       // );
 
-
-
-                      if (res['res'] == "Event added successfully") {
-                        // Clear the form fields
-                        titleController.clear();
-                        descriptionController.clear();
-                        locationController.clear();
-                        setState(() {
-                          dateController.clear();
-                          endDateController.clear();
-                          selectedDate = DateTime.now();
-                          selectedOccurrence = 'No occurrence';
-                          _selectedGroup = null;
-                        });
-                        // Navigator.pushAndRemoveUntil(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => const HomePage()),
-                        //     (route) => false);
-                        Fluttertoast.showToast(msg: res['res']);
-                      }
                     } else {
-                      Fluttertoast.showToast(msg:"All fields are mandatory");
+                      Fluttertoast.showToast(msg: "All fields are mandatory");
                       Navigator.pop(context);
-                     /* ScaffoldMessenger.of(context).showSnackBar(
+                      /* ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text("Please fill in all fields")),
                       );*/
