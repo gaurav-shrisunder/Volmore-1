@@ -321,7 +321,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                      size: 16, color: Colors.green),
                                                  const SizedBox(width: 4),
                                                  Text(
-                                                   DateFormat.yMMMd().format(DateTime.parse(snapshot.data!.eventDetails!.events![index].event!.reccurencePattern!.eventStartDateTime!)),
+                                                   DateFormat.yMMMd().format(DateTime.parse(snapshot.data!.eventDetails!.events![index].eventInstance!.eventStartDateTime!)),
                                                    style: const TextStyle(
                                                        fontSize: 12,
                                                        color: Colors.black,
@@ -419,7 +419,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                    context,
                                                    MaterialPageRoute(
                                                      builder: (context) => LogNowPage(
-                                                       snapshot.data!.eventDetails!.events![index].event!,snapshot.data!.eventDetails!.events![index].eventInstance!.eventInstanceId!
+                                                       snapshot.data!.eventDetails!.events![index].event!,snapshot.data!.eventDetails!.events![index].eventInstance!
                                                      ),
                                                    ),
                                                  );
