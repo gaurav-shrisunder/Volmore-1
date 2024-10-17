@@ -346,6 +346,9 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                     requestBody.verifierInformation =
                         _phoneNumberController.text;
                     requestBody.verifierNotes = _notesController.text;
+                    requestBody.userEndDateTime = null;
+                    requestBody.userStartDateTime = null;
+                    requestBody.userHours = null;
 
                     await EventsServices().logEventData(requestBody);
                     // submitEvent(context, _phoneNumberController.text);
