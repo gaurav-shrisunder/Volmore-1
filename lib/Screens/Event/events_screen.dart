@@ -263,9 +263,9 @@ class _EventsScreenState extends State<EventsScreen>
                          }
                        }
 
-                         return snapshot.data?.eventDetails?.events?[index].eventParticipant?.verifierSignatureHash != "" /*&& isToday*/
+                         return /*snapshot.data?.eventDetails?.events?[index].eventParticipant?.verifierSignatureHash != "" *//*&& isToday*//*
                              ? const SizedBox()
-                             : Center(
+                             :*/ Center(
                            child: Stack(
                              children: [
                                Container(

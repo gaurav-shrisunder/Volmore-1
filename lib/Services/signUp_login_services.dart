@@ -22,7 +22,9 @@ class SignupLoginServices{
     Response? response = await apiHandler.post(signUpApi,requestBody );
     if (response != null && response.statusCode == 201) {
       final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, userModel.userDetails!.refreshToken!);
+    await  setBearerToken(userModel.userDetails!.accessToken!);
+   await setRefreshToken(userModel.userDetails!.refreshToken!);
+
       await setUserId(userModel.userDetails!.user!.userId!);
       return userModel;
     } else {
@@ -45,8 +47,8 @@ class SignupLoginServices{
     if (response != null && response.statusCode == 200) {
        SignUpLoginResponseModel? userModel = SignUpLoginResponseModel.fromJson(response.data);
        print('UserModel::: ${jsonEncode(userModel)}');
-
-      await  DioInstance.saveTokens(userModel.userDetails!.accessToken!, userModel.userDetails!.refreshToken!);
+       await  setBearerToken(userModel.userDetails!.accessToken!);
+       await setRefreshToken(userModel.userDetails!.refreshToken!);
         await setUserId(userModel.userDetails!.user!.userId!);
 
       return userModel;
