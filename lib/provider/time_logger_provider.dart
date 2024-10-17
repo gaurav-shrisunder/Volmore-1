@@ -82,7 +82,7 @@ class TimerProvider with ChangeNotifier {
   }
 
   Future<void> endLogging(
-      BuildContext context, Event event, String eventInstanceId,) async {
+      BuildContext context, Event event, EventInstance eventInstanceId,) async {
     _endTime = DateTime.now();
     toggleLogging();
     notifyListeners();

@@ -273,351 +273,224 @@ class _EventsScreenState extends State<EventsScreen>
                               }
                             }
 
-                            return snapshot
-                                        .data
-                                        ?.eventDetails
-                                        ?.events?[index]
-                                        .eventParticipant
-                                        ?.verifierSignatureHash !=
-                                    "" /*&& isToday*/
-                                ? const SizedBox()
-                                : Center(
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.5),
-                                                spreadRadius: 1,
-                                                blurRadius: 2,
-                                                offset: const Offset(0, 1),
+                         return /*snapshot.data?.eventDetails?.events?[index].eventParticipant?.verifierSignatureHash != "" *//*&& isToday*//*
+                             ? const SizedBox()
+                             :*/ Center(
+                           child: Stack(
+                             children: [
+                               Container(
+                                 decoration: BoxDecoration(
+                                   color: Colors.white,
+                                   borderRadius: BorderRadius.circular(8),
+                                   boxShadow: [
+                                     BoxShadow(
+                                       color: Colors.grey.withOpacity(0.5),
+                                       spreadRadius: 1,
+                                       blurRadius: 2,
+                                       offset: const Offset(0, 1),
+                                     ),
+                                   ],
+                                 ),
+                                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                 child: Padding(
+                                   padding: const EdgeInsets.all(16.0),
+                                   child: Column(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                     children: [
+                                       Text(
+                                         snapshot.data?.eventDetails?.events?[index].event?.eventTitle?.capitalize ?? "",
+                                         style: TextStyle(
+                                             fontSize: 18,
+                                             fontWeight: FontWeight.bold,
+                                             color:HexColor(snapshot.data!.eventDetails!.events![index].event!.eventColorCode!)
                                               ),
-                                            ],
-                                          ),
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(16.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  snapshot
-                                                          .data
-                                                          ?.eventDetails
-                                                          ?.events?[index]
-                                                          .event
-                                                          ?.eventTitle
-                                                          ?.capitalize ??
-                                                      "",
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: HexColor(snapshot
-                                                          .data!
-                                                          .eventDetails!
-                                                          .events![index]
-                                                          .event!
-                                                          .eventColorCode!)),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 5),
-                                                      decoration: BoxDecoration(
-                                                        //  color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset:
-                                                                const Offset(
-                                                                    0, 1),
-                                                          ),
-                                                        ],
-                                                        border: Border.all(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.5)),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                              Icons.date_range,
-                                                              size: 16,
-                                                              color:
-                                                                  Colors.green),
-                                                          const SizedBox(
-                                                              width: 4),
-                                                          Text(
-                                                            DateFormat.yMMMd().format(
-                                                                DateTime.parse(snapshot
-                                                                    .data!
-                                                                    .eventDetails!
-                                                                    .events![
-                                                                        index]
-                                                                    .event!
-                                                                    .reccurencePattern!
-                                                                    .eventStartDateTime!)),
-                                                            style: const TextStyle(
-                                                                fontSize: 12,
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 15),
-                                                    Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 5),
-                                                      decoration: BoxDecoration(
-                                                        //  color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset:
-                                                                const Offset(
-                                                                    0, 1),
-                                                          ),
-                                                        ],
-                                                        border: Border.all(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.5)),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                              Icons.person,
-                                                              size: 16,
-                                                              color:
-                                                                  Colors.blue),
-                                                          const SizedBox(
-                                                              width: 4),
-                                                          Text(
-                                                            'Host by: ${snapshot.data!.eventDetails!.events![index].event?.hostName}',
-                                                            softWrap: true,
-                                                            style: const TextStyle(
-                                                                fontSize: 12,
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  "Event Description: ${snapshot.data!.eventDetails!.events![index].event?.eventDescription ?? "Description"}",
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.normal),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        IconButton(
-                                                          icon: Image.asset(
-                                                              'assets/icons/share.png'),
-                                                          onPressed: () async {
-                                                            final String? uid =
-                                                                await getUserId();
-                                                            String url = await createDynamicLink(
-                                                                snapshot
-                                                                    .data!
-                                                                    .eventDetails!
-                                                                    .events![
-                                                                        index]
-                                                                    .eventInstance!
-                                                                    .eventInstanceId!,
-                                                                uid!);
-                                                            print("URL: $url");
-                                                            Share.share(url);
-                                                          },
-                                                        ),
-                                                        IconButton(
-                                                          icon: Image.asset(
-                                                              'assets/icons/add.png'),
-                                                          onPressed: () {},
-                                                        ),
-                                                        IconButton(
-                                                          icon: Image.asset(
-                                                              'assets/icons/edit.png'),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    ActionChip(
-                                                      backgroundColor:
-                                                          Colors.lightBlue,
-                                                      side: BorderSide.none,
-                                                      disabledColor: Colors.grey
-                                                          .withOpacity(0.6),
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 7,
-                                                          vertical: 5),
-                                                      label: Text(
-                                                        buttonText,
-                                                        style: TextStyle(
-                                                            color: isEnabled
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                            fontSize: 16),
-                                                      ),
-                                                      onPressed: isEnabled
-                                                          ? () {
-                                                              if (tabName
-                                                                  .contains(
-                                                                      "Today")) {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (context) => LogNowPage(
-                                                                        snapshot
-                                                                            .data!
-                                                                            .eventDetails!
-                                                                            .events![
-                                                                                index]
-                                                                            .event!,
-                                                                        snapshot
-                                                                            .data!
-                                                                            .eventDetails!
-                                                                            .events![index]
-                                                                            .eventInstance!
-                                                                            .eventInstanceId!),
-                                                                  ),
-                                                                );
-                                                              }
-                                                              //comm
-                                                              if (tabName
-                                                                  .contains(
-                                                                      "Past")) {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            PastEventVerification(
-                                                                      date: snapshot
-                                                                          .data!
-                                                                          .eventDetails!
-                                                                          .events![
-                                                                              index]
-                                                                          .event!
-                                                                          .reccurencePattern!
-                                                                          .eventStartDateTime!,
-                                                                      event: snapshot
-                                                                          .data!
-                                                                          .eventDetails!
-                                                                          .events![index],
-                                                                      eventInstanceId: snapshot
-                                                                          .data!
-                                                                          .eventDetails!
-                                                                          .events![
-                                                                              index]
-                                                                          .eventInstance!
-                                                                          .eventInstanceId!,
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              }
-                                                            }
-                                                          : null,
-                                                      labelPadding:
-                                                          const EdgeInsets
-                                                              .symmetric(
-                                                              horizontal: 30,
-                                                              vertical: 5),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          left: 0,
-                                          top: 0,
-                                          bottom: 0,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16.0,
-                                                vertical: 8.5),
-                                            child: Container(
-                                              width: 5,
-                                              decoration: BoxDecoration(
-                                                color: HexColor(snapshot
-                                                    .data!
-                                                    .eventDetails!
-                                                    .events![index]
-                                                    .event!
-                                                    .eventColorCode!),
-                                                borderRadius:
-                                                    const BorderRadius.only(
-                                                  topLeft: Radius.circular(8),
-                                                  bottomLeft:
-                                                      Radius.circular(8),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                          },
-                        ),
-                      ),
-              ],
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        });
+                                       ),
+                                       const SizedBox(height: 8),
+                                       Row(
+                                         children: [
+                                           Container(
+                                             padding: const EdgeInsets.symmetric(
+                                                 horizontal: 8, vertical: 5),
+                                             decoration: BoxDecoration(
+                                               //  color: Colors.white,
+                                               borderRadius: BorderRadius.circular(8),
+                                               boxShadow: [
+                                                 BoxShadow(
+                                                   color: Colors.grey.withOpacity(0.2),
+                                                   spreadRadius: 1,
+                                                   blurRadius: 2,
+                                                   offset: const Offset(0, 1),
+                                                 ),
+                                               ],
+                                               border:
+                                               Border.all(color: Colors.grey.withOpacity(0.5)),
+                                             ),
+                                             child: Row(
+                                               children: [
+                                                 const Icon(Icons.date_range,
+                                                     size: 16, color: Colors.green),
+                                                 const SizedBox(width: 4),
+                                                 Text(
+                                                   DateFormat.yMMMd().format(DateTime.parse(snapshot.data!.eventDetails!.events![index].eventInstance!.eventStartDateTime!)),
+                                                   style: const TextStyle(
+                                                       fontSize: 12,
+                                                       color: Colors.black,
+                                                       fontWeight: FontWeight.normal),
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                           const SizedBox(width: 15),
+                                           Container(
+                                             padding: const EdgeInsets.symmetric(
+                                                 horizontal: 8, vertical: 5),
+                                             decoration: BoxDecoration(
+                                               //  color: Colors.white,
+                                               borderRadius: BorderRadius.circular(8),
+                                               boxShadow: [
+                                                 BoxShadow(
+                                                   color: Colors.grey.withOpacity(0.2),
+                                                   spreadRadius: 1,
+                                                   blurRadius: 2,
+                                                   offset: const Offset(0, 1),
+                                                 ),
+                                               ],
+                                               border:
+                                               Border.all(color: Colors.grey.withOpacity(0.5)),
+                                             ),
+                                             child: Row(
+                                               children: [
+                                                 const Icon(Icons.person,
+                                                     size: 16, color: Colors.blue),
+                                                 const SizedBox(width: 4),
+                                                 Text(
+                                                   'Host by: ${snapshot.data!.eventDetails!.events![index].event?.hostName}',
+                                                   softWrap: true,
+                                                   style: const TextStyle(
+                                                       fontSize: 12,
+                                                       color: Colors.black,
+                                                       fontWeight: FontWeight.normal),
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                         ],
+                                       ),
+                                       const SizedBox(height: 8),
+                                       Text(
+                                         "Event Description: ${snapshot.data!.eventDetails!.events![index].event?.eventDescription ?? "Description"}",
+                                         style: const TextStyle(
+                                             fontSize: 14,
+                                             color: Colors.black, fontWeight: FontWeight.normal),
+                                       ),
+                                       const SizedBox(height: 8),
+                                       Row(
+                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Row(
+                                             children: [
+                                               IconButton(
+                                                 icon: Image.asset('assets/icons/share.png'),
+                                                 onPressed: () async {
+
+                                                   final String? uid = await getUserId();
+                                                   String url =
+                                                   await createDynamicLink(snapshot.data!.eventDetails!.events![index].eventInstance!.eventInstanceId!, uid!);
+                                                   print("URL: $url");
+                                                   Share.share(url);
+                                                 },
+                                               ),
+                                               IconButton(
+                                                 icon: Image.asset('assets/icons/add.png'),
+                                                 onPressed: () {},
+                                               ),
+                                               IconButton(
+                                                 icon: Image.asset('assets/icons/edit.png'),
+                                                 onPressed: () {},
+                                               ),
+                                             ],
+                                           ),
+                                           ActionChip(
+                                             backgroundColor: Colors.lightBlue,
+                                             side: BorderSide.none,
+                                             disabledColor: Colors.grey.withOpacity(0.6),
+                                             padding: const EdgeInsets.symmetric(
+                                                 horizontal: 7, vertical: 5),
+                                             label:  Text(
+                                               buttonText,
+                                               style: TextStyle(
+                                                   color: /*isEnabled*/false ? Colors.white : Colors.black,
+                                                   fontSize: 16),
+                                             ),
+                                             onPressed:isEnabled
+                                                 ? () {
+                                               if (tabName.contains("Today")) {
+                                                 Navigator.push(
+                                                   context,
+                                                   MaterialPageRoute(
+                                                     builder: (context) => LogNowPage(
+                                                       snapshot.data!.eventDetails!.events![index].event!,snapshot.data!.eventDetails!.events![index].eventInstance!
+                                                     ),
+                                                   ),
+                                                 );
+                                               }
+                                               if (tabName.contains("Past")) {
+                                              /*   Navigator.push(
+                                                   context,
+                                                   MaterialPageRoute(
+                                                     builder: (context) =>
+                                                         PastEventVerification(
+                                                           date: date,
+                                                           event: event,
+                                                         ),
+                                                   ),
+                                                 );*/
+                                               }
+                                             }
+                                                 : null,
+                                             labelPadding: const EdgeInsets.symmetric(
+                                                 horizontal: 30, vertical: 5),
+                                           ),
+                                         ],
+                                       ),
+                                     ],
+                                   ),
+                                 ),
+                               ),
+                               Positioned(
+                                 left: 0,
+                                 top: 0,
+                                 bottom: 0,
+                                 child: Padding(
+                                   padding:
+                                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.5),
+                                   child: Container(
+                                     width: 5,
+                                     decoration: BoxDecoration(
+                                       color: HexColor(snapshot.data!.eventDetails!.events![index].event!.eventColorCode!),
+                                       borderRadius: const BorderRadius.only(
+                                         topLeft: Radius.circular(8),
+                                         bottomLeft: Radius.circular(8),
+                                       ),
+                                     ),
+                                   ),
+                                 ),
+                               ),
+                             ],
+                           ),
+                         );
+                       },
+                     ),
+                   ),
+                 ],
+               );
+             }else{
+              return const Center(child: CircularProgressIndicator(),);
+             }
+
+
+           }
+         );
   }
 
 /*  bool isLogSignatureVerified(EventParticipant event, DateTime date) {
