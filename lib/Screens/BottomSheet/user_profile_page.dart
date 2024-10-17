@@ -59,7 +59,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
       logRows.add(
         DataRow(cells: [
           DataCell(Text(event.title ?? "")),
-          DataCell(Text(DateFormat.yMMMd().format(DateTime.parse(event.date)))),
+          DataCell(Text(DateFormat.yMMMd()
+              .format(DateTime.parse(event.date.split(" ")[0].trim())))),
           DataCell(Text(event.location ?? "No location")),
         ]),
       );
@@ -82,6 +83,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
 
     if (isLoading) {
       return const Scaffold(
@@ -131,35 +133,42 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     elevation: 10,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: Image.asset(
-                              "assets/images/timer.png",
-                              fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: width * 0.34,
+                        height: width * 0.11,
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "${weeklyStats!.lifeTimeHours.toString()} Hour",
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: headingBlue),
+                            SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: Image.asset(
+                                "assets/images/timer.png",
+                                fit: BoxFit.cover,
                               ),
-                              const Text("Lifetime Hours",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                  )),
-                            ],
-                          )
-                        ],
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  "${weeklyStats!.lifeTimeHours.toString()} Hour",
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: headingBlue),
+                                ),
+                                const Text("Lifetime Hours",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                    )),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -168,35 +177,42 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: Image.asset(
-                              "assets/images/timer.png",
-                              fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: width * 0.34,
+                        height: width * 0.11,
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 8,
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "${weeklyStats?.weekTotalHour.toString() ?? "0"} Hrs",
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: headingBlue),
+                            SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: Image.asset(
+                                "assets/images/timer.png",
+                                fit: BoxFit.cover,
                               ),
-                              const Text("This week",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                  )),
-                            ],
-                          )
-                        ],
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  "${weeklyStats?.weekTotalHour.toString() ?? "0"} Hrs",
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: headingBlue),
+                                ),
+                                const Text("This week",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                    )),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -242,7 +258,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ],
                     xAxisName: "",
                     yAxisName: "",
-                    interval: 1,
+                    interval: 5,
                   ),
                 ),
               ),
@@ -264,12 +280,28 @@ class _UserProfilePageState extends State<UserProfilePage> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
+                  columnSpacing: width * 0.18,
                   columns: const [
-                    DataColumn(label: Text('Title')),
-                    DataColumn(label: Text('Date')),
-                    DataColumn(label: Text('Location')),
+                    DataColumn(
+                        label: Text(
+                      'Title',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
+                    DataColumn(
+                        label: Text(
+                      'Date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
+                    DataColumn(
+                        label: Text(
+                      'Location',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    )),
                   ],
                   rows: generateWeeklyLogRows(weeklyStats!.eventDetails!),
+                  border:
+                      TableBorder.all(borderRadius: BorderRadius.circular(8)),
+                  // TableBorder.symmetric(outside: const BorderSide())
                 ),
               ),
             ],

@@ -18,13 +18,7 @@ import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    // Replace with actual values
-    // options: const FirebaseOptions(
-    //   apiKey: "AIzaSyDGbdwmUAMhURhEyHTFH6Hb4o5s7CenVbw",
-    //   appId: "com.maizelabs.volmore",
-    //   messagingSenderId: "com.maizelabs.volmore",
-    //   projectId: "volunteering-9e75b",
-    // ),
+
   );
   Get.put(EventController());
 
@@ -58,8 +52,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     // Handle dynamic link when the app is launched via a deep link
     handleDynamicLink();
-    // Fetch events once on app start
-    eventController.fetchEvents();
+
+ 
    // clearPreferences();
     checkLocalStorage();
   }

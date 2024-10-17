@@ -500,13 +500,10 @@ class _EventsScreenState extends State<EventsScreen>
                                                           vertical: 5),
                                                       label: Text(
                                                         buttonText,
-                                                        style: const TextStyle(
-                                                            color: /*isEnabled*/
-                                                                false
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black,
+                                                        style: TextStyle(
+                                                            color: isEnabled
+                                                                ? Colors.white
+                                                                : Colors.black,
                                                             fontSize: 16),
                                                       ),
                                                       onPressed: isEnabled
