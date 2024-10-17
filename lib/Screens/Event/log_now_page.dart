@@ -15,7 +15,7 @@ import '../../provider/time_logger_provider.dart';
 class LogNowPage extends StatefulWidget {
   // final EventDataModel eventModel;
    final Event eventModel;
-   final String eventInstanceId;
+   final EventInstance eventInstanceId;
 
   const LogNowPage( this.eventModel, this.eventInstanceId ,{super.key});
 

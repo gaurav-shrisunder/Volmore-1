@@ -29,7 +29,7 @@ import '../../Utils/common_utils.dart';
 class VolunteerConfirmationScreen extends StatefulWidget {
  // final EventDataModel event;
   final Event event;
-  final String eventInstanceId;
+  final EventInstance eventInstanceId;
 
   // final DateTime date;
   const VolunteerConfirmationScreen(this.event,this.eventInstanceId,
@@ -430,7 +430,7 @@ class _VolunteerConfirmationScreenState
                     * */
 
                     requestBody.userId= await getUserId();
-                    requestBody.eventInstanceId = widget.eventInstanceId;
+                    requestBody.eventInstanceId = widget.eventInstanceId.eventInstanceId;
                     requestBody.userStartDateTime = widget.event.eventParticipatedDuration?.split("::").first;
                     requestBody.userEndDateTime = widget.event.eventParticipatedDuration?.split("::").last;
                     requestBody.userLocationName = widget.event.eventLocationName;

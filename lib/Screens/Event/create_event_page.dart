@@ -510,7 +510,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
                               DateFormat('yyyy/MM/dd  hh:mm a').format(
-                                  DateTime.parse(startUtcDateTime).toUtc()),
+                                  DateTime.parse(startUtcDateTime).toUtc().toLocal()),
                               textAlign: TextAlign.center,
                             )
                           : const Icon(Icons.calendar_month_rounded),
@@ -594,7 +594,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 ? Text(
                                     DateFormat('yyyy/MM/dd  hh:mm a').format(
                                         DateTime.parse(endUtcDateTime)
-                                            .toLocal()),
+                                            .toUtc().toLocal()),
                                     textAlign: TextAlign.center,
                                   )
                                 : const Icon(Icons.calendar_month_rounded),
