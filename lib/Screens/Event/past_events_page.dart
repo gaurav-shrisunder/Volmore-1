@@ -7,10 +7,10 @@ import 'package:uuid/uuid.dart';
 import 'package:volunterring/Models/request_models/log_past_event_request_model.dart';
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Services/authentication.dart';
+
 import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Services/logService.dart';
-import 'package:volunterring/Utils/Colors.dart';
+
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
@@ -27,15 +27,14 @@ class _PastEventsPageState extends State<PastEventsPage> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-  final _nameController = TextEditingController();
-  final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
-  final _logMethod = LogServices();
+
   TimeOfDay? picked = TimeOfDay.now();
   List<String> _groupNames = [];
 
   String? _selectedGroup;
-  final Uuid _uuid = const Uuid();
+  bool isLoading = true;
+
   List<EventCategories> eventCategoriesList = [];
 
   DateTime? startDate;
@@ -87,8 +86,6 @@ class _PastEventsPageState extends State<PastEventsPage> {
 
   Future<void> _fetchGroupNames() async {
     try {
-      /* QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('groups').get();*/
       EventCategoryResponseModel? eventCategoryResponseModel =
           await EventsServices().getEventsCategoryData();
 
@@ -100,9 +97,13 @@ class _PastEventsPageState extends State<PastEventsPage> {
       setState(() {
         eventCategoriesList = eventCategoryResponseModel!.eventCategories!;
         _groupNames = groupNames;
+        isLoading = false;
       });
     } catch (e) {
       print("Error fetching group names: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -151,54 +152,61 @@ class _PastEventsPageState extends State<PastEventsPage> {
       context: context,
       builder: (BuildContext context) {
         String newGroupName = '';
-        return AlertDialog(
-          title: const Text('Add New Group'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                onChanged: (value) => newGroupName = value,
-                decoration: const InputDecoration(labelText: 'Group Name'),
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text('Add New Group'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  onChanged: (value) => newGroupName = value,
+                  decoration: const InputDecoration(labelText: 'Group Name'),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                DropdownButton<String>(
+                  value: selectedColor,
+                  hint: const Text('Select Color'),
+                  isExpanded: true,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedColor = newValue;
+                    });
+                  },
+                  items: colorOptions
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
               ),
-              DropdownButton<String>(
-                value: selectedColor,
-                hint: const Text('Select Color'),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedColor = newValue;
-                  });
+              ElevatedButton(
+                onPressed: () async {
+                  if (newGroupName.isNotEmpty && selectedColor != null) {
+                    String colorCode = colorCodes[selectedColor]!;
+                    await _addGroup(newGroupName, colorCode).then((onValue) {
+                      Fluttertoast.showToast(msg: onValue);
+                    });
+                    Navigator.of(context).pop();
+                  } else {
+                    Fluttertoast.showToast(msg: "Please fill all fields");
+                  }
                 },
-                items:
-                    colorOptions.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+                child: const Text('Add Group'),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (newGroupName.isNotEmpty && selectedColor != null) {
-                  String colorCode = colorCodes[selectedColor]!;
-                  await _addGroup(newGroupName, colorCode).then((onValue) {
-                    Fluttertoast.showToast(msg: onValue);
-                  });
-                  Navigator.of(context).pop();
-                } else {
-                  Fluttertoast.showToast(msg: "Please fill all fields");
-                }
-              },
-              child: const Text('Add Group'),
-            ),
-          ],
-        );
+          );
+        });
       },
     );
   }
@@ -295,7 +303,12 @@ class _PastEventsPageState extends State<PastEventsPage> {
         dates: datesList);
     try {
       var res = await EventsServices().logPastEventData(requestModel);
-      Fluttertoast.showToast(msg: res["message"] ?? "Success");
+      if (res == true) {
+        Fluttertoast.showToast(msg: "Past Hours Logged Successfully");
+      } else {
+        Fluttertoast.showToast(msg: "Some error occured Try again later");
+      }
+
       Navigator.pop(context);
 
       Navigator.pushReplacement(
@@ -382,6 +395,49 @@ class _PastEventsPageState extends State<PastEventsPage> {
                         const SizedBox(height: 5),
                         TextField(
                           controller: dateControllers[index],
+                          decoration: InputDecoration(
+                            filled: true,
+                            labelText: 'Date',
+                            suffixIcon: const Icon(Icons.calendar_today),
+
+                            hintStyle: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            //  fillColor: Colors.white,
+                            // prefixIcon: widget.prefixicon,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(255, 213, 215, 215),
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[400]!,
+                                width: 2.0,
+                              ),
+                            ),
+                            // Display the error message
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.red[400]!,
+                                width: 2.0,
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.red[400]!,
+                                width: 2.0,
+                              ),
+                            ),
+                          ),
                           onTap: () async {
                             final DateTime? picked = await showDatePicker(
                               context: context,
@@ -398,10 +454,9 @@ class _PastEventsPageState extends State<PastEventsPage> {
                             }
                           },
                           readOnly: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Date',
-                            suffixIcon: Icon(Icons.calendar_today),
-                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
                         ),
                         Row(
                           children: [
@@ -423,9 +478,48 @@ class _PastEventsPageState extends State<PastEventsPage> {
                                   }
                                 },
                                 readOnly: true,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
+                                  filled: true,
                                   labelText: 'Start Time',
-                                  suffixIcon: Icon(Icons.access_time),
+                                  suffixIcon: const Icon(Icons.access_time),
+
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 20),
+                                  //  fillColor: Colors.white,
+                                  // prefixIcon: widget.prefixicon,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromARGB(255, 213, 215, 215),
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[400]!,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  // Display the error message
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Colors.red[400]!,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Colors.red[400]!,
+                                      width: 2.0,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -448,9 +542,48 @@ class _PastEventsPageState extends State<PastEventsPage> {
                                   }
                                 },
                                 readOnly: true,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
+                                  filled: true,
                                   labelText: 'End Time',
-                                  suffixIcon: Icon(Icons.access_time),
+                                  suffixIcon: const Icon(Icons.access_time),
+
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 20),
+                                  //  fillColor: Colors.white,
+                                  // prefixIcon: widget.prefixicon,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: const BorderSide(
+                                      color: Color.fromARGB(255, 213, 215, 215),
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey[400]!,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  // Display the error message
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Colors.red[400]!,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Colors.red[400]!,
+                                      width: 2.0,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -481,8 +614,10 @@ class _PastEventsPageState extends State<PastEventsPage> {
                   ),
                 ),
                 const SizedBox(height: 5),
-                _groupNames.isEmpty
-                    ? const CircularProgressIndicator()
+                isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
                     : Container(
                         decoration: BoxDecoration(
                           boxShadow: [
@@ -535,13 +670,14 @@ class _PastEventsPageState extends State<PastEventsPage> {
                             }
                           },
                           items: [
-                            ..._groupNames
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                            ..._groupNames.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList() ??
+                                [],
                             const DropdownMenuItem<String>(
                               value: 'add_new',
                               child: Text('Add New Group'),

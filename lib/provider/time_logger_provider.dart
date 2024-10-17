@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -83,44 +82,21 @@ class TimerProvider with ChangeNotifier {
   }
 
   Future<void> endLogging(
-      BuildContext context, Event event, EventInstance eventInstance,) async {
+      BuildContext context, Event event, String eventInstanceId,) async {
     _endTime = DateTime.now();
     toggleLogging();
     notifyListeners();
-    // Convert to UTC and format without seconds
-    String formattedStartTime = DateFormat("yyyy-MM-ddTHH:mm").format(startTime.toUtc().toLocal());
-    String formattedEndTime = DateFormat("yyyy-MM-ddTHH:mm").format(endTime.toUtc().toLocal());
-    event.eventParticipatedDuration = "$formattedStartTime::$formattedEndTime";
-    event.eventLocationName = address ?? "";
-    log('time is: $formattedStartTime::$formattedEndTime');
+    event.eventParticipatedDuration = "${startTime.toIso8601String()+""+endTime.toIso8601String()}";
+    log('time is: ${startTime.toIso8601String()} :: ${endTime.toIso8601String()}');
 
-    // Calculate the difference between startTime and endTime
-    Duration difference = endTime.difference(startTime);
-
-    // Check if startTime is before endTime and the difference is at least 1 minute
-    if (startTime.isBefore(endTime) && difference.inMinutes >= 1) {
-      // Navigate to the Confirmation screen if the condition is met
-      Navigator.push(
+    ///Navigating to Confirmation form screen with the Event data
+    Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VolunteerConfirmationScreen(event, eventInstance),
-        ),
-      );
-    } else if (difference.inMinutes < 1) {
-      // Show FlutterToast if the time difference is less than 1 minute
-      Fluttertoast.showToast(
-        msg: "The difference between start and end time should be at least 1 minute",
-        toastLength: Toast.LENGTH_LONG,
-      );
-    } else {
-      // Show FlutterToast if endTime is before startTime
-      Fluttertoast.showToast(
-        msg: "End time should be later than start time",
-        toastLength: Toast.LENGTH_LONG,
-      );
-    }
+            builder: (context) => VolunteerConfirmationScreen(
+                  event,eventInstanceId
 
-
+                )));
   }
 
   Future<void> createSingleLog(

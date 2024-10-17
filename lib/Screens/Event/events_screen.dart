@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
 
 import '../../Models/event_data_model.dart';
 import '../../Models/response_models/events_data_response_model.dart';
@@ -81,12 +82,11 @@ class _EventsScreenState extends State<EventsScreen>
   FutureBuilder<EventsDataResponseModel?> buildEventsFutureBuilder(
       String tabName, Future<EventsDataResponseModel?> eventFuture) {
     return FutureBuilder<EventsDataResponseModel?>(
-           future: eventFuture,
-           builder: (context, snapshot) {
-             if(ConnectionState.done == snapshot.connectionState){
-
-               return Column(
-                 children: [
+        future: eventFuture,
+        builder: (context, snapshot) {
+          if (ConnectionState.done == snapshot.connectionState) {
+            return Column(
+              children: [
                 //   const SizedBox(height: 15),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -165,103 +165,113 @@ class _EventsScreenState extends State<EventsScreen>
                                                   _selectedOption =
                                                       selectedOption;
 
-                                                     //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                                                     //   _updateEventList(events); // Update the main event list
-                                                   });
-                                                   Navigator.of(context).pop();
-                                                 },
-                                               ),
-                                               RadioListTile<SortOption>(
-                                                 title: const Text('Z-A'),
-                                                 value: SortOption.za,
-                                                 groupValue: selectedOption,
-                                                 onChanged: (SortOption? value) {
-                                                   setState(() {
-                                                     selectedOption = value;
-                                                     _selectedOption = selectedOption;
-                                                     //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
-                                                     //    _updateEventList(events); // Update the main event list
-                                                   });
-                                                   Navigator.of(context).pop();
-                                                 },
-                                               ),
-                                               RadioListTile<SortOption>(
-                                                 title: const Text('Date: Ascending'),
-                                                 value: SortOption.dateAsc,
-                                                 groupValue: selectedOption,
-                                                 onChanged: (SortOption? value) {
-                                                   setState(() {
-                                                     selectedOption = value;
-                                                     _selectedOption = selectedOption;
-
-                                                   });
-                                                   Navigator.of(context).pop();
-                                                 },
-                                               ),
-                                               RadioListTile<SortOption>(
-                                                 title: const Text('Date: Descending'),
-                                                 value: SortOption.dateDesc,
-                                                 groupValue: selectedOption,
-                                                 onChanged: (SortOption? value) {
-                                                   setState(() {
-                                                     selectedOption = value;
-                                                     _selectedOption = selectedOption;
-
-                                                   });
-                                                   Navigator.of(context).pop();
-                                                 },
-                                               ),
-                                             ],
-                                           )
-                                         ],
-                                       );
-                                     },
-                                   );
-                                 },
-                                 icon: const Icon(Icons.sort))
-                           ],
-                         ),
-                       ],
-                     ),
-                   ),
-                   snapshot.data?.eventDetails?.events?.length == 0
-                       ? const Expanded(
-                     child: Center(
-                       child: Text(
-                         "No Events Found",
-                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                       ),
-                     ),
-                   )
-                       : Expanded(
-                     child: ListView.builder(
-                       itemCount: snapshot.data?.eventDetails?.events?.length,
-                       itemBuilder: (context, index) {
+                                                  //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                                                  //   _updateEventList(events); // Update the main event list
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            RadioListTile<SortOption>(
+                                              title: const Text('Z-A'),
+                                              value: SortOption.za,
+                                              groupValue: selectedOption,
+                                              onChanged: (SortOption? value) {
+                                                setState(() {
+                                                  selectedOption = value;
+                                                  _selectedOption =
+                                                      selectedOption;
+                                                  //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+                                                  //    _updateEventList(events); // Update the main event list
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            RadioListTile<SortOption>(
+                                              title:
+                                                  const Text('Date: Ascending'),
+                                              value: SortOption.dateAsc,
+                                              groupValue: selectedOption,
+                                              onChanged: (SortOption? value) {
+                                                setState(() {
+                                                  selectedOption = value;
+                                                  _selectedOption =
+                                                      selectedOption;
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            RadioListTile<SortOption>(
+                                              title: const Text(
+                                                  'Date: Descending'),
+                                              value: SortOption.dateDesc,
+                                              groupValue: selectedOption,
+                                              onChanged: (SortOption? value) {
+                                                setState(() {
+                                                  selectedOption = value;
+                                                  _selectedOption =
+                                                      selectedOption;
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(Icons.sort))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                snapshot.data?.eventDetails?.events?.length == 0
+                    ? const Expanded(
+                        child: Center(
+                          child: Text(
+                            "No Events Found",
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount:
+                              snapshot.data?.eventDetails?.events?.length,
+                          itemBuilder: (context, index) {
                             // EventDataModel? event = events[index].event;
-                         // DateTime date = DateTime.parse(snapshot.data!.events![index].eventInstance!.eventStartDateTime!);
-
+                            // DateTime date = DateTime.parse(snapshot.data!.events![index].eventInstance!.eventStartDateTime!);
 
                             //  Color color =colorMap[getGroupColor(event!)] ?? Colors.pink;
 
-                       bool isEnabled = false;
-                       String buttonText = "";
-                    //   bool isVerified = snapshot.data!.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
-                       if (tabName.contains("Today")) {
-                         isEnabled = true;
-                         buttonText = "Log Now";
-                       } else if (tabName.contains("Upcoming")) {
-                         isEnabled = false;
-                         buttonText = "Log Now";
-                       } else {
-                         bool isVerified = snapshot.data!.eventDetails?.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
-                         if (isVerified) {
-                           isEnabled = false;
-                           buttonText = "Verify";
-                         } else {
-                           isEnabled = true;
-                           buttonText = "Verify";
-                         }
-                       }
+                            bool isEnabled = false;
+                            String buttonText = "";
+                            //   bool isVerified = snapshot.data!.events![index].eventParticipant?.verifierSignatureHash != "";/*isLogSignatureVerified(event, date);*/
+                            if (tabName.contains("Today")) {
+                              isEnabled = true;
+                              buttonText = "Log Now";
+                            } else if (tabName.contains("Upcoming")) {
+                              isEnabled = false;
+                              buttonText = "Log Now";
+                            } else {
+                              bool isVerified = snapshot
+                                      .data!
+                                      .eventDetails
+                                      ?.events![index]
+                                      .eventParticipant
+                                      ?.verifierSignatureHash !=
+                                  ""; /*isLogSignatureVerified(event, date);*/
+                              if (isVerified) {
+                                isEnabled = false;
+                                buttonText = "Verify";
+                              } else {
+                                isEnabled = true;
+                                buttonText = "Verify";
+                              }
+                            }
 
                          return /*snapshot.data?.eventDetails?.events?[index].eventParticipant?.verifierSignatureHash != "" *//*&& isToday*//*
                              ? const SizedBox()

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:volunterring/Utils/Colors.dart';
+
 
 class InputFeildWidget extends StatefulWidget {
   final String title;
@@ -29,26 +31,8 @@ class InputFeildWidget extends StatefulWidget {
 class _InputFeildWidgetState extends State<InputFeildWidget> {
   String? _errorMessage;
 
-
-
-  // Validation logic based on title
   void _validateInput() {
-    String? error;
-
-    // Apply validation based on the title
-    if (widget.title.toLowerCase().contains("email")) {
-      error = emailValidator(widget.controller.text);
-    } else if (widget.title.toLowerCase().contains("name")) {
-      error = nameValidator(widget.controller.text);
-    } else if (widget.title.toLowerCase().contains("mobile")) {
-      error = phoneValidator(widget.controller.text);
-    }
-
-    // If there's a custom validator passed, use it as well
-    if (widget.validator != null) {
-      error = widget.validator!.call(widget.controller.text);
-    }
-
+    final error = widget.validator?.call(widget.controller.text);
     setState(() {
       _errorMessage = error;
     });
@@ -60,6 +44,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         TextFormField(
           enabled: widget.isEnabled,
           controller: widget.controller,
@@ -75,6 +60,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
                 fontWeight: FontWeight.w400),
             contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          //  fillColor: Colors.white,
             prefixIcon: widget.prefixicon,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -115,15 +101,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
   }
 }
 
-// Example Validators (if needed for other fields)
-String? generalValidator(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'This field cannot be empty';
-  }
-  return null;
-}
-
-// Email Validator
+// Example Validators
 String? emailValidator(String? value) {
   if (value == null || value.isEmpty) {
     return 'Email cannot be empty';
@@ -133,7 +111,6 @@ String? emailValidator(String? value) {
   return null;
 }
 
-// Name Validator
 String? nameValidator(String? value) {
   if (value == null || value.isEmpty) {
     return 'Name cannot be empty';
@@ -143,7 +120,6 @@ String? nameValidator(String? value) {
   return null;
 }
 
-// Phone Validator
 String? phoneValidator(String? value) {
   if (value == null || value.isEmpty) {
     return 'Phone number cannot be empty';
@@ -152,3 +128,4 @@ String? phoneValidator(String? value) {
   }
   return null;
 }
+

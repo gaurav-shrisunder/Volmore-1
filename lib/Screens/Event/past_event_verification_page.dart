@@ -3,22 +3,32 @@ import 'dart:core';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
-import 'package:volunterring/Models/event_data_model.dart';
+import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
+
+import 'package:volunterring/Models/response_models/events_data_response_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
+import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Services/logService.dart';
-import 'package:volunterring/Utils/Colormap.dart';
+
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 
 import '../../widgets/InputFormFeild.dart';
 
 class PastEventVerification extends StatefulWidget {
-  final EventDataModel event;
-  final DateTime date;
-  const PastEventVerification(
-      {super.key, required this.event, required this.date});
+  final String eventInstanceId;
+  final Events event;
+  final String date;
+  const PastEventVerification({
+    super.key,
+    required this.eventInstanceId,
+    required this.event,
+    required this.date,
+  });
 
   @override
   State<PastEventVerification> createState() => _PastEventVerificationState();
@@ -26,6 +36,7 @@ class PastEventVerification extends StatefulWidget {
 
 class _PastEventVerificationState extends State<PastEventVerification> {
   final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
   final SignatureController _signatureController = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
@@ -59,33 +70,12 @@ class _PastEventVerificationState extends State<PastEventVerification> {
           date1.day == date2.day;
     }
 
-    String? getLogIdForDate(EventDataModel event, DateTime date) {
-      for (LogModel log in event.logs ?? []) {
-        print(log.date.toDate());
-        print(date.toIso8601String());
-        if (log.date != null && isSameDate(log.date.toDate(), date)) {
-          return log.logId;
-        }
-      }
-      return null;
-    }
+    Color color = HexColor(widget.event.event!.eventColorCode!);
 
-    LogModel? getLogForDate(EventDataModel event, DateTime date) {
-      for (LogModel log in event.logs ?? []) {
-        print(log.date.toDate());
-        print(date.toIso8601String());
-        if (log.date != null && isSameDate(log.date.toDate(), date)) {
-          return log;
-        }
-      }
-      return null;
-    }
-
-    Color color = colorMap[widget.event.groupColor] ?? Colors.pink;
-    double screenWidth = MediaQuery.of(context).size.width;
+    // double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     String selectedCountryCode = '+1'; // Default country code
-    LogModel? log = getLogForDate(widget.event, widget.date);
+    // LogModel? log = getLogForDate(widget.event, widget.date);
 
     final List<String> countryCodes = ['+1', '+91', '+44', '+61', '+81'];
     return Scaffold(
@@ -132,44 +122,50 @@ class _PastEventVerificationState extends State<PastEventVerification> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.event.title.toString().capitalize ?? "",
+                widget.event.event!.eventTitle.toString().capitalize ?? "",
                 style: TextStyle(fontSize: 24, color: color),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                DateFormat.yMMMMEEEEd().format(widget.event.date),
+                DateFormat.yMMMMEEEEd().format(DateTime.parse(
+                    widget.event.eventParticipant!.userStartDateTime!)),
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                widget.event.description ?? "",
+                "Location :- ${widget.event.eventParticipant?.userLocationName ?? ""} ",
+                style: const TextStyle(fontSize: 16, color: greyColor),
+              ),
+              SizedBox(
+                height: screenHeight * 0.01,
+              ),
+              // Text(
+              //   "Duration :- ${log?.elapsedTime}" ?? "",
+              //   style: const TextStyle(fontSize: 16, color: greyColor),
+              // ),
+              // SizedBox(
+              //   height: screenHeight * 0.01,
+              // ),
+              Text(
+                "Duration :- ${widget.event.eventParticipant?.userHours ?? "00:00"} Hrs",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "Duration :- ${log?.elapsedTime}" ?? "",
+                "Start Time :-  ${DateFormat.Hm().format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!))}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "Start Time :- ${DateFormat('hh:mm a').format(log!.startTime.toDate())}" ??
-                    "",
-                style: const TextStyle(fontSize: 16, color: greyColor),
-              ),
-              SizedBox(
-                height: screenHeight * 0.01,
-              ),
-              Text(
-                "End Time :- ${DateFormat('hh:mm a').format(log.endTime.toDate())}" ??
-                    "",
+                "End Time :-  ${DateFormat.Hm().format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!))}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -192,11 +188,46 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                   borderRadius: BorderRadius.circular(9),
                   child: Signature(
                     controller: _signatureController,
-                    height: screenHeight * 0.2,
+                    height: screenHeight * 0.15,
                     backgroundColor: Colors.grey[200]!,
                     dynamicPressureSupported: true,
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              TextFormField(
+                controller: _notesController,
+                keyboardType: TextInputType.text,
+                maxLines: 3,
+                maxLength: 100,
+                decoration: InputDecoration(
+                  labelText: 'Notes(Optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  // Display the error message
+                ),
+                onChanged: (value) {},
+
+                // validator: phoneValidator,
               ),
               SizedBox(
                 height: screenHeight * 0.03,
@@ -285,20 +316,43 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                 onTap: () async {
                   String signatureString = await _exportSignatureAsString();
 
-                  // Handle empty signature case
-                  if (signatureString.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Please provide your signature.')),
-                    );
-                    return;
+                  if (_errorMessage != null) {
+                    Fluttertoast.showToast(
+                        msg: "Enter valid phone number",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  } else if (_signatureController.isEmpty) {
+                    Fluttertoast.showToast(
+                        msg: "Enter Signature",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  } else {
+                    LogEventRequestModel requestBody = LogEventRequestModel();
+
+                    requestBody.userId = await getUserId();
+                    requestBody.eventInstanceId = widget.eventInstanceId;
+
+                    requestBody.userNotes = _notesController.text;
+                    requestBody.verifierSignatureHash =
+                        _signatureController.toString();
+                    requestBody.verifierInformation =
+                        _phoneNumberController.text;
+                    requestBody.verifierNotes = _notesController.text;
+                    requestBody.userEndDateTime = null;
+                    requestBody.userStartDateTime = null;
+                    requestBody.userHours = null;
+
+                    await EventsServices().logEventData(requestBody);
+                    // submitEvent(context, _phoneNumberController.text);
                   }
-                  print(getLogIdForDate(widget.event, widget.date));
-                  print(widget.event.logs![0].logId);
-                  logMethods.updateSignatureInFirebase(
-                      getLogIdForDate(widget.event, widget.date) ?? "",
-                      signatureString,
-                      widget.event.id!);
                 },
                 child: Container(
                   padding:

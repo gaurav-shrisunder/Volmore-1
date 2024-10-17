@@ -42,7 +42,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final _nameController = TextEditingController();
   final _colorController = TextEditingController();
   DateTime selectedDate = DateTime.now();
- 
+
   TimeOfDay? picked = TimeOfDay.now();
 
   UserModel? user;
@@ -213,18 +213,46 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       setState(() {
         eventCategoriesList = eventCategoryResponseModel!.eventCategories!;
         _groupNames = groupNames;
+        isLoading = false;
       });
     } catch (e) {
       print("Error fetching group names: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
-  Future<String> _addGroup(String name, String color) async {
+  final List<String> colorOptions = [
+    'Red',
+    'Blue',
+    'Green',
+    'Yellow',
+    'Purple',
+    'Orange',
+    'Pink',
+    'Teal',
+    'Brown'
+  ];
+  final Map<String, String> colorCodes = {
+    'Red': '#FF0000',
+    'Blue': '#0000FF',
+    'Green': '#00FF00',
+    'Yellow': '#FFFF00',
+    'Purple': '#800080',
+    'Orange': '#FFA500',
+    'Pink': '#FFC0CB',
+    'Teal': '#008080',
+    'Brown': '#A52A2A'
+  };
+  String? selectedColor;
+  bool isLoading = true;
+  Future<String> _addGroup(String name, String colorCode) async {
     var userId = await getUserId();
 
     var req = {
       "eventCategoryName": name,
-      "eventColorCode": color,
+      "eventColorCode": colorCode,
       "createdBy": userId
     };
 
@@ -232,17 +260,76 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       EventCategoryResponseModel responseModel =
           await EventsServices().createEventCategoryData(req);
 
-      /*  String id = _uuid.v4();
-      await FirebaseFirestore.instance.collection('groups').doc(id).set({
-        'name': name,
-        'color': color,
-      });*/
       _fetchGroupNames();
       return responseModel.message ?? "Group added successfully";
     } catch (e) {
       print("Error adding group: $e");
       return "Something went wrong! Please try again later";
     }
+  }
+
+  void _showAddGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newGroupName = '';
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: const Text('Add New Group'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  onChanged: (value) => newGroupName = value,
+                  decoration: const InputDecoration(labelText: 'Group Name'),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                DropdownButton<String>(
+                  value: selectedColor,
+                  hint: const Text('Select Color'),
+                  isExpanded: true,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedColor = newValue;
+                    });
+                  },
+                  items: colorOptions
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (newGroupName.isNotEmpty && selectedColor != null) {
+                    String colorCode = colorCodes[selectedColor]!;
+                    await _addGroup(newGroupName, colorCode).then((onValue) {
+                      Fluttertoast.showToast(msg: onValue);
+                    });
+                    Navigator.of(context).pop();
+                  } else {
+                    Fluttertoast.showToast(msg: "Please fill all fields");
+                  }
+                },
+                child: const Text('Add Group'),
+              ),
+            ],
+          );
+        });
+      },
+    );
   }
 
   @override
@@ -256,54 +343,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     super.dispose();
   }
 
-  void _showAddGroupDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Group'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Group Name'),
-              ),
-              TextField(
-                controller: _colorController,
-                decoration: const InputDecoration(labelText: 'Group Color'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                String name = _nameController.text;
-                String color = _colorController.text;
-                if (name.isNotEmpty && color.isNotEmpty) {
-                  await _addGroup(name, color).then((onValue) {
-                    Fluttertoast.showToast(msg: onValue);
-                  });
-                  _nameController.clear();
-                  _colorController.clear();
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Add Group'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -527,35 +566,40 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     )*/
                   ],
                 ),
-              /*  selectedOccurrence == 'No occurrence'*/ true
-                    ?  Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'End Date & Time:',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        //   color: headingBlue,
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                          padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
-                          backgroundColor:
-                          MaterialStatePropertyAll(Colors.white),
-                          elevation: MaterialStatePropertyAll(0),
-                          shadowColor: MaterialStatePropertyAll(Colors.white),
-                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
-                      onPressed: () => _selectEndDate(context),
-                      child: endUtcDateTime.isNotEmpty
-                          ? Text(
-                        '${DateFormat('yyyy/MM/dd  hh:mm a').format(DateTime.parse(endUtcDateTime).toUtc())}',
-                        textAlign: TextAlign.center,
-                      )
-                          : Icon(Icons.calendar_month_rounded),
-                    ),
-                    /* Container(
+                /*  selectedOccurrence == 'No occurrence'*/ true
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'End Date & Time:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              //   color: headingBlue,
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: const ButtonStyle(
+                                padding: MaterialStatePropertyAll(
+                                    EdgeInsets.symmetric(horizontal: 12)),
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.white),
+                                elevation: MaterialStatePropertyAll(0),
+                                shadowColor:
+                                    MaterialStatePropertyAll(Colors.white),
+                                side: MaterialStatePropertyAll(
+                                    BorderSide(width: 1))),
+                            onPressed: () => _selectEndDate(context),
+                            child: endUtcDateTime.isNotEmpty
+                                ? Text(
+                                    DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                        DateTime.parse(endUtcDateTime)
+                                            .toLocal()),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : const Icon(Icons.calendar_month_rounded),
+                          ),
+                          /* Container(
                       width: width * 0.25,
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -617,8 +661,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                 ),
                 const SizedBox(height: 5),
-                _groupNames.isEmpty
-                    ? const CircularProgressIndicator()
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                           boxShadow: [
@@ -671,13 +715,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             }
                           },
                           items: [
-                            ..._groupNames
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                            ..._groupNames.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList() ??
+                                [],
                             const DropdownMenuItem<String>(
                               value: 'add_new',
                               child: Text('Add New Group'),
@@ -703,7 +748,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&
                         selectedOccurrence.isNotEmpty) {
-                    /*  DateTime endDate = selectedOccurrence == 'No occurrence'
+                      /*  DateTime endDate = selectedOccurrence == 'No occurrence'
                           ? selectedDate
                           : DateFormat('dd/MM/yyyy')
                               .parse(endDateController.text);
@@ -723,13 +768,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           .eventCategoryId;
                       requestModel.createdBy = await getUserId();
                       Recurrence recurrence = Recurrence();
-                     recurrence.eventStartDateTime =
-                          startUtcDateTime;
-                      print(' Payload ::: ${endUtcDateTime}');
-                      recurrence.eventEndDateTime =
-                          endUtcDateTime;
-                     recurrence.recurInterval = 1;
-                      recurrence.weekdays = _selectedGroup == "Weekly"? DateFormat('EEEE').format(DateTime.parse(startUtcDateTime).toLocal()) : null;
+                      recurrence.eventStartDateTime = startUtcDateTime;
+                      print(' Payload ::: $endUtcDateTime');
+                      recurrence.eventEndDateTime = endUtcDateTime;
+                      recurrence.recurInterval = 1;
+                      recurrence.weekdays = _selectedGroup == "Weekly"
+                          ? DateFormat('EEEE').format(
+                              DateTime.parse(startUtcDateTime).toLocal())
+                          : null;
 
                       recurrence.recurFrequency =
                           selectedOccurrence == "No occurrence"
@@ -740,10 +786,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
                       print('Payload');
 
-                      EventCategoryResponseModel? eventCreatedResponse = await  EventsServices().createEventData(requestModel);
-                   //   Navigator.pop(context);
+                      EventCategoryResponseModel? eventCreatedResponse =
+                          await EventsServices().createEventData(requestModel);
+                      //   Navigator.pop(context);
 
-                     /* dynamic res = await _authMethod
+                      /* dynamic res = await _authMethod
                           .addEvent(
                         title: titleController.text,
                         description: descriptionController.text,
@@ -771,157 +818,160 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       //   id: "",
                       //   host: user?.name ?? "",
 
-                    if ( eventCreatedResponse!.message!.contains("successfully")){
-                      // Clear the form fields
-                      titleController.clear();
-                      descriptionController.clear();
-                      locationController.clear();
-                      setState(() {
-                        dateController.clear();
-                        endDateController.clear();
-                        selectedDate = DateTime.now();
-                        selectedOccurrence = 'No occurrence';
-                        _selectedGroup = null;
-                      });
-                      // Navigator.pushAndRemoveUntil(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const HomePage()),
-                      //     (route) => false);
-                      Fluttertoast.showToast(msg: eventCreatedResponse.message!);
-                      showDialog(
-                          context: context,
-                          builder: (_) {
-                            return SimpleDialog(
-                              title: Column(
+                      if (eventCreatedResponse.message!
+                          .contains("successfully")) {
+                        // Clear the form fields
+                        titleController.clear();
+                        descriptionController.clear();
+                        locationController.clear();
+                        setState(() {
+                          dateController.clear();
+                          endDateController.clear();
+                          selectedDate = DateTime.now();
+                          selectedOccurrence = 'No occurrence';
+                          _selectedGroup = null;
+                        });
+                        // Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => const HomePage()),
+                        //     (route) => false);
+                        Fluttertoast.showToast(
+                            msg: eventCreatedResponse.message!);
+                        showDialog(
+                            context: context,
+                            builder: (_) {
+                              return SimpleDialog(
+                                title: Column(
+                                  children: [
+                                    const Center(
+                                      child: Text(
+                                        "Event created successfully!",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Lottie.asset(
+                                        height: 380,
+                                        width: width * 0.8,
+                                        "assets/images/hurrah_lotttie.json"),
+                                  ],
+                                ),
                                 children: [
                                   const Center(
                                     child: Text(
-                                      "Event created successfully!",
+                                      "Want to make it a group effort? Invite your friends!",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  Lottie.asset(
-                                      height: 380,
-                                      width: width * 0.8,
-                                      "assets/images/hurrah_lotttie.json"),
-                                ],
-                              ),
-                              children: [
-                                const Center(
-                                  child: Text(
-                                    "Want to make it a group effort? Invite your friends!",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
+                                  const SizedBox(
+                                    height: 15,
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Center(
-                                  child: GestureDetector(
-                                      onTap: () async {
-
-                                        final SharedPreferences prefs =
-                                        await SharedPreferences
-                                            .getInstance();
-                                        final String? uid = await getUserId();
-                                        String url = await createDynamicLink(
-                                            "event_id", uid!);
-                                        Share.share(url);
-                                        Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                const HomePage()),
-                                                (route) => false);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Container(
-                                          width: double.infinity,
+                                  Center(
+                                    child: GestureDetector(
+                                        onTap: () async {
+                                          final SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          final String? uid = await getUserId();
+                                          String url = await createDynamicLink(
+                                              "event_id", uid!);
+                                          Share.share(url);
+                                          Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const HomePage()),
+                                              (route) => false);
+                                        },
+                                        child: Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              vertical: 15, horizontal: 15),
-                                          decoration: BoxDecoration(
-                                            color: Colors.lightBlue[500],
-                                            borderRadius:
-                                            BorderRadius.circular(10),
-                                          ),
-                                          child: const Center(
-                                            child: Text(
-                                              "Share",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
+                                              horizontal: 20.0),
+                                          child: Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 15, horizontal: 15),
+                                            decoration: BoxDecoration(
+                                              color: Colors.lightBlue[500],
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: const Center(
+                                              child: Text(
+                                                "Share",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      )),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Center(
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        /* Navigator.pushAndRemoveUntil(
+                                        )),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Center(
+                                    child: GestureDetector(
+                                        onTap: () {
+                                          /* Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     const HomePage()),
                                             (route) => false);*/
 
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                const HomePage()));
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0),
-                                        child: Container(
-                                          width: double.infinity,
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const HomePage()));
+                                        },
+                                        child: Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              vertical: 15, horizontal: 15),
-                                          decoration: BoxDecoration(
-                                            color: const Color.fromARGB(
-                                                255, 6, 7, 7),
-                                            borderRadius:
-                                            BorderRadius.circular(10),
-                                          ),
-                                          child: const Center(
-                                            child: Text(
-                                              "Skip",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
+                                              horizontal: 20.0),
+                                          child: Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 15, horizontal: 15),
+                                            decoration: BoxDecoration(
+                                              color: const Color.fromARGB(
+                                                  255, 6, 7, 7),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: const Center(
+                                              child: Text(
+                                                "Skip",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      )),
-                                ),
-                              ],
-                            );
-                          });
-                    }  else {
-                      Fluttertoast.showToast(msg: "Something went wrong. Pls try again later");
-                      Navigator.pop(context);
-                      /* ScaffoldMessenger.of(context).showSnackBar(
+                                        )),
+                                  ),
+                                ],
+                              );
+                            });
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Something went wrong. Pls try again later");
+                        Navigator.pop(context);
+                        /* ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text("Please fill in all fields")),
                       );*/
-                    }
+                      }
                       // );
-
                     } else {
                       Fluttertoast.showToast(msg: "All fields are mandatory");
                       Navigator.pop(context);

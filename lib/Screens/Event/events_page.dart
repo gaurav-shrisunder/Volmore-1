@@ -568,16 +568,7 @@ class _EventPageState extends State<EventPage>
                                       );*/
                                     }
                                     if (isPast) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              PastEventVerification(
-                                            date: date,
-                                            event: event,
-                                          ),
-                                        ),
-                                      );
+                                     
                                     }
                                   }
                                 : null,
