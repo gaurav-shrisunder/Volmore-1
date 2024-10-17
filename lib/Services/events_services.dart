@@ -7,6 +7,7 @@ import 'package:volunterring/Models/request_models/log_current_event_request_mod
 import 'package:volunterring/Models/request_models/log_past_event_request_model.dart';
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Models/response_models/events_data_response_model.dart';
+import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
 
@@ -17,6 +18,7 @@ class EventsServices {
 
   Future<EventsDataResponseModel?> getEventsData(String endpoint) async {
     var userId = await getUserId();
+   
     Response? response =
         await apiHandler.get("${getEventApi + userId}/$endpoint");
     if (response != null && response.statusCode == 200) {
@@ -79,11 +81,31 @@ class EventsServices {
     }
   }
 
-  Future<Map<String, String>> logPastEventData(
+  Future<bool> logPastEventData(
       LogPastEventRequestModel requestPayload) async {
     print('Payload::: ${jsonEncode(requestPayload)}');
     Response? response = await apiHandler.post(logPastHours, requestPayload);
-    if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+    if (response != null &&
+        (response.statusCode == 200 || response.statusCode == 201)) {
+      print('Event Created:::${response.data}');
+      final EventCategoryResponseModel eventCategory =
+          EventCategoryResponseModel.fromJson(response.data);
+      return true;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load create Event data');
+      }
+      return false;
+    }
+  }
+
+  Future<LogEventRequestModel> logEventData(
+      LogEventRequestModel requestPayload) async {
+    print('Payload::: ${jsonEncode(requestPayload)}');
+    Response? response =
+        await apiHandler.post(eventParticipantsApi, requestPayload);
+    if (response != null &&
+        (response.statusCode == 200 || response.statusCode == 201)) {
       print('Event Created:::${response.data}');
       final EventCategoryResponseModel eventCategory =
           EventCategoryResponseModel.fromJson(response.data);
@@ -93,22 +115,6 @@ class EventsServices {
         print('Failed to load create Event data');
       }
       return response?.data ?? "";
-    }
-  }
-
-  Future<dynamic> logEventData(LogEventRequestModel requestPayload) async {
-    print('Payload::: ${jsonEncode(requestPayload)}');
-    Response? response = await apiHandler.post(eventParticipantsApi, requestPayload);
-    if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
-      print('Event Created:::${response.data}');
-      // final  Map<String,dynamic> eventCategory =
-      // Map<String,dynamic>.fromJson(response.data);
-      return response.data['message'];
-    } else {
-      if (kDebugMode) {
-        print('Failed to load create Event data');
-      }
-      return response?.data['message'] ?? "";
     }
   }
 }

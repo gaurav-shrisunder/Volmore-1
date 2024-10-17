@@ -14,17 +14,17 @@ class LogEventRequestModel {
 
   LogEventRequestModel(
       {this.userId,
-        this.eventInstanceId,
-        this.userStartDateTime,
-        this.userEndDateTime,
-        this.userLocationName,
-        this.userNotes,
-        this.userHours,
-        this.hostInformation,
-        this.userEarnPoints,
-        this.verifierSignatureHash,
-        this.verifierInformation,
-        this.verifierNotes});
+      this.eventInstanceId,
+      this.userStartDateTime,
+      this.userEndDateTime,
+      this.userLocationName,
+      this.userNotes,
+      this.userHours,
+      this.hostInformation,
+      this.userEarnPoints,
+      this.verifierSignatureHash,
+      this.verifierInformation,
+      this.verifierNotes});
 
   LogEventRequestModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -35,7 +35,7 @@ class LogEventRequestModel {
     userNotes = json['userNotes'];
     userHours = json['userHours'];
     hostInformation = json['hostInformation'] != null
-        ? new HostInformation.fromJson(json['hostInformation'])
+        ? HostInformation.fromJson(json['hostInformation'])
         : null;
     userEarnPoints = json['userEarnPoints'];
     verifierSignatureHash = json['verifierSignatureHash'];
@@ -44,32 +44,40 @@ class LogEventRequestModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userId'] = this.userId;
-    data['eventInstanceId'] = this.eventInstanceId;
-    data['userStartDateTime'] = this.userStartDateTime;
-    data['userEndDateTime'] = this.userEndDateTime;
-    if (this.userLocationName != null) {
-      data['userLocationName'] = this.userLocationName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userId'] = userId;
+    data['eventInstanceId'] = eventInstanceId;
+
+    if (userStartDateTime != null) {
+      data['userStartDateTime'] = userStartDateTime;
     }
-    if (this.userNotes != null){
-      data['userNotes'] = this.userNotes;
+    if (userEndDateTime != null) {
+      data['userEndDateTime'] = userEndDateTime;
     }
-    data['userHours'] = this.userHours;
-    if (this.hostInformation != null) {
-      data['hostInformation'] = this.hostInformation!.toJson();
+    if (userLocationName != null) {
+      data['userLocationName'] = userLocationName;
     }
-    if (this.userEarnPoints != null){
-      data['userEarnPoints'] = this.userEarnPoints;
+    if (userNotes != null) {
+      data['userNotes'] = userNotes;
     }
-    if (this.verifierSignatureHash != null){
-      data['verifierSignatureHash'] = this.verifierSignatureHash;
+    if (userHours != null) {
+      data['userHours'] = userHours;
     }
-    if (this.verifierInformation != null){
-      data['verifierInformation'] = this.verifierInformation;
+
+    if (hostInformation != null) {
+      data['hostInformation'] = hostInformation!.toJson();
     }
-    if (this.verifierNotes != null){
-      data['verifierNotes'] = this.verifierNotes;
+    if (userEarnPoints != null) {
+      data['userEarnPoints'] = userEarnPoints;
+    }
+    if (verifierSignatureHash != null) {
+      data['verifierSignatureHash'] = verifierSignatureHash;
+    }
+    if (verifierInformation != null) {
+      data['verifierInformation'] = verifierInformation;
+    }
+    if (verifierNotes != null) {
+      data['verifierNotes'] = verifierNotes;
     }
     return data;
   }
@@ -89,10 +97,10 @@ class HostInformation {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['eventId'] = this.eventId;
-    data['hostId'] = this.hostId;
-    data['hours'] = this.hours;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['eventId'] = eventId;
+    data['hostId'] = hostId;
+    data['hours'] = hours;
     return data;
   }
 }

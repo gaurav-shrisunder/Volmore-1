@@ -138,16 +138,11 @@ class DioInstance {
         await setBearerToken(newTokens.token!.accessToken!);
         // await _saveTokens(newTokens.access!, newTokens.refresh!);
         return true;
-      }else{
-        clearPreferences();
-        return false;
       }
     } catch (e) {
       print('Failed to refresh token: $e');
-      clearPreferences();
-      return false;
     }
 
-   // return false;
+    return false;
   }
 }

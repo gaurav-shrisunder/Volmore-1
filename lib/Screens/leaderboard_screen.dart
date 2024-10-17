@@ -19,7 +19,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   final List<String> graduatingClasses = ["2024", "2023", "2022", "2021"];
   String? selectedState;
   String? selectedGraduatingClass;
-
+  bool isLoading = true;
   List<LeaderboardUser?>? userList = [];
   List<LeaderboardUser?>? influencedList = [];
 
@@ -39,6 +39,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     setState(() {
       userList = leaderboardDatatotal?.leaderBoardDetails?.users ?? [];
       influencedList = leaderboardData?.leaderBoardDetails?.users ?? [];
+      isLoading = false;
     });
   }
 
@@ -47,7 +48,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: userList != null
+        body: !isLoading
             ? Column(
                 children: [
                   const TabBar(
@@ -224,16 +225,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                                 Colors.orange.shade50,
                                           ),
                                           const SizedBox(width: 8),
-                                          // Chip(
-                                          //   padding: EdgeInsets.zero,
-                                          //   side: const BorderSide(
-                                          //       color: Colors.transparent, width: 0),
-                                          //   label: Text(
-                                          //     userList[index]!.gradYear!,
-                                          //     style: const TextStyle(fontSize: 12),
-                                          //   ),
-                                          //   backgroundColor: Colors.purple.shade50,
-                                          // ),
                                         ],
                                       )
                                     : const SizedBox(),
