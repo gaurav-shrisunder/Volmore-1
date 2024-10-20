@@ -22,3 +22,6 @@ const String leaderboardRankingApi = "api/v1/leaderboard/influenceBoard";
 
 //Profile related Endpoint
 const String getWeeklyStat = "api/v1/eventStatistics/";
+
+//Transcript
+const String getTranscripts = "api/v1/events/users/transcripts/";
