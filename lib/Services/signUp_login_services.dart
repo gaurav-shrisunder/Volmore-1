@@ -19,9 +19,10 @@ class SignupLoginServices {
       SignUpRequestModel requestBody) async {
     Response? response = await apiHandler.post(signUpApi, requestBody);
     if (response != null && response.statusCode == 201) {
-      final SignUpLoginResponseModel userModel = SignUpLoginResponseModel.fromJson(response.data);
-    await  setBearerToken(userModel.userDetails!.accessToken!);
-   await setRefreshToken(userModel.userDetails!.refreshToken!);
+      final SignUpLoginResponseModel userModel =
+          SignUpLoginResponseModel.fromJson(response.data);
+      await setBearerToken(userModel.userDetails!.accessToken!);
+      await setRefreshToken(userModel.userDetails!.refreshToken!);
 
       await setUserId(userModel.userDetails!.user!.userId!);
       await setUser(userModel.userDetails!.user!);
@@ -40,11 +41,13 @@ class SignupLoginServices {
     var requestBody = {"emailId": email, "password": password};
     Response? response = await apiHandler.post(loginApi, requestBody);
     if (response != null && response.statusCode == 200) {
-       SignUpLoginResponseModel? userModel = SignUpLoginResponseModel.fromJson(response.data);
-       print('UserModel::: ${jsonEncode(userModel)}');
-       await  setBearerToken(userModel.userDetails!.accessToken!);
-       await setRefreshToken(userModel.userDetails!.refreshToken!);
-        await setUserId(userModel.userDetails!.user!.userId!);
+      SignUpLoginResponseModel? userModel =
+          SignUpLoginResponseModel.fromJson(response.data);
+      print('UserModel::: ${jsonEncode(userModel)}');
+      await setBearerToken(userModel.userDetails!.accessToken!);
+      await setRefreshToken(userModel.userDetails!.refreshToken!);
+      await setUserId(userModel.userDetails!.user!.userId!);
+      await setUser(userModel.userDetails!.user!);
 
       return userModel;
     } else {
