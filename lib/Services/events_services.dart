@@ -18,7 +18,7 @@ class EventsServices {
 
   Future<EventsDataResponseModel?> getEventsData(String endpoint) async {
     var userId = await getUserId();
-   
+
     Response? response =
         await apiHandler.get("${getEventApi + userId}/$endpoint");
     if (response != null && response.statusCode == 200) {
@@ -81,8 +81,7 @@ class EventsServices {
     }
   }
 
-  Future<bool> logPastEventData(
-      LogPastEventRequestModel requestPayload) async {
+  Future<bool> logPastEventData(LogPastEventRequestModel requestPayload) async {
     print('Payload::: ${jsonEncode(requestPayload)}');
     Response? response = await apiHandler.post(logPastHours, requestPayload);
     if (response != null &&
@@ -99,8 +98,7 @@ class EventsServices {
     }
   }
 
-  Future<LogEventRequestModel> logEventData(
-      LogEventRequestModel requestPayload) async {
+  Future<dynamic> logEventData(LogEventRequestModel requestPayload) async {
     print('Payload::: ${jsonEncode(requestPayload)}');
     Response? response =
         await apiHandler.post(eventParticipantsApi, requestPayload);

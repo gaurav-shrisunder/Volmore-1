@@ -24,10 +24,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final TextEditingController numberController = TextEditingController();
   final TextEditingController gradYearController = TextEditingController();
   final TextEditingController collegeNameController = TextEditingController();
+  final TextEditingController schoolNameController = TextEditingController();
   String selectedCountryCode = '+1'; // Default country code
 
   final List<String> countryCodes = ['+1', '+91', '+44', '+61', '+81'];
@@ -48,16 +50,9 @@ class _SignUpPageState extends State<SignUpPage> {
       isLoading = true;
     });
 
-    // signup user using our authmethod
-    // String res = await AuthMethod().signupUser(
-    //     email: emailController.text,
-    //     password: passwordController.text,
-    //     confirmPassword: confirmPasswordController.text,
-    //     name: nameController.text,
-    //     phone: numberController.text);
-
     SignupLoginServices signupServices = SignupLoginServices();
-  SignUpLoginResponseModel? res = await signupServices.signUpUser(requestBody);
+    SignUpLoginResponseModel? res =
+        await signupServices.signUpUser(requestBody);
 
     if (res?.userDetails?.user != null) {
       setState(() {
@@ -69,8 +64,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-            (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
+        MaterialPageRoute(builder: (context) => const HomePage()),
+        (Route<dynamic> route) =>
+            false, // This condition makes sure all the routes are removed.
       );
       Fluttertoast.showToast(
           msg: "Account created successfully.", toastLength: Toast.LENGTH_LONG);
@@ -80,7 +76,9 @@ class _SignUpPageState extends State<SignUpPage> {
         Navigator.pop(context);
       });
       // show error
-      Fluttertoast.showToast(msg: res?.message ?? "Something went wrong!!!", toastLength: Toast.LENGTH_LONG);
+      Fluttertoast.showToast(
+          msg: res?.message ?? "Something went wrong!!!",
+          toastLength: Toast.LENGTH_LONG);
       //   showSnackBar(context, res);
     }
   }
@@ -90,7 +88,6 @@ class _SignUpPageState extends State<SignUpPage> {
     // TODO: implement dispose
     super.dispose();
     nameController.dispose();
-
   }
 
   @override
@@ -108,7 +105,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                     Image.asset(
                       "assets/icons/signup.png",
                       height: height * 0.08,
@@ -116,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(
                       height: height * 0.01,
                     ),
-                    Text(
+                    const Text(
                       'Create Account ',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -126,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           fontSize: 24,
                           fontWeight: FontWeight.w500),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     SizedBox(
@@ -160,7 +157,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             dropdownColor: Colors.white,
                             underline: Container(),
                             borderRadius: BorderRadius.circular(9),
-                            style: const TextStyle(fontSize: 20, color: Colors.black),
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.black),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 3),
                             value: selectedCountryCode,
@@ -203,7 +201,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   color: Colors.blue[200]!,
                                 ),
                               ),
-                              errorText: _errorMessage, // Display the error message
+                              errorText:
+                                  _errorMessage, // Display the error message
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
@@ -221,14 +220,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ],
                     ),
-                   /* InputFeildWidget(
+                    /* InputFeildWidget(
                       title: 'Phone number*',
                       controller: numberController,
                       maxlines: 1,
                       hintText: "Enter Your phone number",
                     ),*/
                     SizedBox(
-                      height: height  * 0.009,
+                      height: height * 0.009,
                     ),
                     InputFeildWidget(
                       title: 'Password*',
@@ -248,7 +247,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(
                       height: height * 0.009,
                     ),
-
                     Visibility(
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
@@ -267,8 +265,23 @@ class _SignUpPageState extends State<SignUpPage> {
                     Visibility(
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
-                        title: 'College/University/Organisation Name',
+                        title: 'College/University Name',
                         controller: collegeNameController,
+                        maxlines: 1,
+                        hintText: "Enter your graduation year",
+                      ),
+                    ),
+                    Visibility(
+                      visible: !isIndividualChecked,
+                      child: SizedBox(
+                        height: height * 0.009,
+                      ),
+                    ),
+                    Visibility(
+                      visible: !isIndividualChecked,
+                      child: InputFeildWidget(
+                        title: 'School Name',
+                        controller: schoolNameController,
                         maxlines: 1,
                         hintText: "Enter your graduation year",
                       ),
@@ -282,40 +295,56 @@ class _SignUpPageState extends State<SignUpPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Checkbox(value: isIndividualChecked, onChanged: (value){
-                          setState(() {
-                            isIndividualChecked = value!;
-                          });
-                        }),
-                        const Text("Want to sign up as an Individual?", style: TextStyle(fontSize: 16,),)
-
+                        Checkbox(
+                            value: isIndividualChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                isIndividualChecked = value!;
+                              });
+                            }),
+                        const Text(
+                          "Want to sign up as an Individual?",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        )
                       ],
                     ),
-
                     SizedBox(
                       height: height * 0.009,
                     ),
+                    MyButtons(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              });
+                          SignUpRequestModel signUpRequestBody =
+                              SignUpRequestModel();
+                          signUpRequestBody.userName = nameController.text;
+                          signUpRequestBody.emailId = emailController.text;
 
-                    MyButtons(onTap: (){
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_){
-                            return const Center(child: CircularProgressIndicator());
-                          });
-                      SignUpRequestModel signUpRequestBody = SignUpRequestModel();
-                      signUpRequestBody.userName = nameController.text;
-                      signUpRequestBody.emailId = emailController.text;
-                      signUpRequestBody.passwordHash = passwordController.text;
-                      signUpRequestBody.userRoleId = isIndividualChecked ? "3" : "4";
-                      if(!isIndividualChecked){
-                        signUpRequestBody.yearOfStudy = int.parse(gradYearController.text);
-                        signUpRequestBody.organization?.name = collegeNameController.text;
-                      }
-                      signUpRequestBody.contactNumber = selectedCountryCode+numberController.text;
+                          signUpRequestBody.passwordHash =
+                              passwordController.text;
+                          signUpRequestBody.userRoleId =
+                              isIndividualChecked ? "3" : "4";
+                          if (!isIndividualChecked) {
+                            signUpRequestBody.yearOfStudy =
+                                int.parse(gradYearController.text);
+                            signUpRequestBody.university =
+                                collegeNameController.text;
+                            signUpRequestBody.school =
+                                schoolNameController.text;
+                          }
+                          signUpRequestBody.contactNumber =
+                              selectedCountryCode + numberController.text;
 
-                      signUp(signUpRequestBody);
-                    }, text: "Sign Up"),
+                          signUp(signUpRequestBody);
+                        },
+                        text: "Sign Up"),
                     SizedBox(
                       height: height * 0.01,
                     ),
@@ -326,16 +355,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(
+                            const Text(
                               ' Existing User?',
                               style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal),
+                                  fontSize: 18, fontWeight: FontWeight.normal),
                             ),
                             GestureDetector(
                               onTap: () {
                                 Navigator.pop(context);
-                               /* Navigator.push(
+                                /* Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
