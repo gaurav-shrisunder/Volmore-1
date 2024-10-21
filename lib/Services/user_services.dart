@@ -4,15 +4,55 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';
+import '../Utils/shared_prefs.dart';
+import '../api_handler.dart';
 
 class UserServices {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ApiBaseHelper apiHandler = ApiBaseHelper();
+
+  Future<dynamic> updateUserApi(dynamic requestBody) async {
+    var userId = await getUserId();
+    Response? response = await apiHandler.put("api/v1/users/$userId/profile", requestBody);
+    if (response != null && response.statusCode == 200) {
+
+      return response.body;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load token data');
+      }
+      return null;
+    }
+  }
+
+
+  Future<dynamic> changePassword(String newPass, String oldPass) async {
+
+    var userId = await getUserId();
+    var reqBody = {
+
+    };
+    Response? response = await apiHandler.put("api/v1/users/$userId/profile", reqBody);
+    if (response != null && response.statusCode == 200) {
+
+      return response.body;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load token data');
+      }
+      return null;
+    }
+  }
+
+
+
+  /*final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -28,8 +68,8 @@ class UserServices {
 
         print('User:::: ${user.data()}');
         userModel.name = user.get("name");
-        userModel.state = /*user.get("state") ??*/ "Michigan";
-        userModel.gradYear = /*user.get("grad_year") ?? */ "2024";
+        userModel.state = *//*user.get("state") ??*//* "Michigan";
+        userModel.gradYear = *//*user.get("grad_year") ?? *//* "2024";
         userModel.totalMinutes = user.get("total_minutes");
         userModel.minutesInfluenced = user.get("minutes_influenced");
 
@@ -102,5 +142,5 @@ class UserServices {
       print(e);
       return lifetimeCountedMinutes; // Handle errors appropriately
     }
-  }
+  }*/
 }

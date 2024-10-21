@@ -7,7 +7,8 @@ const String loginApi = "api/v1/users/login";
 const String refreshTokenApi = "api/v1/auth/refreshToken";
 const String rolesApi = "api/v1/roles";
 const String organisationListApi = "api/v1/organizations";
-const String updateProfileApi = "api/v1/users/1/profile";
+const String changePasswordApi = "api/v1/users/changePassword";
+const String resetPasswordApi = "api/v1/users/resetPassword";
 
 /// Events related Endpoints
 const String createEventCategoryListApi = "api/v1/events/eventCategory";

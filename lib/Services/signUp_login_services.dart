@@ -45,6 +45,7 @@ class SignupLoginServices {
        await  setBearerToken(userModel.userDetails!.accessToken!);
        await setRefreshToken(userModel.userDetails!.refreshToken!);
         await setUserId(userModel.userDetails!.user!.userId!);
+       await setUser(userModel.userDetails!.user!);
 
       return userModel;
     } else {
@@ -86,4 +87,26 @@ class SignupLoginServices {
       return RefreshTokenResponseModel(message: response?.data["message"]);
     }
   }
+
+
+  updateUserService(dynamic requestBody) async {
+
+    var userId = await getUserId();
+
+    Response? response = await apiHandler.put("api/v1/users/$userId/profile", requestBody);
+    if (response != null && response.statusCode == 200) {
+      final RefreshTokenResponseModel tokenModel =
+      RefreshTokenResponseModel.fromJson(response.data);
+      await setBearerToken(tokenModel.token!.accessToken!);
+      // await  DioInstance.saveTokens(tokenModel.userDetails!.accessToken!, refreshToken);
+      return tokenModel;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load token data');
+      }
+      return RefreshTokenResponseModel(message: response?.data["message"]);
+    }
+  }
+
+
 }

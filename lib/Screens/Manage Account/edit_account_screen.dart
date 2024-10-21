@@ -8,12 +8,12 @@ import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:volunterring/widgets/button.dart';
 
+import '../../Models/response_models/sign_up_response_model.dart';
 import '../../widgets/InputFormFeild.dart';
 
 class EditAccountScreen extends StatefulWidget {
-  final String name;
-  final String phone;
-  const EditAccountScreen(this.name, this.phone, {super.key});
+  final User userData;
+  const EditAccountScreen(this.userData, {super.key});
 
   @override
   State<EditAccountScreen> createState() => _EditAccountScreenState();
@@ -22,6 +22,7 @@ class EditAccountScreen extends StatefulWidget {
 class _EditAccountScreenState extends State<EditAccountScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   var oldPasswordController = TextEditingController();
   var newPasswordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
@@ -30,8 +31,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    nameController.text = widget.name;
-    phoneController.text = widget.phone;
+    nameController.text = widget.userData.userName!;
+    emailController.text = widget.userData.emailId!;
   }
 
   @override
@@ -52,23 +53,37 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 hintText: 'Enter your name',
                 validator: nameValidator,
               ),
+              SizedBox(height: 10,),
+              InputFeildWidget(
+                title: 'Email',
+                controller: emailController,
+                hintText: 'Enter your email address',
+                validator: phoneValidator,
+              ),
+            /*  SizedBox(height: 10,),
               InputFeildWidget(
                 title: 'Phone',
                 controller: phoneController,
                 hintText: 'Enter your phone number',
                 validator: phoneValidator,
-              ),
+              ),*/
+              SizedBox(height: 10,),
+
               InputFeildWidget(
                 title: 'Old Password',
                 controller: oldPasswordController,
                 hintText: 'Enter your old password',
               ),
+              SizedBox(height: 10,),
+
               InputFeildWidget(
                 title: 'New Password',
                 controller: newPasswordController,
                 hintText: 'Enter new password here',
 
-              ),  InputFeildWidget(
+              ),
+              SizedBox(height: 10,),
+              InputFeildWidget(
                 title: 'Confirm Password',
                 controller: confirmPasswordController,
                 hintText: 'Re-enter new password',

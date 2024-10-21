@@ -49,7 +49,8 @@ class User {
   String? userId;
   String? userName;
   String? emailId;
-  String? organizationName;
+  String? school;
+  String? university;
   int? yearOfStudy;
   String? profilePicture;
 
@@ -57,7 +58,7 @@ class User {
       {this.userId,
         this.userName,
         this.emailId,
-        this.organizationName,
+        this.school,
         this.yearOfStudy,
         this.profilePicture});
 
@@ -65,7 +66,8 @@ class User {
     userId = json['userId'];
     userName = json['userName'];
     emailId = json['emailId'];
-    organizationName = json['organizationName'];
+    school = json['school'];
+    university = json['university'];
     yearOfStudy = json['yearOfStudy'];
     profilePicture = json['profilePicture'];
   }
@@ -75,7 +77,8 @@ class User {
     data['userId'] = this.userId;
     data['userName'] = this.userName;
     data['emailId'] = this.emailId;
-    data['organizationName'] = this.organizationName;
+    data['school'] = this.school;
+    data['university'] = this.university;
     data['yearOfStudy'] = this.yearOfStudy;
     data['profilePicture'] = this.profilePicture;
     return data;

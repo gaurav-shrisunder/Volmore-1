@@ -105,8 +105,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: headingBlue,
                       child: IconButton(
                           onPressed: () {
-                            // Get.to(
-                            // EditAccountScreen(user!.name!, user!.phone!));
+                            Get.to(
+                            EditAccountScreen(user!));
                           },
                           icon: const Icon(Icons.edit)))),
               const CircleAvatar(
