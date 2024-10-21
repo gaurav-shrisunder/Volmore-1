@@ -25,3 +25,4 @@ const String getWeeklyStat = "api/v1/eventStatistics/";
 
 //Transcript
 const String getTranscripts = "api/v1/events/users/transcripts/";
+const String shareWithTeacherApi = "api/v1/events/users/transcripts/share";
