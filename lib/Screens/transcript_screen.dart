@@ -9,6 +9,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Models/response_models/transcript_response.dart';
+import 'package:volunterring/Services/profile_services.dart';
 
 import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';
@@ -23,7 +25,6 @@ class TranscriptScreen extends StatefulWidget {
 }
 
 class _TranscriptScreenState extends State<TranscriptScreen> {
-  List<EventDataModel> _eventsFuture = [];
   final LogServices _logMethod = LogServices();
   int lifetimeCountedMinutes = 0;
   List<EventDataModel> groupTrashCleanUp = [];
@@ -35,16 +36,25 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
   int hospServiceHours = 0;
   int otherHours = 0;
   List<Record> records = [];
+  TranscriptResponse? transcript;
 
   String lifetimeMinutes = "";
 
   Future<void> createAndSharePdf() async {
     records.clear();
     UserModel userDetails = await fetchUserData();
-   // List<EventDataModel> data = await _logMethod.fetchAllEventsWithLogs();
+    // List<EventDataModel> data = await _logMethod.fetchAllEventsWithLogs();
     for (var action in groupTrashCleanUp) {
-      action.logs?.forEach((log){
-        records.add(Record(group: action.group!, title: action.title!, host: action.host!, address: log.address!, timeElapsed: log.elapsedTime!, signature: log.isSignatureVerified.toString(), location: log.isLocationVerified.toString(), timer: log.isTimeVerified.toString()));
+      action.logs?.forEach((log) {
+        records.add(Record(
+            group: action.group!,
+            title: action.title!,
+            host: action.host!,
+            address: log.address!,
+            timeElapsed: log.elapsedTime!,
+            signature: log.isSignatureVerified.toString(),
+            location: log.isLocationVerified.toString(),
+            timer: log.isTimeVerified.toString()));
       });
     }
     pw.Document pdf = await generatePdf(records, userDetails);
@@ -55,19 +65,37 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? uid = prefs.getString('uid');
     DocumentSnapshot doc =
-    await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+  }
+
+  ProfileServices profileServices = ProfileServices();
+  bool isLoading = true;
+  bool isError = false;
+
+  void fetchTranscript() async {
+    TranscriptResponse? temp = await profileServices.getTranscript();
+
+    if (temp != null) {
+      setState(() {
+        transcript = temp;
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isError = true;
+        isLoading = false;
+      });
+    }
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
   }
 
-
-  Future<pw.Document> generatePdf(List<Record>  data, UserModel user) async {
+  Future<pw.Document> generatePdf(List<Record> data, UserModel user) async {
     final pdf = pw.Document();
     const pageFormat = PdfPageFormat.a4;
     const margin = 20.0;
@@ -94,10 +122,12 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 pw.Text('University: Pule University'),
                 pw.SizedBox(height: 20),
                 pw.TableHelper.fromTextArray(
-                  border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+                  border:
+                      pw.TableBorder.all(color: PdfColors.black, width: 0.5),
                   cellStyle: const pw.TextStyle(fontSize: 10),
                   headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+                  headerDecoration:
+                      const pw.BoxDecoration(color: PdfColors.grey300),
                   headers: [
                     'Group',
                     'Title',
@@ -143,113 +173,69 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder<List<EventDataModel>>(
-            future: _logMethod.fetchAllEventsWithLogs(),
+        child: FutureBuilder<TranscriptResponse?>(
+            future: profileServices.getTranscript(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-
-                _eventsFuture = snapshot.data!;
-                print('Event liss:: ${_eventsFuture}');
-                if(_eventsFuture.isNotEmpty){
-
-
-                for (var event in _eventsFuture) {
-                  // log("_eventsFutureGroup :: ${event.group}");
-                  event.logs!.forEach((action) {
-                    if (event.group!.contains("Trash")) {
-                      trashHours = (trashHours +
-                          int.parse(action.elapsedTime!.split(":")[1]))!;
-                    } else if (event.group!.toLowerCase().contains("Food")) {
-                      foodHours = (foodHours +
-                          int.parse(action.elapsedTime!.split(":")[1]))!;
-                    } else if (event.group!
-                        .toLowerCase()
-                        .contains("hospital")) {
-                      hospServiceHours = (hospServiceHours +
-                          int.parse(action.elapsedTime!.split(":")[1]))!;
-                    } else {
-                      otherHours = (otherHours +
-                          int.parse(action.elapsedTime!.split(":")[1]))!;
-                    }
-                    lifetimeCountedMinutes = (lifetimeCountedMinutes +
-                        int.parse(action.elapsedTime!.split(":")[1]))!;
-                  });
-                }
-                print('Counted minutes : ${lifetimeCountedMinutes}');
-                groupTrashCleanUp.clear();
-                groupFoodService.clear();
-                groupTestOthers.clear();
-                groupHospitalService.clear();
-                groupTrashCleanUp.addAll(_eventsFuture
-                    .where((test) => test.group!.contains("Trash Cleaning")));
-                groupFoodService.addAll(_eventsFuture
-                    .where((test) => test.group!.contains("food service")));
-                groupHospitalService.addAll(_eventsFuture
-                    .where((test) => test.group!.contains("hospital service")));
-                groupTestOthers.addAll(_eventsFuture
-                    .where((test) => test.group!.contains("test")));
-
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Lifetime volunteer minutes: $lifetimeCountedMinutes",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              textStyle: const TextStyle(
-                                  fontSize: 18, color: Colors.white),
-                            ),
-                            onPressed: createAndSharePdf,
-                            child: const Text(
-                              'Export',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.only(bottom: 40),
-                        child: Column(
+                transcript = snapshot.data!;
+                print('Event liss:: $transcript');
+                if (transcript != null) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            buildGroupedContainer(
-                                groupTrashCleanUp, trashHours),
-                            const SizedBox(
-                              height: 20,
+                            Text(
+                              "Lifetime volunteer Hours: ${transcript?.lifeTimeHour ?? 0}",
+                              style: const TextStyle(fontSize: 14),
                             ),
-                            buildGroupedContainer(groupFoodService, foodHours),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            buildGroupedContainer(
-                                groupHospitalService, hospServiceHours),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            buildGroupedContainer(groupTestOthers, otherHours),
-                            const SizedBox(
-                              height: 20,
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                textStyle: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
+                              onPressed: createAndSharePdf,
+                              child: const Text(
+                                'Export',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                );} else{
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.only(bottom: 40),
+                          child: Column(
+                            children: [
+                              ListView.builder(
+                                shrinkWrap:
+                                    true, // Ensures the ListView doesn't take infinite height
+                                physics:
+                                    const NeverScrollableScrollPhysics(), // Disables internal scrolling since SingleChildScrollView handles scrolling
+                                itemCount: transcript?.transcripts?.length ??
+                                    0, // Set item count based on the length of transcripts
+                                itemBuilder: (context, index) {
+                                  return buildGroupedContainer(
+                                      transcript!.transcripts![index]);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
                   return const Center(child: Text("No Transcript yet"));
                 }
               } else {
@@ -260,10 +246,10 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     );
   }
 
-   buildGroupedContainer(
-      List<EventDataModel> groupName, int totalMinutes) {
+  buildGroupedContainer(Transcript transcripts) {
     return Container(
-      // padding: EdgeInsets.all(10),
+      // padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(width: 1, color: Colors.grey)),
@@ -273,7 +259,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: groupName.first.group!.toLowerCase().contains("trash") ? Colors.pink.shade50 : groupName.first.group!.toLowerCase().contains("hospital") ? Colors.green.shade50 : groupName.first.group!.toLowerCase().contains("food") ? Colors.orange.shade100 : Colors.grey.shade200,
+              color: HexColor(transcripts.eventColorCode!).withOpacity(0.2),
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               //   border: Border.all(width: 1, color: Colors.black)
@@ -282,11 +268,12 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  groupName.first.group!,
-                  style: TextStyle(color: groupName.first.group!.toLowerCase().contains("trash") ? Colors.pink : groupName.first.group!.toLowerCase().contains("hospital") ? Colors.green : groupName.first.group!.toLowerCase().contains("food") ? Colors.orange : Colors.grey,
+                  transcripts.eventCategoryName ?? "Trash",
+                  style: TextStyle(
+                      color: HexColor(transcripts.eventColorCode!),
                       fontSize: 16),
                 ),
-                Text("Total minutes: $totalMinutes"),
+                Text("Total Hours ${transcripts.totalHours}"),
               ],
             ),
           ),
@@ -294,98 +281,86 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
             padding: const EdgeInsets.all(8.0),
             child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: groupName.length,
+                itemCount: transcripts.event?.length ?? 0,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: groupName[index].logs?.length,
-                      itemBuilder: (context, i) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              groupName[index].title!,
-                              style:
-                                  TextStyle(color: groupName.first.group!.toLowerCase().contains("trash") ? Colors.pink : groupName.first.group!.toLowerCase().contains("hospital") ? Colors.green : groupName.first.group!.toLowerCase().contains("food") ? Colors.orange : Colors.grey,
-                                      fontSize: 16),
+                  Event? event = transcripts.event?[index];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        event?.eventTitle ?? "",
+                        style: TextStyle(
+                            color: HexColor(transcripts.eventColorCode!),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        DateFormat.yMMMMEEEEd().format(DateTime.parse(
+                            event!.eventDateTime!.split("|")[0])),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                      // Text(
+                      //   "${DateFormat('h:mm a').format(groupName[index].logs![i].startTime.toDate())} - ${DateFormat('h:mm a').format(groupName[index].logs![i].endTime.toDate())}",
+                      //   style:
+                      //       const TextStyle(color: Colors.black, fontSize: 14),
+                      // ),
+                      Text(
+                        "Host: ${event.hostName}",
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "${event.userLocation}",
+                              maxLines: 3,
+                              softWrap: true,
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 14),
                             ),
-                            Text(
-                              DateFormat.yMMMMEEEEd().format(
-                                  groupName[index].logs![i].date.toDate()),
-                              style:
-                                  const TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              "${DateFormat('h:mm a').format(groupName[index].logs![i].startTime.toDate())} - ${DateFormat('h:mm a').format(groupName[index].logs![i].endTime.toDate())}",
-                              style:
-                                  const TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              "Host: ${groupName[index].host!}",
-                              style:
-                                  const TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "${groupName[index].logs![i].address}",
-                                    maxLines: 3,
-                                    softWrap: true,textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                  
-                                        color: Colors.black, fontSize: 14),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_outlined,
-                                      color: groupName[index]
-                                              .logs![i]
-                                              .isLocationVerified!
-                                          ? Colors.black
-                                          : Colors.grey.shade400,
-                                      size: 30,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    SvgPicture.asset(
-                                      "assets/icons/signature_icon.svg",
-                                      color: groupName[index]
-                                              .logs![i]
-                                              .isSignatureVerified!
-                                          ? Colors.black
-                                          : Colors.grey.shade400,
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                color: event.userLocation!.isNotEmpty
+                                    ? Colors.black
+                                    : Colors.grey.shade400,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              SvgPicture.asset(
+                                "assets/icons/signature_icon.svg",
+                                color: event.verifierSignatureHash!.isNotEmpty
+                                    ? Colors.black
+                                    : Colors.grey.shade400,
 
-                                      //  size: 30,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Icon(
-                                      Icons.timer,
-                                      color: groupName[index]
-                                              .logs![i]
-                                              .isTimeVerified!
-                                          ? Colors.black
-                                          : Colors.grey.shade400,
-                                      size: 30,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            )
-                          ],
-                        );
-                      });
+                                //  size: 30,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              const Icon(
+                                Icons.timer,
+                                color: Colors.black,
+                                size: 30,
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      )
+                    ],
+                  );
                 }),
           ),
         ],
@@ -393,7 +368,6 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     );
   }
 }
-
 
 class Record {
   final String group;
@@ -416,8 +390,3 @@ class Record {
     required this.timer,
   });
 }
-
-
-
-
-

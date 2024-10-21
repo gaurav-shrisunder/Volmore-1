@@ -35,7 +35,7 @@ class _EventPageState extends State<EventPage>
   final _logMethod = LogServices();
   final EventsServices _eventsServices = EventsServices();
   EventsDataResponseModel pastEvent = EventsDataResponseModel();
- 
+
   late TabController _tabController;
   List<Map<String, dynamic>> _groups = [];
 
@@ -60,9 +60,7 @@ class _EventPageState extends State<EventPage>
   }
 
   Future<void> _fetchGroups() async {
-
     try {
-
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();
       print("querySnapshot.docs: ${querySnapshot.docs}");
@@ -227,7 +225,7 @@ class _EventPageState extends State<EventPage>
         child: AppBar(
           bottom: TabBar(
             controller: _tabController,
-            labelStyle: TextStyle(fontSize: 14),
+            labelStyle: const TextStyle(fontSize: 14),
             tabs: const [
               Tab(text: "Today's"),
               Tab(text: "Upcoming"),
@@ -267,9 +265,9 @@ class _EventPageState extends State<EventPage>
         }
         List<EventListDataModel> todaysEvents = [];
         List<EventListDataModel> upcomingEvents = getUpcomingEvents(events);
-         List<EventListDataModel> pastEvents = getPastEvents(events);
+        List<EventListDataModel> pastEvents = getPastEvents(events);
 
-      //  EventsDataResponseModel? pastEvent =  _eventsServices.getEventsData("past")
+        //  EventsDataResponseModel? pastEvent =  _eventsServices.getEventsData("past")
 
         for (var event in events) {
           if (containsToday(event.dates!)) {
@@ -477,7 +475,6 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
-                                        
                                         });
                                         Navigator.of(context).pop();
                                       },
@@ -490,7 +487,6 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
-                                         
                                         });
                                         Navigator.of(context).pop();
                                       },
@@ -557,7 +553,7 @@ class _EventPageState extends State<EventPage>
                             onPressed: isEnabled
                                 ? () {
                                     if (isToday) {
-                                   /*   Navigator.push(
+                                      /*   Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LogNowPage(
@@ -567,9 +563,7 @@ class _EventPageState extends State<EventPage>
                                         ),
                                       );*/
                                     }
-                                    if (isPast) {
-                                     
-                                    }
+                                    if (isPast) {}
                                   }
                                 : null,
                             buttonText: buttonText,

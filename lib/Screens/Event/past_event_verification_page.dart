@@ -350,7 +350,16 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                     requestBody.userStartDateTime = null;
                     requestBody.userHours = null;
 
-                    await EventsServices().logEventData(requestBody);
+                    dynamic res =
+                        await EventsServices().logEventData(requestBody);
+                    if (res["message"].toString().contains("success")) {
+                      Fluttertoast.showToast(
+                          msg: "Hours verified successfully");
+                      Get.back();
+                    } else {
+                      Fluttertoast.showToast(msg: "Some error occured");
+                      Get.back();
+                    }
                     // submitEvent(context, _phoneNumberController.text);
                   }
                 },
