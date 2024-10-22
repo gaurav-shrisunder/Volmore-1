@@ -73,10 +73,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (initialLink != null) {
       final Uri deepLink = initialLink.link;
       final String? eventId = deepLink.queryParameters['eventId'];
-      final String? userId = deepLink.queryParameters['userId'];
+     
       if (eventId != null) {
         // Show the event popup
-        showEventPopup(userId!, eventId, uid!);
+        showEventPopup( eventId);
       }
     }
 
@@ -84,10 +84,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
       final Uri deepLink = data.link;
       final String? eventId = deepLink.queryParameters['eventId'];
-      final String? userId = deepLink.queryParameters['userId'];
+     
       if (eventId != null) {
         // Show the event popup
-        showEventPopup(userId!, eventId, uid!);
+        showEventPopup( eventId);
       }
     }).onError((error) {
       print('Dynamic Link Failed: $error');

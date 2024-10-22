@@ -19,6 +19,7 @@ const String createEventApi = "api/v1/events/event";
 const String logPastHours = "api/v1/events/pastEventParticipant";
 const String getEventCategoryApi = "api/v1/events/eventCategory/";
 const String getEventApi = "api/v1/events/";
+const String getEvent = "api/v1/events/eventInstances/details/";
 
 const String leaderboardApi = "api/v1/leaderboard";
 const String leaderboardRankingApi = "api/v1/leaderboard/influenceBoard";

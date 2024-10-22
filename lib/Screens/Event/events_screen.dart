@@ -438,32 +438,31 @@ class _EventsScreenState extends State<EventsScreen>
                                                           await getUserId();
                                                           String url =
                                                           await createDynamicLink(
-                                                              snapshot
-                                                                  .data!
-                                                                  .eventDetails!
-                                                                  .events![
-                                                              index]
-                                                                  .eventInstance!
-                                                                  .eventInstanceId!,
-                                                              uid!);
-                                                          print("URL: $url");
-                                                          Share.share(url);
-                                                        },
-                                                      ),
-                                                      IconButton(
-                                                        icon: Image.asset(
-                                                            'assets/icons/add.png'),
-                                                        onPressed: () {},
-                                                      ),
-                                                      IconButton(
-                                                        icon: Image.asset(
-                                                            'assets/icons/edit.png'),
-                                                        onPressed: () {},
-                                                      ),
-                                                    ],
+                                                        snapshot
+                                                            .data!
+                                                            .eventDetails!
+                                                            .events![index]
+                                                            .eventInstance!
+                                                            .eventInstanceId!,
+                                                      );
+                                                      print("URL: $url");
+                                                      Share.share(url);
+                                                    },
                                                   ),
-                                                  ActionChip(
-                                                    backgroundColor:
+                                                  IconButton(
+                                                    icon: Image.asset(
+                                                        'assets/icons/add.png'),
+                                                    onPressed: () {},
+                                                  ),
+                                                  IconButton(
+                                                    icon: Image.asset(
+                                                        'assets/icons/edit.png'),
+                                                    onPressed: () {},
+                                                  ),
+                                                ],
+                                              ),
+                                              ActionChip(
+                                                backgroundColor:
                                                     Colors.lightBlue,
                                                     side: BorderSide.none,
                                                     disabledColor: Colors.grey

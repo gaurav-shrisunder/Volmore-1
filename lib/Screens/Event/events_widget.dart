@@ -152,7 +152,7 @@ class EventWidget extends StatelessWidget {
                                   await SharedPreferences.getInstance();
                               final String? uid = prefs.getString('uid');
                               String url =
-                                  await createDynamicLink(event.id!, uid!);
+                                  await createDynamicLink(event.id!);
                               print("URL: $url");
                               Share.share(url);
                             },

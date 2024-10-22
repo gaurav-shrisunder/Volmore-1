@@ -510,7 +510,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
                               DateFormat('yyyy/MM/dd  hh:mm a').format(
-                                  DateTime.parse(startUtcDateTime).toUtc().toLocal()),
+                                  DateTime.parse(startUtcDateTime)
+                                      .toUtc()
+                                      .toLocal()),
                               textAlign: TextAlign.center,
                             )
                           : const Icon(Icons.calendar_month_rounded),
@@ -594,7 +596,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                 ? Text(
                                     DateFormat('yyyy/MM/dd  hh:mm a').format(
                                         DateTime.parse(endUtcDateTime)
-                                            .toUtc().toLocal()),
+                                            .toUtc()
+                                            .toLocal()),
                                     textAlign: TextAlign.center,
                                   )
                                 : const Icon(Icons.calendar_month_rounded),
@@ -879,8 +882,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                               await SharedPreferences
                                                   .getInstance();
                                           final String? uid = await getUserId();
-                                          String url = await createDynamicLink(
-                                              "event_id", uid!);
+                                          String url =
+                                              await createDynamicLink("2");
                                           Share.share(url);
                                           Navigator.pushAndRemoveUntil(
                                               context,
