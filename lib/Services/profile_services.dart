@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:volunterring/Models/request_models/share_transcript_request_model.dart';
 import 'package:volunterring/Models/response_models/transcript_response.dart';
 import 'package:volunterring/Models/response_models/weekly_stats_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
@@ -35,6 +36,21 @@ class ProfileServices {
         print('Failed to load Transcript');
       }
       return null;
+    }
+  }
+
+  Future<dynamic> shareWithTeacher(
+      ShareResponseRequestModel requestBody) async {
+    Response? response =
+        await apiHandler.post(shareWithTeacherApi, requestBody);
+    if (response != null && response.statusCode == 200) {
+      return "Transcript shared Successfully";
+    } else {
+      if (kDebugMode) {
+        print('Failed to load user data');
+      }
+      //  response.statusMessage
+      return response?.data["errors"][0];
     }
   }
 }
