@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_is_empty
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -438,14 +439,16 @@ class _EventsScreenState extends State<EventsScreen>
                                                           await getUserId();
                                                           String url =
                                                           await createDynamicLink(
-                                                        snapshot
+                                                     eventId:    snapshot
                                                             .data!
                                                             .eventDetails!
                                                             .events![index]
                                                             .eventInstance!
-                                                            .eventInstanceId!,
+                                                            .eventInstanceId!
                                                       );
-                                                      print("URL: $url");
+                                                      if (kDebugMode) {
+                                                        print("URL: $url");
+                                                      }
                                                       Share.share(url);
                                                     },
                                                   ),

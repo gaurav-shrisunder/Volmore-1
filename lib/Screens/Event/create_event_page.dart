@@ -883,7 +883,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                                   .getInstance();
                                           final String? uid = await getUserId();
                                           String url =
-                                              await createDynamicLink("2");
+                                              await createDynamicLink(eventId: "2");
                                           Share.share(url);
                                           Navigator.pushAndRemoveUntil(
                                               context,

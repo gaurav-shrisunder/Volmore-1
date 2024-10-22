@@ -22,10 +22,9 @@ class UserServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
 
   Future<UpdateProfileResponseModel> updateUserApi(UpdateProfileRequest requestBody) async {
-    var userId = await getUserId();
-    Response? response = await apiHandler.put("api/v1/users/$userId/profile", requestBody);
+    // var userId = await getUserId();
+    Response? response = await apiHandler.put("api/v1/users/profile", requestBody);
     if (response != null && response.statusCode == 200) {
-
       final UpdateProfileResponseModel responseModel =
       UpdateProfileResponseModel.fromJson(response.body);
       return responseModel;
