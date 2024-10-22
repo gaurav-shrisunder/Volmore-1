@@ -69,6 +69,14 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
                 width: 1.0,
               ),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(
+                color: Color.fromARGB(255, 213, 215, 215),
+                width: 1.0,
+              ),
+            ),
+
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(

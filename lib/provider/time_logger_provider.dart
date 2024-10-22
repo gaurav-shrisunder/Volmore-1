@@ -86,7 +86,7 @@ class TimerProvider with ChangeNotifier {
     _endTime = DateTime.now();
     toggleLogging();
     notifyListeners();
-    event.eventParticipatedDuration = "${startTime.toIso8601String()+""+endTime.toIso8601String()}";
+    event.eventParticipatedDuration = "${startTime.toIso8601String()+"::"+endTime.toIso8601String()}";
     log('time is: ${startTime.toIso8601String()} :: ${endTime.toIso8601String()}');
 
     ///Navigating to Confirmation form screen with the Event data

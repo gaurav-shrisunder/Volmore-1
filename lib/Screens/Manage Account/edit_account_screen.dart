@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:volunterring/Models/request_models/update_Profile_request_model.dart';
 import 'package:volunterring/Services/authentication.dart';
+import 'package:volunterring/Services/user_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:volunterring/widgets/button.dart';
@@ -23,6 +28,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController schoolController = TextEditingController();
+  TextEditingController universityController = TextEditingController();
+  TextEditingController yearOfGradController = TextEditingController();
   var oldPasswordController = TextEditingController();
   var newPasswordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
@@ -33,6 +41,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     super.initState();
     nameController.text = widget.userData.userName!;
     emailController.text = widget.userData.emailId!;
+    if( widget.userData.university!=null){
+      universityController.text = widget.userData.university!;
+    }
+    if(widget.userData.school!=null){
+      schoolController.text = widget.userData.school!;
+    }
   }
 
   @override
@@ -56,19 +70,72 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               SizedBox(height: 10,),
               InputFeildWidget(
                 title: 'Email',
+                isEnabled: false,
                 controller: emailController,
                 hintText: 'Enter your email address',
                 validator: phoneValidator,
               ),
-            /*  SizedBox(height: 10,),
+              SizedBox(height: 10,),
               InputFeildWidget(
                 title: 'Phone',
                 controller: phoneController,
                 hintText: 'Enter your phone number',
                 validator: phoneValidator,
-              ),*/
+              ),
               SizedBox(height: 10,),
+              InputFeildWidget(
+                title: 'School',
+                controller: schoolController,
+                hintText: 'Enter your School name',
+              ),
+              SizedBox(height: 10,),
+              InputFeildWidget(
+                title: 'University',
+                controller: universityController,
+                hintText: 'Enter your University name',
+              ),
+              SizedBox(height: 10,),
+              Padding(
+                padding: const EdgeInsets.only(left: 18.0),
+                child: ElevatedButton(
+                    style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(headingBlue)),
+                    onPressed: () async {
+                      UpdateProfileRequest updateProfile =  UpdateProfileRequest();
+                      updateProfile.userId = await getUserId();
+                      updateProfile.userName = nameController.text.isEmpty ? null : nameController.text;
+                      updateProfile.school = schoolController.text.isEmpty ? null : schoolController.text;
+                      updateProfile.university = universityController.text.isEmpty ? null : universityController.text;
+                      //    updateProfile.yearOfStudy = yearOfGradController.text;
+                      updateProfile.contactNumber = phoneController.text.isEmpty? null : phoneController.text;
 
+
+                      print('Payload:::: ${jsonEncode(updateProfile)}');
+
+                      await UserServices().updateUserApi(updateProfile).then((onValue){
+                        if(onValue.contains("successfully")){
+                          Fluttertoast.showToast(msg: onValue.toString());
+                        }else{
+                          Fluttertoast.showToast(msg: onValue.toString());
+                        }
+                      });
+                      /*   if(oldPasswordController.text.isNotEmpty && newPasswordController.text.isNotEmpty && confirmPasswordController.text.isNotEmpty){
+                        AuthMethod().changePassword(
+                            oldPassword: oldPasswordController.text,
+                            newPassword: newPasswordController.text,
+                            confirmNewPassword: confirmPasswordController.text);
+                      }else{
+                        Fluttertoast.showToast(msg: "Password fields cannot be empty");
+
+                      }*/
+
+                    },
+                    child: const Text(
+                      "Apply",
+                      style: TextStyle(color: Colors.white),
+                    )),
+              ),
+              SizedBox(height: 10,),
               InputFeildWidget(
                 title: 'Old Password',
                 controller: oldPasswordController,
@@ -96,12 +163,15 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 child: ElevatedButton(
                     style: const ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(headingBlue)),
-                    onPressed: () {
+                    onPressed: () async {
                       if(oldPasswordController.text.isNotEmpty && newPasswordController.text.isNotEmpty && confirmPasswordController.text.isNotEmpty){
-                        AuthMethod().changePassword(
-                            oldPassword: oldPasswordController.text,
-                            newPassword: newPasswordController.text,
-                            confirmNewPassword: confirmPasswordController.text);
+                     await   UserServices().changePassword(oldPasswordController.text, newPasswordController.text).then((onValue){
+                       if(onValue.contains("successfully")){
+                         Fluttertoast.showToast(msg: onValue);
+                       }else{
+                         Fluttertoast.showToast(msg: onValue);
+                       }
+                     });
                       }else{
                         Fluttertoast.showToast(msg: "Password fields cannot be empty");
 

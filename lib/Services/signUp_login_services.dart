@@ -91,22 +91,37 @@ class SignupLoginServices {
   }
 
 
-  updateUserService(dynamic requestBody) async {
-
-    var userId = await getUserId();
-
-    Response? response = await apiHandler.put("api/v1/users/$userId/profile", requestBody);
+  Future<UserRoleResponseModel?> sendOtp(String email) async {
+    var reqBody ={
+      "emailId":email
+    };
+    Response? response = await apiHandler.post(sendOtpApi, reqBody);
     if (response != null && response.statusCode == 200) {
-      final RefreshTokenResponseModel tokenModel =
-      RefreshTokenResponseModel.fromJson(response.data);
-      await setBearerToken(tokenModel.token!.accessToken!);
-      // await  DioInstance.saveTokens(tokenModel.userDetails!.accessToken!, refreshToken);
-      return tokenModel;
+      final UserRoleResponseModel userRole =
+      UserRoleResponseModel.fromJson(response.data);
+      return userRole;
     } else {
       if (kDebugMode) {
-        print('Failed to load token data');
+        print('Failed to load user roles data');
       }
-      return RefreshTokenResponseModel(message: response?.data["message"]);
+      return UserRoleResponseModel(message: response?.data["message"]);
+    }
+  }
+
+  Future<UserRoleResponseModel?> verifyOtp(String email, String otp) async {
+    var reqBody ={
+      "emailId":email,
+      "otp": otp
+    };
+    Response? response = await apiHandler.post(verifyOtpApi, reqBody);
+    if (response != null && response.statusCode == 200) {
+      final UserRoleResponseModel userRole = UserRoleResponseModel.fromJson(response.data);
+      return userRole;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load user roles data');
+      }
+      return UserRoleResponseModel(message: response?.data["message"]);
     }
   }
 

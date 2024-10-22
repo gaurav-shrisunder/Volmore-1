@@ -59,6 +59,7 @@ class User {
         this.userName,
         this.emailId,
         this.school,
+        this.university,
         this.yearOfStudy,
         this.profilePicture});
 

@@ -9,6 +9,8 @@ const String rolesApi = "api/v1/roles";
 const String organisationListApi = "api/v1/organizations";
 const String changePasswordApi = "api/v1/users/changePassword";
 const String resetPasswordApi = "api/v1/users/resetPassword";
+const String sendOtpApi = "api/v1/users/sendOTP";
+const String verifyOtpApi = "api/v1/users/verifyOTP";
 
 /// Events related Endpoints
 const String createEventCategoryListApi = "api/v1/events/eventCategory";
