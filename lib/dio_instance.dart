@@ -156,7 +156,7 @@ class DioInstance {
   }
 
   static bool _shouldSkipAuth(String path) {
-    const skipAuthPaths = [loginApi, signUpApi];
+    const skipAuthPaths = [loginApi, signUpApi, sendOtpApi, verifyOtpApi];
     return skipAuthPaths.contains(path);
   }
 }

@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:volunterring/Models/request_models/update_Profile_request_model.dart';
+import 'package:volunterring/Screens/BottomSheet/user_profile_page.dart';
 import 'package:volunterring/Services/authentication.dart';
 import 'package:volunterring/Services/user_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
@@ -113,8 +114,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       print('Payload:::: ${jsonEncode(updateProfile)}');
 
                       await UserServices().updateUserApi(updateProfile).then((onValue){
-                        if(onValue.contains("successfully")){
+                        if(onValue.message!.contains("successfully")){
                           Fluttertoast.showToast(msg: onValue.toString());
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserProfilePage()));
+
                         }else{
                           Fluttertoast.showToast(msg: onValue.toString());
                         }

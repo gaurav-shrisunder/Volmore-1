@@ -5,6 +5,12 @@ plugins {
     // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+//   // id 'kotlin-android'
+//    id 'kotlin-android-extensions'
+//    // Flutter-specific plugins (adjust based on your setup)
+//    id 'com.android.library'
+   // id 'org.jetbrains.kotlin.jvm' version '1.5.31' // adjust Kotlin version if needed
+
 }
 
 def localProperties = new Properties()

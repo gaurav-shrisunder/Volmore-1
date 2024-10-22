@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:volunterring/Screens/VerifyOtpScreen.dart';
 import 'package:volunterring/Services/signUp_login_services.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
@@ -82,8 +83,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   MyButtons(onTap: ()async {
 
                     await signupLoginServices.sendOtp(emailController.text).then((onValue){
+                      if(onValue!.message!.toLowerCase().contains("Failed to process request")){
+                        Fluttertoast.showToast(msg: onValue.message!);
+                      }else{
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => VerifyOtpScreen(emailController.text)));
 
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => VerifyOtpScreen(emailController.text)));
+                      }
+
 
                     });
 

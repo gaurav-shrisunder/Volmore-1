@@ -9,9 +9,11 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Models/request_models/reset_password_request_model.dart';
+import 'package:volunterring/Models/response_models/update_user_response_model.dart';
 
 import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';
+import '../Models/request_models/update_Profile_request_model.dart';
 import '../Utils/shared_prefs.dart';
 import '../api_constants.dart';
 import '../api_handler.dart';
@@ -19,15 +21,17 @@ import '../api_handler.dart';
 class UserServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
 
-  Future<dynamic> updateUserApi(dynamic requestBody) async {
+  Future<UpdateProfileResponseModel> updateUserApi(UpdateProfileRequest requestBody) async {
     var userId = await getUserId();
     Response? response = await apiHandler.put("api/v1/users/$userId/profile", requestBody);
     if (response != null && response.statusCode == 200) {
 
-      return response.body['message'];
+      final UpdateProfileResponseModel responseModel =
+      UpdateProfileResponseModel.fromJson(response.body);
+      return responseModel;
     } else {
       if (kDebugMode) {
-        print('Failed to load token data');
+        print('Failed to update data');
       }
       return response?.body['message'];
     }
@@ -39,8 +43,8 @@ class UserServices {
     var userId = await getUserId();
     var reqBody = {
       "userId": "$userId",
-      "oldPassword": "$oldPass",
-      "newPassword": "$newPass"
+      "oldPassword": oldPass,
+      "newPassword": newPass
     };
 
     Response? response = await apiHandler.put("api/v1/users/$userId/profile", reqBody);
