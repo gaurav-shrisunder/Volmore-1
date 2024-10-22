@@ -435,14 +435,13 @@ class _EventsScreenState extends State<EventsScreen>
                                                           await getUserId();
                                                       String url =
                                                           await createDynamicLink(
-                                                              snapshot
-                                                                  .data!
-                                                                  .eventDetails!
-                                                                  .events![
-                                                                      index]
-                                                                  .eventInstance!
-                                                                  .eventInstanceId!,
-                                                              uid!);
+                                                        snapshot
+                                                            .data!
+                                                            .eventDetails!
+                                                            .events![index]
+                                                            .eventInstance!
+                                                            .eventInstanceId!,
+                                                      );
                                                       print("URL: $url");
                                                       Share.share(url);
                                                     },

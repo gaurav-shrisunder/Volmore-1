@@ -1,10 +1,10 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-Future<String> createDynamicLink(String eventId, String userId) async {
+Future<String> createDynamicLink(String eventId) async {
   final DynamicLinkParameters parameters = DynamicLinkParameters(
     uriPrefix: 'https://volmore.page.link',
     link:
-        Uri.parse('https://volmore.com/event?eventId=$eventId&userId=$userId'),
+        Uri.parse('https://volmore.com/event?eventId=$eventId'),
     androidParameters: const AndroidParameters(
       packageName: 'com.yourapp',
     ),
