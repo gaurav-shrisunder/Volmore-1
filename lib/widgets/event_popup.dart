@@ -1,51 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:volunterring/Models/event_data_model.dart';
+
+import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
+import 'package:volunterring/Models/response_models/get_event_response_model.dart';
 
 import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Services/authentication.dart';
+
+import 'package:volunterring/Services/events_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
+import 'package:volunterring/Utils/shared_prefs.dart';
 // Assuming this is the file where fetchEventById is defined
 
-void showEventPopup(String userId, String eventId, String uid) async {
+void showEventPopup(String eventId) async {
   // Fetch event details from Firestore using eventId
-  var authServices = AuthMethod();
-  EventDataModel? event = await authServices.fetchEventById(userId, eventId);
-
-  if (event != null) {
-    EventDataModel? alreadyeventExist =
-        await authServices.fetchEventById(uid, eventId);
-    if (alreadyeventExist != null) {
-      showDialog(
-        context: Get.context!,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Event Already Accepted"),
-            content: const Text("You have already accepted this invite."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
-      return;
+  GetEventResponseModel eventData =
+      await EventsServices().getEventDetails(eventId);
+  Future<void> acceptInvite(String eventId, BuildContext context) async {
+    LogEventRequestModel requestBody = LogEventRequestModel();
+    requestBody.eventInstanceId = eventId;
+    requestBody.userId = await getUserId();
+    requestBody.userEndDateTime = null;
+    requestBody.userStartDateTime = null;
+    requestBody.userHours = null;
+    dynamic res = await EventsServices().logEventData(requestBody);
+    if (res["message"].toString().contains("success")) {
+      Fluttertoast.showToast(msg: "Event Accepted Successfully");
+      Get.to(const HomePage());
+    } else {
+      Fluttertoast.showToast(msg: "Some error occured");
+      Get.back();
     }
+  }
+
+  if (eventData.events.isNotEmpty) {
+    //   showDialog(
+    //     context: Get.context!,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         title: const Text("Event Already Accepted"),
+    //         content: const Text("You have already accepted this invite."),
+    //         actions: [
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //             child: const Text('Close'),
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   );
+    //   return;
+    // }
     showDialog(
       context: Get.context!,
       builder: (BuildContext context) {
         bool isLoading = false;
-
+        Event event = eventData.events[0].event;
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(event.title ?? "Event Details"),
+              title: Text(event.eventTitle ?? "Event Details"),
               content: SizedBox(
                 width: Get.width * 0.9,
                 child: Column(
@@ -61,7 +79,7 @@ void showEventPopup(String userId, String eventId, String uid) async {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          ' ${event.description ?? "No description"}',
+                          ' ${event.eventDescription ?? "No description"}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -77,7 +95,7 @@ void showEventPopup(String userId, String eventId, String uid) async {
                           width: 5,
                         ),
                         Text(
-                          'Location: ${event.location ?? "No location"}',
+                          'Location: ${event.eventLocationName ?? "No location"}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -92,7 +110,7 @@ void showEventPopup(String userId, String eventId, String uid) async {
                           width: 5,
                         ),
                         Text(
-                          'Date: ${DateFormat.yMMMd().format(event.date)}',
+                          'Date: ${DateFormat.yMMMd().format(DateTime.parse(event.recurrencePattern.eventStartDateTime))}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -107,7 +125,7 @@ void showEventPopup(String userId, String eventId, String uid) async {
                           width: 5,
                         ),
                         Text(
-                          'Time: ${event.time ?? "No time"}',
+                          'Time: ${DateFormat('hh:mm a').format(DateTime.parse(event.recurrencePattern.eventStartDateTime)) ?? "No time"}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -122,7 +140,7 @@ void showEventPopup(String userId, String eventId, String uid) async {
                           width: 5,
                         ),
                         Text(
-                          'Host: ${event.host ?? "No host"}',
+                          'Host: ${event.hostName ?? "No host"}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -170,7 +188,7 @@ void showEventPopup(String userId, String eventId, String uid) async {
                                       isLoading = true;
                                     });
 
-                                    await acceptInvite(event, context);
+                                    await acceptInvite(eventId, context);
 
                                     setState(() {
                                       isLoading = false;
@@ -224,32 +242,5 @@ void showEventPopup(String userId, String eventId, String uid) async {
         );
       },
     );
-  }
-}
-
-Future<void> acceptInvite(EventDataModel event, BuildContext context) async {
-  // Update Firebase with the user's acceptance
-  dynamic res = await AuthMethod().acceptEvent(
-      title: event.title ?? "",
-      description: event.description ?? "",
-      date: event.date,
-      location: event.location ?? "",
-      occurrence: event.occurence ?? "No occurence",
-      group: event.group!,
-      time: event.time ?? "",
-      endDate: event.endTime,
-      dates: event.dates!,
-      eventId: event.id,
-      hostId: event.hostId);
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(res['res'])),
-  );
-
-  if (res['res'] == "Event added successfully") {
-    Navigator.of(context).pop();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      Get.to(const HomePage());
-    });
   }
 }

@@ -7,7 +7,10 @@ const String loginApi = "api/v1/users/login";
 const String refreshTokenApi = "api/v1/auth/refreshToken";
 const String rolesApi = "api/v1/roles";
 const String organisationListApi = "api/v1/organizations";
-const String updateProfileApi = "api/v1/users/1/profile";
+const String changePasswordApi = "api/v1/users/changePassword";
+const String resetPasswordApi = "api/v1/users/resetPassword";
+const String sendOtpApi = "api/v1/users/sendOTP";
+const String verifyOtpApi = "api/v1/users/verifyOTP";
 
 /// Events related Endpoints
 const String createEventCategoryListApi = "api/v1/events/eventCategory";
@@ -16,6 +19,7 @@ const String createEventApi = "api/v1/events/event";
 const String logPastHours = "api/v1/events/pastEventParticipant";
 const String getEventCategoryApi = "api/v1/events/eventCategory/";
 const String getEventApi = "api/v1/events/";
+const String getEvent = "api/v1/events/eventInstances/details/";
 
 const String leaderboardApi = "api/v1/leaderboard";
 const String leaderboardRankingApi = "api/v1/leaderboard/influenceBoard";

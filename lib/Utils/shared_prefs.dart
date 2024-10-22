@@ -66,9 +66,9 @@ getUserId() async {
 
 Future<void> setUser(User user) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String userJson = jsonEncode(user.toJson()); 
-  await prefs.setString(
-      'user', userJson); 
+  String userJson = jsonEncode(user.toJson());
+  print('User Data::: ${jsonDecode(userJson)}');
+  await prefs.setString('user', userJson);
 }
 
 // Function to retrieve the user object from SharedPreferences
