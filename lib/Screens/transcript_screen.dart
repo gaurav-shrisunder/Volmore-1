@@ -273,7 +273,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Lifetime volunteer Hours: ${transcript?.lifeTimeHour ?? 0}",
+                              "Lifetime volunteer : ${(transcript?.lifeTimeHour ?? 0) ~/ 60} Hours ${(transcript?.lifeTimeHour ?? 0) % 60} Mins ",
                               style: const TextStyle(fontSize: 14),
                             ),
                             ElevatedButton(
@@ -341,7 +341,8 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
             transcripts.eventCategoryName ?? "Trash",
             style: const TextStyle(fontSize: 16),
           ),
-          subtitle: Text("Total Hours ${transcripts.totalHours}"),
+          subtitle: Text(
+              "Total  ${transcripts.totalHours! ~/ 60} Hours ${transcripts.totalHours! % 60} min"),
           collapsedBackgroundColor:
               HexColor(transcripts.eventColorCode!).withOpacity(0.2),
           // backgroundColor:
