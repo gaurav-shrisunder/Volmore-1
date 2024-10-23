@@ -160,13 +160,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 return const Divider();
               },
               itemBuilder: (context, index) {
-                userList[index]!.hostInfluenceHours;
-                int hours = userList[index]!.hostInfluenceHours ?? 0;
+                userList[index]!.participantHours;
+                int hours = (userList[index]!.participantHours ?? 0) ~/ 60;
                 // Integer division to get hours
-                int minutes = userList[index]!.hostInfluenceHours ??
-                    0 % 60; // Remainder to get minutes
+                int minutes = (userList[index]!.participantHours ?? 0) %
+                    60; // Remainder to get minutes
 
-                String formattedTime = '${hours}h ${minutes}m';
+                String formattedTime = '${hours}h  ${minutes}m';
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 5.0,
@@ -207,6 +207,28 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                       color: Colors.black, fontSize: 16),
                                 ),
                                 userList[index]!.yearOfStudy != 0
+                                    ? Row(
+                                        children: [
+                                          Chip(
+                                            side: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0),
+                                            padding: EdgeInsets.zero,
+                                            label: Text(
+                                              userList[index]!
+                                                  .yearOfStudy
+                                                  .toString(),
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                            ),
+                                            backgroundColor:
+                                                Colors.orange.shade50,
+                                          ),
+                                          const SizedBox(width: 8),
+                                        ],
+                                      )
+                                    : const SizedBox(),
+                                    userList[index]!.yearOfStudy != 0
                                     ? Row(
                                         children: [
                                           Chip(
@@ -325,9 +347,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 return const Divider();
               },
               itemBuilder: (context, index) {
-                int hours = userList[index]!
-                    .participantHours!; // Integer division to get hours
-                int minutes = userList[index]!.participantHours! %
+                userList[index]!.hostInfluenceHours;
+                int hours = (userList[index]!.hostInfluenceHours ?? 0) ~/ 60;
+                // Integer division to get hours
+                int minutes = (userList[index]!.hostInfluenceHours ?? 0) %
                     60; // Remainder to get minutes
 
                 String formattedTime = '${hours}h ${minutes}m';

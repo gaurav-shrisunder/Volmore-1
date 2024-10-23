@@ -1,18 +1,13 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Controllers/event_controller.dart';
-import 'package:volunterring/Models/UserModel.dart';
-import 'package:volunterring/Models/event_data_model.dart';
+
 import 'package:intl/intl.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Models/response_models/weekly_stats_response_model.dart';
 import 'package:volunterring/Screens/Manage%20Account/edit_account_screen.dart';
-import 'package:volunterring/Services/logService.dart';
+
 import 'package:volunterring/Services/profile_services.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
@@ -49,18 +44,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
     super.initState();
   }
 
-  List<DataRow> generateWeeklyLogRows(List<EventDetail> events) {
+  List<DataRow> generateWeeklyLogRows(List<EventDetail?> events) {
     List<DataRow> logRows = [];
 
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
 
     for (var event in events) {
       logRows.add(
         DataRow(cells: [
-          DataCell(Text(event.title ?? "")),
+          DataCell(Text(event?.title ?? "")),
           DataCell(Text(DateFormat.yMMMd()
-              .format(DateTime.parse(event.date.split(" ")[0].trim())))),
+              .format(DateTime.parse(event!.date.split(" ")[0].trim())))),
           DataCell(Text(event.location ?? "No location")),
         ]),
       );
@@ -105,8 +99,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: headingBlue,
                       child: IconButton(
                           onPressed: () {
-                            Get.to(
-                            EditAccountScreen(user!));
+                            Get.to(EditAccountScreen(user!));
                           },
                           icon: const Icon(Icons.edit)))),
               const CircleAvatar(
@@ -155,7 +148,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             Column(
                               children: [
                                 Text(
-                                  "${weeklyStats!.lifeTimeHours.toString()} Hour",
+                                  "${weeklyStats!.lifeTimeHours! ~/ 60} Hour",
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -199,7 +192,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             Column(
                               children: [
                                 Text(
-                                  "${weeklyStats?.weekTotalHour.toString() ?? "0"} Hrs",
+                                  "${(weeklyStats?.weekTotalHour ?? 0) ~/ 60} Hrs",
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -248,16 +241,37 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       "Sun"
                     ],
                     yAxisList: [
-                      weeklyStats?.userHoursByDay?.monday.toDouble() ?? 0.0,
-                      weeklyStats?.userHoursByDay?.tuesday.toDouble() ?? 0.0,
-                      weeklyStats?.userHoursByDay?.wednesday.toDouble() ?? 0.0,
-                      weeklyStats?.userHoursByDay?.thursday.toDouble() ?? 0.0,
-                      weeklyStats?.userHoursByDay?.friday.toDouble() ?? 0.0,
-                      weeklyStats?.userHoursByDay?.saturday.toDouble() ?? 0.0,
-                      weeklyStats?.userHoursByDay?.sunday.toDouble() ?? 0.0,
+                      ((weeklyStats?.userHoursByDay?.monday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
+                      ((weeklyStats?.userHoursByDay?.tuesday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
+                      ((weeklyStats?.userHoursByDay?.wednesday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
+                      ((weeklyStats?.userHoursByDay?.thursday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
+                      ((weeklyStats?.userHoursByDay?.friday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
+                      ((weeklyStats?.userHoursByDay?.saturday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
+                      ((weeklyStats?.userHoursByDay?.sunday.toDouble() ??
+                                  0.0) ~/
+                              60)
+                          .toDouble(),
                     ],
-                    xAxisName: "",
-                    yAxisName: "",
+                    xAxisName: "Days",
+                    yAxisName: "Hours",
                     interval: 5,
                   ),
                 ),
@@ -280,7 +294,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
-                  columnSpacing: width * 0.18,
+                  columnSpacing: width * 0.16,
                   columns: const [
                     DataColumn(
                         label: Text(
