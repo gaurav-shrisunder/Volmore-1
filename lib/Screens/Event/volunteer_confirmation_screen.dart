@@ -23,16 +23,17 @@ import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 
 import '../../Models/response_models/events_data_response_model.dart';
+import '../../Models/response_models/nonverified_events_response.dart';
 import '../../Services/logService.dart';
 import '../../Utils/common_utils.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
- // final EventDataModel event;
+  // final EventDataModel event;
   final Event event;
-  final EventInstance eventInstanceId;
+  final EventInstance eventInstance;
 
   // final DateTime date;
-  const VolunteerConfirmationScreen(this.event,this.eventInstanceId,
+  const VolunteerConfirmationScreen(this.event, this.eventInstance,
       {super.key});
 
   @override
@@ -47,6 +48,10 @@ class _VolunteerConfirmationScreenState
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   final LogServices _logMethod = LogServices();
+  final EventsServices _eventsServices = EventsServices();
+  bool isSelectedAllPreviousCheckbox = false;
+  NonVerifiedEventsResponseModel nonVerifiedEvents = NonVerifiedEventsResponseModel();
+  List<CheckboxItem> checkboxItems = [];
 
   String? _errorMessage;
 
@@ -60,7 +65,29 @@ class _VolunteerConfirmationScreenState
   @override
   void initState() {
     super.initState();
-    _eventsFuture = _logMethod.fetchAllEventsWithLogs();
+   // _eventsFuture = _logMethod.fetchAllEventsWithLogs();
+    getPreviousEventApiCalling();
+  }
+
+  getPreviousEventApiCalling()async{
+    nonVerifiedEvents =  await _eventsServices.getNonVerifiedEventDetails(
+        widget.event.eventCategoryId!);
+    nonVerifiedEvents.nonVerifiedEvents?.forEach((action){
+      checkboxItems.add(CheckboxItem(
+          eventName: action.eventTitle!,
+          isChecked: false,
+          time: DateFormat.yMMMMEEEEd()
+              .format(DateTime.parse(action.eventStartDate!)),
+          userLocation: action.userLocation,
+          verifierSignatureHash:
+          action.verifierSignatureHash,eventInstanceId: action.eventInstanceId));
+    });
+
+    setState(() {
+
+    });
+
+
   }
 
   final SignatureController _signatureController = SignatureController(
@@ -117,6 +144,7 @@ class _VolunteerConfirmationScreenState
   }
 
   List<Map<String, String>> selectedEvents = [];
+
   @override
   Widget build(BuildContext context) {
     Color color = HexColor(widget.event.eventColorCode!);
@@ -147,7 +175,8 @@ class _VolunteerConfirmationScreenState
         actions: [
           GestureDetector(
             onTap: () {
-           /*   final timerProvider =
+              Navigator.pop(context);
+              /*   final timerProvider =
                   Provider.of<TimerProvider>(context, listen: false);
               timerProvider
                   .createSingleLog(context, widget.event, widget.date, null,
@@ -185,8 +214,8 @@ class _VolunteerConfirmationScreenState
                 height: screenHeight * 0.01,
               ),
               Text(
-                 DateFormat.yMMMMEEEEd().format(DateTime.parse(widget.event.reccurencePattern!.eventStartDateTime!)),
-
+                DateFormat.yMMMMEEEEd().format(
+                    DateTime.parse(widget.eventInstance.eventStartDateTime!)),
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -220,7 +249,8 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    "${formatTime(widget.event.eventParticipatedDuration!.split("::").first)} to ${formatTime(widget.event.eventParticipatedDuration!.split("::").last)}" ?? "",
+                    "${formatTime(widget.event.eventParticipatedDuration!.split("::").first)} to ${formatTime(widget.event.eventParticipatedDuration!.split("::").last)}" ??
+                        "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
                 ],
@@ -251,7 +281,6 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-
               TextFormField(
                 controller: _notesController,
                 keyboardType: TextInputType.text,
@@ -280,8 +309,7 @@ class _VolunteerConfirmationScreenState
                   ),
                   // Display the error message
                 ),
-                onChanged: (value) {
-                },
+                onChanged: (value) {},
 
                 // validator: phoneValidator,
               ),
@@ -293,7 +321,6 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.007,
               ),
-
               Row(
                 children: [
                   Container(
@@ -320,8 +347,6 @@ class _VolunteerConfirmationScreenState
                       },
                     ),
                   ),
-
-
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
@@ -348,7 +373,8 @@ class _VolunteerConfirmationScreenState
                             color: Colors.blue[200]!,
                           ),
                         ),
-                        errorText: _errorMessage, // Display the error message
+                        errorText: _errorMessage,
+                        // Display the error message
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
@@ -366,43 +392,39 @@ class _VolunteerConfirmationScreenState
                   ),
                 ],
               ),
-
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              const Text(
-                "Sign for all previous events too",
-                style: TextStyle(fontSize: 18, color: Colors.black),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Sign for all previous events",
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                  Checkbox(
+                      value: isSelectedAllPreviousCheckbox,
+                      onChanged: (value) {
+                        setState(() {
+                          isSelectedAllPreviousCheckbox =
+                              !isSelectedAllPreviousCheckbox;
+                        });
+                      })
+                ],
               ),
-              FutureBuilder<List<EventDataModel>>(
-                  future: _eventsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      print("Data ${snapshot.data}");
-                      return const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(height: 20),
-                            Center(child: Text('No Previous events found')),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return SizedBox();
-                     /* List<EventListDataModel> pastEvents =
-                          getPastEvents(snapshot.data ?? []);
-                      return SizedBox(
-                        height: screenHeight * 0.4, // Adjust as needed
-                        child: buildEventList("Past Events", pastEvents),
-                      );*/
-                    }
-                  }),
+
+          /*    Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: checkboxItems.length,
+                  itemBuilder: (context, index) {
+                    return Expanded(child: buildCheckboxItem(checkboxItems[index]));
+                  },
+                ),
+              ),*/
+
+
+
               GestureDetector(
                 onTap: () async {
                   if (_errorMessage != null) {
@@ -429,15 +451,24 @@ class _VolunteerConfirmationScreenState
     "verifierNotes": "Some notes from the verifier2"
                     * */
 
-                    requestBody.userId= await getUserId();
-                    requestBody.eventInstanceId = widget.eventInstanceId.eventInstanceId;
-                    requestBody.userStartDateTime = widget.event.eventParticipatedDuration?.split("::").first;
-                    requestBody.userEndDateTime = widget.event.eventParticipatedDuration?.split("::").last;
-                    requestBody.userLocationName = widget.event.eventLocationName;
+                    requestBody.userId = await getUserId();
+                    requestBody.eventInstanceId =
+                        widget.eventInstance.eventInstanceId;
+                    requestBody.userStartDateTime = widget
+                        .event.eventParticipatedDuration
+                        ?.split("::")
+                        .first;
+                    requestBody.userEndDateTime = widget
+                        .event.eventParticipatedDuration
+                        ?.split("::")
+                        .last;
+                    requestBody.userLocationName =
+                        widget.event.eventLocationName;
                     requestBody.userNotes = _notesController.text;
                     requestBody.userHours = 4;
                     requestBody.userEarnPoints = 4;
-                    requestBody.verifierSignatureHash = _signatureController.toString();
+                    requestBody.verifierSignatureHash =
+                        _signatureController.toString();
                     requestBody.verifierInformation = "Verifier name";
                     requestBody.verifierNotes = _notesController.text;
                     HostInformation hostInfo = HostInformation();
@@ -446,27 +477,25 @@ class _VolunteerConfirmationScreenState
                     hostInfo.hours = 4;
                     requestBody.hostInformation = hostInfo;
 
-
-
-
-                   await EventsServices().logEventData(requestBody);
-                   // submitEvent(context, _phoneNumberController.text);
+                    await EventsServices().logEventData(requestBody);
+                    // submitEvent(context, _phoneNumberController.text);
                   }
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   width: double.infinity,
                   decoration: BoxDecoration(
                       color: Colors.lightBlue[500],
                       borderRadius: BorderRadius.circular(10)),
                   child: const Center(
                       child: Text(
-                        "Submit Event",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      )),
+                    "Submit Event",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  )),
                 ),
               ),
             ],
@@ -476,8 +505,8 @@ class _VolunteerConfirmationScreenState
     );
   }
 
-  Widget buildEventList(String title, List<EventListDataModel> events) {
-   
+  /*Widget buildEventList(String title, List<NonVerifiedEvents> events) {
+
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -495,15 +524,13 @@ class _VolunteerConfirmationScreenState
                 child: ListView.builder(
                   itemCount: events.length,
                   itemBuilder: (context, index) {
-                   
-                    print(events.length);
-                    EventListDataModel event = events[index];
-                    Color color =
-                        colorMap[event.event!.groupColor] ?? Colors.pink;
-                    LogModel? log = fetchLog(event.event!, event.date);
-                    if (log == null) {
-                      return const SizedBox();
-                    }
+                    NonVerifiedEvents event = events[index];
+                    // Color color =
+                    //     colorMap[event.event!.groupColor] ?? Colors.pink;
+                    // LogModel? log = fetchLog(event.event!, event.date);
+                    // if (log == null) {
+                    //   return const SizedBox();
+                    // }
 
                     if (events.isEmpty) {
                       return const Text("No Events Found",
@@ -650,7 +677,7 @@ class _VolunteerConfirmationScreenState
         )
       ],
     );
-  }
+  }*/
 
   void submitEvent(BuildContext context, String number) async {
     final timerProvider = Provider.of<TimerProvider>(context, listen: false);
@@ -664,7 +691,66 @@ class _VolunteerConfirmationScreenState
       );
       return;
     }
-   /* timerProvider.createSingleLog(context, widget.event, widget.date,
+    /* timerProvider.createSingleLog(context, widget.event, widget.date,
         signatureString, number, selectedEvents);*/
   }
+
+
+
+  Widget buildCheckboxItem(CheckboxItem item) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+      child: Row(
+        children: [
+          // Checkbox and Name aligned left
+          Row(
+            children: [
+              Checkbox(
+                value: item.isChecked,
+                onChanged: (bool? value) {
+                  setState(() {
+                    item.isChecked = value ?? false;
+                  });
+                },
+              ),
+              Text(item.eventName),
+            ],
+          ),
+
+          // Spacer to push icons to the right
+          Spacer(),
+
+          // Icons aligned to the right
+          Row(
+            children: const [
+              Icon(Icons.edit, color: Colors.blue),
+              SizedBox(width: 8),
+              Icon(Icons.delete, color: Colors.red),
+              SizedBox(width: 8),
+              Icon(Icons.more_vert, color: Colors.grey),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
+}
+
+class CheckboxItem {
+  final String eventName;
+  bool isChecked;
+  String? userLocation;
+  String? verifierSignatureHash;
+  String? time;
+  String? eventInstanceId;
+
+  CheckboxItem(
+      {required this.eventName,
+      this.isChecked = false,
+      this.userLocation,
+      this.time,
+      this.verifierSignatureHash,
+      this.eventInstanceId});
 }

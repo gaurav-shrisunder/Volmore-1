@@ -8,6 +8,7 @@ import 'package:volunterring/Models/request_models/log_past_event_request_model.
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Models/response_models/events_data_response_model.dart';
 import 'package:volunterring/Models/response_models/get_event_response_model.dart';
+import 'package:volunterring/Models/response_models/nonverified_events_response.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
@@ -130,6 +131,22 @@ class EventsServices {
       }
       return GetEventResponseModel(
           message: response?.data["message"], events: []);
+    }
+  }
+
+
+  Future<NonVerifiedEventsResponseModel> getNonVerifiedEventDetails(String eventCategoryID) async {
+    var userId = await getUserId();
+    Response? response = await apiHandler.get("${getNonVerifiedEventApi+userId}/$eventCategoryID");
+    if (response != null && response.statusCode == 200) {
+      final NonVerifiedEventsResponseModel event =
+      NonVerifiedEventsResponseModel.fromJson(response.data);
+      return event;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load non verified event data');
+      }
+      return NonVerifiedEventsResponseModel.fromJson(response!.data);
     }
   }
 }

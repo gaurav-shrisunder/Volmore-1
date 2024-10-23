@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -82,21 +83,29 @@ class TimerProvider with ChangeNotifier {
   }
 
   Future<void> endLogging(
-      BuildContext context, Event event, EventInstance eventInstanceId,) async {
+      BuildContext context, Event event, EventInstance eventInstance,) async {
     _endTime = DateTime.now();
-    toggleLogging();
-    notifyListeners();
-    event.eventParticipatedDuration = "${startTime.toIso8601String()+"::"+endTime.toIso8601String()}";
-    log('time is: ${startTime.toIso8601String()} :: ${endTime.toIso8601String()}');
+    if( startTime.minute < endTime.minute) {
+      toggleLogging();
+      notifyListeners();
+      event.eventParticipatedDuration =
+      "${startTime.toIso8601String() + "::" + endTime.toIso8601String()}";
+      log('time is: ${startTime.toIso8601String()} :: ${endTime
+          .toIso8601String()}');
 
-    ///Navigating to Confirmation form screen with the Event data
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => VolunteerConfirmationScreen(
-                  event,eventInstanceId
+      ///Navigating to Confirmation form screen with the Event data
 
-                )));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  VolunteerConfirmationScreen(
+                      event, eventInstance
+
+                  )));
+    }else{
+      Fluttertoast.showToast(msg: "Should complete atleast 1 minute");
+    }
   }
 
   Future<void> createSingleLog(
