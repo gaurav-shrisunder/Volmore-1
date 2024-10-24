@@ -500,8 +500,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                     .data!
                                                                     .eventDetails!
                                                                     .events![
-                                                                index]
-                                                                    .eventInstance!),
+                                                                index].eventInstance!),
                                                           ),
                                                         );
                                                       }
