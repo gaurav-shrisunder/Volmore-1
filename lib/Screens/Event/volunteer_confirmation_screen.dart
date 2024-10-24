@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'dart:convert';
@@ -21,6 +22,7 @@ import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
+import 'package:volunterring/widgets/button.dart';
 
 import '../../Models/response_models/events_data_response_model.dart';
 import '../../Models/response_models/nonverified_events_response.dart';
@@ -174,17 +176,47 @@ class _VolunteerConfirmationScreenState
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-              /*   final timerProvider =
-                  Provider.of<TimerProvider>(context, listen: false);
-              timerProvider
-                  .createSingleLog(context, widget.event, widget.date, null,
-                      null, selectedEvents)
-                  .then((onValue) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const HomePage()));
-              });*/
+            onTap: ()async  {
+              if (_errorMessage != null) {
+                Fluttertoast.showToast(
+                    msg: "Enter valid phone number",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              } else {
+                LogEventRequestModel requestBody = LogEventRequestModel();
+                requestBody.userId = await getUserId();
+                requestBody.eventInstanceId =
+                    widget.eventInstance.eventInstanceId;
+                requestBody.userStartDateTime = widget
+                    .event.eventParticipatedDuration
+                    ?.split("::")
+                    .first;
+                requestBody.userEndDateTime = widget
+                    .event.eventParticipatedDuration
+                    ?.split("::")
+                    .last;
+                requestBody.userLocationName =
+                    widget.event.eventLocationName;
+                requestBody.userNotes = _notesController.text;
+                requestBody.userHours = 4;
+                requestBody.userEarnPoints = 4;
+                requestBody.verifierSignatureHash =
+                    _signatureController.toString();
+                requestBody.verifierInformation = "Verifier name";
+                requestBody.verifierNotes = _notesController.text;
+                HostInformation hostInfo = HostInformation();
+                hostInfo.eventId = widget.event.eventId;
+                hostInfo.hostId = widget.event.hostId;
+                hostInfo.hours = 4;
+                requestBody.hostInformation = hostInfo;
+
+                await EventsServices().logEventData(requestBody);
+                // submitEvent(context, _phoneNumberController.text);
+              }
             },
             child: Text(
               "Skip",
@@ -200,6 +232,7 @@ class _VolunteerConfirmationScreenState
         ],
       ),
       body: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Column(
@@ -258,9 +291,23 @@ class _VolunteerConfirmationScreenState
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              const Text(
-                "Signature",
-                style: TextStyle(fontSize: 18, color: headingBlue),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Signature",
+                    style: TextStyle(fontSize: 18, color: headingBlue),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      _signatureController.clear();
+                    },
+                    child: Text(
+                      "Clear",
+                      style: TextStyle(fontSize: 16, color: headingBlue),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: screenHeight * 0.007,
@@ -402,106 +449,154 @@ class _VolunteerConfirmationScreenState
                     "Sign for all previous events",
                     style: TextStyle(fontSize: 18, color: Colors.black),
                   ),
-                  Checkbox(
-                      value: isSelectedAllPreviousCheckbox,
-                      onChanged: (value) {
-                        setState(() {
-                          isSelectedAllPreviousCheckbox =
-                              !isSelectedAllPreviousCheckbox;
-                        });
-                      })
+                  // Checkbox(
+                  //     value: isSelectedAllPreviousCheckbox,
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         !isSelectedAllPreviousCheckbox ?   checkboxItems.forEach((action) => action.isChecked =true) : checkboxItems.forEach((action) => action.isChecked =false);
+                  //
+                  //         isSelectedAllPreviousCheckbox =
+                  //             !isSelectedAllPreviousCheckbox;
+                  //
+                  //         if(checkboxItems.any((test) => test.isChecked !=true)){
+                  //           isSelectedAllPreviousCheckbox = false;
+                  //         }
+                  //       });
+                  //     })
                 ],
               ),
 
-          /*    Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: checkboxItems.length,
-                  itemBuilder: (context, index) {
-                    return Expanded(child: buildCheckboxItem(checkboxItems[index]));
-                  },
-                ),
-              ),*/
+          ListView.builder(
+              shrinkWrap: true,
+              itemCount: checkboxItems.length,
 
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (context,index){
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(value: checkboxItems[index].isChecked, onChanged: (value){
+                            setState(() {
+                              checkboxItems[index].isChecked = value!;
 
+                            });
+                          }),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(checkboxItems[index].eventName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                              Text(checkboxItems[index].time!),
+                            ],
+                          ),
 
-              GestureDetector(
-                onTap: () async {
-                  if (_errorMessage != null) {
-                    Fluttertoast.showToast(
-                        msg: "Enter valid phone number",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
-                  } else {
-                    LogEventRequestModel requestBody = LogEventRequestModel();
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            color: checkboxItems[index].userLocation!.isNotEmpty
+                                ? Colors.black
+                                : Colors.grey.shade400,
+                            size: 30,
+                          ),
+                          const SizedBox(width: 5),
+                          SvgPicture.asset(
+                            "assets/icons/signature_icon.svg",
+                            color: checkboxItems[index]
+                                .verifierSignatureHash!.isNotEmpty
+                                ? Colors.black
+                                : Colors.grey.shade400,
+                          ),
+                          const SizedBox(width: 5),
+                          Icon(
+                            Icons.timer,
+                            color:
+                            Colors.black,
+                            size: 30,
+                          ),
+                        ],
+                      )
 
-                    /*
-                     "hostInformation": {
-        "eventId": "9",
-        "hostId": "1",
-        "hours": 4
-    },
-    "userEarnPoints": 0,
-    "verifierSignatureHash": "someHashValue2",
-    "verifierInformation": "Verifier details here2", // name | phone |
-    "verifierNotes": "Some notes from the verifier2"
-                    * */
+                    ],
+                  ),
+                );
 
-                    requestBody.userId = await getUserId();
-                    requestBody.eventInstanceId =
-                        widget.eventInstance.eventInstanceId;
-                    requestBody.userStartDateTime = widget
-                        .event.eventParticipatedDuration
-                        ?.split("::")
-                        .first;
-                    requestBody.userEndDateTime = widget
-                        .event.eventParticipatedDuration
-                        ?.split("::")
-                        .last;
-                    requestBody.userLocationName =
-                        widget.event.eventLocationName;
-                    requestBody.userNotes = _notesController.text;
-                    requestBody.userHours = 4;
-                    requestBody.userEarnPoints = 4;
-                    requestBody.verifierSignatureHash =
-                        _signatureController.toString();
-                    requestBody.verifierInformation = "Verifier name";
-                    requestBody.verifierNotes = _notesController.text;
-                    HostInformation hostInfo = HostInformation();
-                    hostInfo.eventId = widget.event.eventId;
-                    hostInfo.hostId = widget.event.hostId;
-                    hostInfo.hours = 4;
-                    requestBody.hostInformation = hostInfo;
-
-                    await EventsServices().logEventData(requestBody);
-                    // submitEvent(context, _phoneNumberController.text);
-                  }
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Colors.lightBlue[500],
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                      child: Text(
-                    "Submit Event",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  )),
-                ),
-              ),
+          }),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        //  height: 40,
+          child: MyButtons(
+              onTap:() async {
+          if (_errorMessage != null) {
+          Fluttertoast.showToast(
+          msg: "Enter valid phone number",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+          } else {
+          LogEventRequestModel requestBody = LogEventRequestModel();
+          requestBody.userId = await getUserId();
+          requestBody.eventInstanceId =
+          widget.eventInstance.eventInstanceId;
+          requestBody.userStartDateTime = widget
+              .event.eventParticipatedDuration
+              ?.split("::")
+              .first;
+          requestBody.userEndDateTime = widget
+              .event.eventParticipatedDuration
+              ?.split("::")
+              .last;
+          requestBody.userLocationName =
+          widget.event.eventLocationName;
+          requestBody.userNotes = _notesController.text;
+          requestBody.userHours = 4;
+          requestBody.userEarnPoints = 4;
+          requestBody.verifierSignatureHash =
+          _signatureController.toString();
+          requestBody.verifierInformation = "Verifier name";
+          requestBody.verifierNotes = _notesController.text;
+          HostInformation hostInfo = HostInformation();
+          hostInfo.eventId = widget.event.eventId;
+          hostInfo.hostId = widget.event.hostId;
+          hostInfo.hours = 4;
+          requestBody.hostInformation = hostInfo;
+          for (var val in checkboxItems) {
+            if(val.isChecked){
+              requestBody.instancesToBeVerified?.add(val.eventInstanceId!);
+            }
+          }
+
+          await EventsServices().logEventData(requestBody).then((onValue){
+            if(onValue.message!.contains("updated successfully")){
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+                    (Route<dynamic> route) =>
+                false, // This condition makes sure all the routes are removed.
+              );
+              Fluttertoast.showToast(
+                  msg: onValue.message!, toastLength: Toast.LENGTH_LONG);
+
+            }else{
+              Fluttertoast.showToast(
+                  msg: onValue.message ?? "Something went wrong.", toastLength: Toast.LENGTH_LONG);
+            }
+          });
+          // submitEvent(context, _phoneNumberController.text);
+          }
+          }, text: "Submit")),
     );
   }
 

@@ -11,6 +11,7 @@ class LogEventRequestModel {
   String? verifierSignatureHash;
   String? verifierInformation;
   String? verifierNotes;
+  List<String>? instancesToBeVerified;
 
   LogEventRequestModel(
       {this.userId,
@@ -24,7 +25,9 @@ class LogEventRequestModel {
       this.userEarnPoints,
       this.verifierSignatureHash,
       this.verifierInformation,
-      this.verifierNotes});
+      this.verifierNotes,
+      this.instancesToBeVerified
+      });
 
   LogEventRequestModel.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
@@ -41,6 +44,7 @@ class LogEventRequestModel {
     verifierSignatureHash = json['verifierSignatureHash'];
     verifierInformation = json['verifierInformation'];
     verifierNotes = json['verifierNotes'];
+    instancesToBeVerified = json['instancesToBeVerified'];
   }
 
   Map<String, dynamic> toJson() {
@@ -78,6 +82,8 @@ class LogEventRequestModel {
     }
     if (verifierNotes != null) {
       data['verifierNotes'] = verifierNotes;
+    } if (instancesToBeVerified != null) {
+      data['instancesToBeVerified'] = instancesToBeVerified;
     }
     return data;
   }
