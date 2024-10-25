@@ -41,14 +41,14 @@ class UserServices {
     };
 
     Response? response =
-        await apiHandler.put("api/v1/users/$userId/profile", reqBody);
+        await apiHandler.post("api/v1/users/changePassword", reqBody);
     if (response != null && response.statusCode == 200) {
       return response.data['message'];
     } else {
       if (kDebugMode) {
         print('Failed to load token data');
       }
-      return response?.data['message'];
+      return response?.data['errors'][0];
     }
   }
 

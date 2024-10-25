@@ -1,5 +1,5 @@
 /// Base URL
-const String baseUrl = "https://volmore.maizelab-cloud.com/";
+const String baseUrl = "https://dev.volmore.maizelab-cloud.com/";
 
 /// Api endpoints
 const String signUpApi = "api/v1/users/signup";

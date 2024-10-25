@@ -47,9 +47,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     if (user.contactNumber != null) {
       phoneController.text = user.contactNumber!;
     }
-    print("School ${user.organizationName}");
-    if (user.organizationName != null) {
-      schoolController.text = user.organizationName!;
+    print("School ${user.school}");
+    if (user.school != null) {
+      schoolController.text = user.school!;
     }
   }
 
@@ -223,10 +223,18 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       if (oldPasswordController.text.isNotEmpty &&
                           newPasswordController.text.isNotEmpty &&
                           confirmPasswordController.text.isNotEmpty) {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            });
                         await UserServices()
                             .changePassword(oldPasswordController.text,
                                 newPasswordController.text)
                             .then((onValue) {
+                          Get.back();
                           if (onValue.contains("successfully")) {
                             Fluttertoast.showToast(msg: onValue);
                           } else {

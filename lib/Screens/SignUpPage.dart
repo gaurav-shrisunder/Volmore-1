@@ -149,38 +149,42 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Row(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(9),
-                              border: Border.all(color: Colors.grey[300]!)),
-                          child: DropdownButton<String>(
-                            dropdownColor: Colors.white,
-                            underline: Container(),
-                            borderRadius: BorderRadius.circular(9),
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.black),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 3),
-                            value: selectedCountryCode,
-                            items: countryCodes.map((String code) {
-                              return DropdownMenuItem<String>(
-                                value: code,
-                                child: Text(code),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedCountryCode = newValue!;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 10),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(9),
+                        //       border: Border.all(color: Colors.grey[300]!)),
+                        //   child: DropdownButton<String>(
+                        //     dropdownColor: Colors.white,
+                        //     underline: Container(),
+                        //     borderRadius: BorderRadius.circular(9),
+                        //     style: const TextStyle(
+                        //         fontSize: 20, color: Colors.black),
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 10, vertical: 3),
+                        //     value: selectedCountryCode,
+                        //     items: countryCodes.map((String code) {
+                        //       return DropdownMenuItem<String>(
+                        //         value: code,
+                        //         child: Text(code),
+                        //       );
+                        //     }).toList(),
+                        //     onChanged: (String? newValue) {
+                        //       setState(() {
+                        //         selectedCountryCode = newValue!;
+                        //       });
+                        //     },
+                        //   ),
+                        // ),
+
+                        // const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             controller: numberController,
                             keyboardType: TextInputType.phone,
+                            maxLength: 10,
+
                             decoration: InputDecoration(
+                              counter: const SizedBox(),
                               labelText: 'Mobile Number',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(9.0),
@@ -231,6 +235,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     InputFeildWidget(
                       title: 'Password*',
+                      isPassword: true,
                       controller: passwordController,
                       maxlines: 1,
                       hintText: "Enter Your Password",
@@ -242,6 +247,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       title: 'Re-Enter Password*',
                       controller: confirmPasswordController,
                       maxlines: 1,
+                      isPassword: true,
                       hintText: "Re-enter Your Password",
                     ),
                     SizedBox(
@@ -315,6 +321,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     MyButtons(
                         onTap: () {
+                          if (passwordController.text !=
+                              confirmPasswordController.text) {
+                            Fluttertoast.showToast(
+                                msg:
+                                    "Password and Confirm password doesn't match");
+                            return;
+                          }
                           showDialog(
                               context: context,
                               barrierDismissible: false,
