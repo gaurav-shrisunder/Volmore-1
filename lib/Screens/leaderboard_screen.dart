@@ -228,28 +228,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                         ],
                                       )
                                     : const SizedBox(),
-                                    userList[index]!.yearOfStudy != 0
-                                    ? Row(
-                                        children: [
-                                          Chip(
-                                            side: const BorderSide(
-                                                color: Colors.transparent,
-                                                width: 0),
-                                            padding: EdgeInsets.zero,
-                                            label: Text(
-                                              userList[index]!
-                                                  .yearOfStudy
-                                                  .toString(),
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                            ),
-                                            backgroundColor:
-                                                Colors.orange.shade50,
-                                          ),
-                                          const SizedBox(width: 8),
-                                        ],
-                                      )
-                                    : const SizedBox(),
                               ],
                             ),
                           ),
