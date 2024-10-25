@@ -24,25 +24,34 @@ import '../Models/response_models/events_data_response_model.dart';
 
 class TimerProvider with ChangeNotifier {
   final Uuid _uuid = const Uuid();
+  DateTime? _startTime;
+  DateTime? _endTime;
   int _elapsedTime = 0;
-  int duration = 0;
   bool _isLogging = false;
+
+  DateTime? get startTime => _startTime;
+  DateTime? get endTime => _endTime;
+  bool get isLogging => _isLogging;
+  int get elapsedTime => _elapsedTime;
+  // int _elapsedTime = 0;
+  int duration = 0;
+  // bool _isLogging = false;
   final int _points = 0;
   bool _locationTracking = false;
   loc.LocationData? _locationData;
   String _address = "";
-  late DateTime _startTime;
-  late DateTime _endTime;
+  // late DateTime _startTime;
+  // late DateTime _endTime;
   final loc.Location _location = loc.Location();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   String _phoneNo = "";
   bool _isSignatureVerified = false;
 
-  int get elapsedTime => _elapsedTime;
+  // int get elapsedTime => _elapsedTime;
 
   int get points => _points;
 
-  bool get isLogging => _isLogging;
+  // bool get isLogging => _isLogging;
 
   bool get locationTracking => _locationTracking;
 
@@ -50,10 +59,12 @@ class TimerProvider with ChangeNotifier {
 
   String get address => _address;
 
-  DateTime get startTime => _startTime;
-  DateTime get endTime => _endTime;
+  // DateTime get startTime => _startTime;
+  // DateTime get endTime => _endTime;
   String get phoneNo => _phoneNo;
   bool get isSignatureVerified => _isSignatureVerified;
+
+
 
   set phoneNo(String value) {
     _phoneNo = value;
@@ -65,10 +76,80 @@ class TimerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+  void _startTimer() {
+    Future.delayed(const Duration(seconds: 1), () {
+      if (_isLogging) {
+        _elapsedTime++;
+        notifyListeners();
+        _startTimer();
+      }
+    });
+  }
+
   Future<void> toggleLogging() async {
     if (_isLogging) {
+      // Stop the timer
       _isLogging = false;
+      notifyListeners(); // Update the UI with the stopped state
+    } else {
+      // Start the timer
+      _startTime = DateTime.now();
+      _isLogging = true;
+      _endTime = null; // Reset _endTime when starting fresh
+      _startTimer();
+    }
+    notifyListeners();
+  }
 
+  Future<void> endLogging(
+      BuildContext context, Event event, EventInstance eventInstance) async {
+    if (_isLogging) {
+      // Set end time and stop the timer
+      _endTime = DateTime.now();
+      if (_startTime != null &&
+          _startTime!.difference(_endTime!).inMinutes.abs() >= 1) {
+        _isLogging = false; // Stop logging
+        notifyListeners(); // Update UI to reflect stopped state
+        log('Logged duration: ${_startTime!.toIso8601String()} - ${_endTime!.toIso8601String()}');
+      } else {
+        Fluttertoast.showToast(msg: "Please log for at least 1 minute.");
+      }
+    }
+  }
+
+  Future<void> submitLogging(
+      BuildContext context, Event event, EventInstance eventInstance) async {
+    if (_startTime != null && _endTime != null) {
+      event.eventParticipatedDuration =
+      "${_startTime!.toIso8601String()}::${_endTime!.toIso8601String()}";
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VolunteerConfirmationScreen(
+            event,
+            eventInstance,
+          ),
+        ),
+      );
+    } else {
+      Fluttertoast.showToast(msg: "Please start and end the logging first.");
+    }
+  }
+
+  void resetTimer() {
+    _elapsedTime = 0;
+    _startTime = null;
+    _endTime = null;
+    _isLogging = false;
+    notifyListeners();
+  }
+
+
+
+/*  Future<void> toggleLogging() async {
+    if (_isLogging) {
+      _isLogging = false;
       /// added the below to reset the elapsed time when going to next page
       _elapsedTime = 0;
     } else {
@@ -95,6 +176,32 @@ class TimerProvider with ChangeNotifier {
 
       ///Navigating to Confirmation form screen with the Event data
 
+     *//* Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  VolunteerConfirmationScreen(
+                      event, eventInstance
+
+                  )));*//*
+    }else{
+      Fluttertoast.showToast(msg: "Should complete atleast 1 minute");
+    }
+  }
+
+  Future<void> submitLogging(
+      BuildContext context, Event event, EventInstance eventInstance,) async {
+    _endTime = DateTime.now();
+    if( startTime.minute < endTime.minute) {
+      toggleLogging();
+      notifyListeners();
+      event.eventParticipatedDuration =
+      "${startTime.toIso8601String() + "::" + endTime.toIso8601String()}";
+      log('time is: ${startTime.toIso8601String()} :: ${endTime
+          .toIso8601String()}');
+
+      ///Navigating to Confirmation form screen with the Event data
+
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -108,146 +215,6 @@ class TimerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> createSingleLog(
-      BuildContext context,
-      EventDataModel event,
-      DateTime date,
-      String? signature,
-      String? number,
-      List<Map<String, String>>? selectedLogs) async {
-    final SharedPreferences prefs = await _prefs;
-    String logId = _uuid.v4();
-    String uid = prefs.getString("uid") ?? "";
-    _isLogging = false;
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Lottie.asset("assets/images/loader_lottie.json");
-        });
-    DocumentSnapshot doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-    UserModel currenetUser =
-        UserModel.fromMap(doc.data() as Map<String, dynamic>);
-    int totalminutes = currenetUser.totalMinutes + duration ~/ 60;
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(uid)
-        .update({'total_minutes': totalminutes});
-
-    CollectionReference logs = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('events')
-        .doc(event.id)
-        .collection("logs");
-    await logs.doc(logId).set({
-      'id': logId,
-      'elapsedTime(hh:mm:ss)':
-          "${duration ~/ 3600}:${(duration % 3600) ~/ 60}:${duration % 60}",
-      'location': _locationData != null
-          ? GeoPoint(_locationData!.latitude!, _locationData!.longitude!)
-          : null,
-      'startTime': _startTime,
-      'endTime': _endTime,
-      'address': _address,
-      'signature': signature,
-      'phoneNumber': number,
-      'date': date,
-      'isLocationVerified': _locationData != null ? true : false,
-      'isSignatureVerified': signature != null ? true : false,
-      'isTimeVerified': duration != 0 ? true : false,
-    }).then((onValue) {
-      Navigator.of(context).pop();
-    });
-    DocumentSnapshot docs = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(event.hostId)
-        .get();
-
-    UserModel user = UserModel.fromMap(docs.data() as Map<String, dynamic>);
-    int referralMinutes = user.minutesInfluenced + duration ~/ 60;
-    print("Elapsed time : $referralMinutes");
-
-    FirebaseFirestore.instance.collection("users").doc(event.hostId).set(
-      {'minutes_influenced': referralMinutes},
-      SetOptions(merge: true),
-    );
-
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(event.hostId)
-        .collection("referrals")
-        .doc(event.id)
-        .update({
-      'isLogged': true,
-      'duration': referralMinutes,
-    });
-    if (selectedLogs!.isNotEmpty) {
-      try {
-        for (var selectedEvent in selectedLogs) {
-          String eventId = selectedEvent['eventId']!;
-          String logId = selectedEvent['logId']!;
-          final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-          // Specify the path to the log document
-          DocumentReference logRef = firestore
-              .collection('users')
-              .doc(uid)
-              .collection('events')
-              .doc(eventId)
-              .collection('logs')
-              .doc(logId);
-          await logRef.update({
-            'signature': signature,
-            'isSignatureVerified': true,
-            'phoneNumber': number,
-          });
-        }
-      } catch (e) {
-        Get.snackbar("Error", "Some Error in past events");
-      }
-    }
-    showDialog(
-        context: context,
-        builder: (_) {
-          return SimpleDialog(
-            title: Lottie.asset("assets/images/hurrah_lotttie.json"),
-            children: [
-              const Center(
-                child: Text(
-                  "Log Saved Successfully",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Center(
-                child: TextButton(
-                    onPressed: () {
-                      event.startTime = _startTime;
-                      event.endTime = DateTime.now();
-                      event.address = _address;
-                      event.location = _location.toString();
-                      event.duration =
-                          "${duration ~/ 3600}:${(duration % 3600)}";
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomePage()));
-                    },
-                    child: const Text("OK")),
-              ),
-              const SizedBox(
-                height: 20,
-              )
-            ],
-          );
-        });
-    toggleLogging();
-    duration = 0;
-    // _elapsedTime = 0;
-    notifyListeners();
-  }
 
   void _startTimer() {
     Future.delayed(const Duration(seconds: 1), () {
@@ -258,7 +225,7 @@ class TimerProvider with ChangeNotifier {
         _startTimer();
       }
     });
-  }
+  }*/
 
   void toggleLocationTracking(BuildContext context) async {
     if (_locationTracking) {

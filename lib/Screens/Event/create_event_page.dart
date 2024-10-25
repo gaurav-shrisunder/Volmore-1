@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,8 @@ import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:uuid/uuid.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
+import 'package:http/http.dart' as http;
+
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -52,7 +56,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   List<String> _groupNames = [];
 
   String? _selectedGroup;
-  final Uuid _uuid = const Uuid();
+  var uuid = Uuid();
+  String? _sessionToken;
+  // Generate a v1 (time-based) id
+  bool _showPlaceList = false;
+  List<dynamic>_placeList = [];
   List<EventCategories> eventCategoriesList = [];
 
   DateTime? startDate;
@@ -68,7 +76,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != startDate) {
@@ -163,7 +171,39 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   void initState() {
     super.initState();
+   // _sessionToken = uuid.v1();
     _fetchGroupNames();
+    locationController.addListener(() {
+      _onChanged();
+      setState(() {
+        _showPlaceList = locationController.text.isNotEmpty;
+      });
+    });
+  }
+
+  _onChanged() {
+    if (_sessionToken == null) {
+      setState(() {
+        _sessionToken = uuid.v4();
+      });
+    }
+    getSuggestion(locationController.text);
+  }
+
+  void getSuggestion(String input) async {
+    String kPLACES_API_KEY = "AIzaSyDBytohYWyW41AVjU3A04QOrilB0fmqsDA";
+    String type = '(regions)';
+    String baseURL =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    var response = await http.get(Uri.parse(request));
+    if (response.statusCode == 200) {
+      setState(() {
+        _placeList = json.decode(response.body)['predictions'];
+      });
+    } else {
+      throw Exception('Failed to load predictions');
+    }
   }
 
   List<dynamic> generateDates(
@@ -339,6 +379,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     descriptionController.dispose();
     locationController.dispose();
     dateController.dispose();
+    locationController.dispose();
 
     super.dispose();
   }
@@ -403,6 +444,24 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     color: Colors.grey,
                   ),
                   hintText: '123 Main St New York, NY 10001',
+                ),
+                if (_showPlaceList)
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _placeList.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      onTap: (){
+                        setState(() {
+                          locationController.text = _placeList[index]["description"];
+                          _showPlaceList = false;
+
+                        });
+                      },
+                      title: Text(_placeList[index]["description"]),
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -509,7 +568,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       onPressed: () => _selectStartDate(context),
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
-                              DateFormat('yyyy/MM/dd  hh:mm a').format(
+                              DateFormat('MM/dd/yyyy  hh:mm a').format(
                                   DateTime.parse(startUtcDateTime)
                                       .toUtc()
                                       .toLocal()),
@@ -594,7 +653,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             onPressed: () => _selectEndDate(context),
                             child: endUtcDateTime.isNotEmpty
                                 ? Text(
-                                    DateFormat('yyyy/MM/dd  hh:mm a').format(
+                                    DateFormat('MM/dd/yyyy  hh:mm a').format(
                                         DateTime.parse(endUtcDateTime)
                                             .toUtc()
                                             .toLocal()),

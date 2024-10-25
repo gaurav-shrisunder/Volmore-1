@@ -225,7 +225,7 @@ class _LogNowPageState extends State<LogNowPage> {
                             Text(
                               timerProvider.elapsedTime != 0
                                   ? DateFormat('HH:mm')
-                                      .format(timerProvider.startTime.toLocal())
+                                      .format(timerProvider.startTime!.toLocal())
                                   : '--:--',
                               style: const TextStyle(
                                   color: Colors.black,
@@ -251,15 +251,14 @@ class _LogNowPageState extends State<LogNowPage> {
                                   fontSize: screenWidth * 0.04),
                             ),
                             Text(
-                              !(timerProvider.isLogging ||
-                                      timerProvider.elapsedTime == 0)
-                                  ? DateFormat('HH:mm')
-                                      .format(DateTime.now().toLocal())
+                              !timerProvider.isLogging && timerProvider.endTime != null
+                                  ? DateFormat('HH:mm').format(timerProvider.endTime!)
                                   : '--:--',
                               style: const TextStyle(
                                 color: Colors.black,
-                                  fontWeight: FontWeight.normal),
-                            ),
+                                fontWeight: FontWeight.normal,
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -297,6 +296,36 @@ class _LogNowPageState extends State<LogNowPage> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 30,),
+                  GestureDetector(
+                      onTap: () {
+                        timerProvider.submitLogging(
+                            context, widget.eventModel, widget.eventInstance);
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.all(21),
+                              decoration: BoxDecoration(
+                                  color: Colors.blue[50],
+                                  shape: BoxShape.circle),
+                              child: const Icon(
+                                Icons.chevron_right_sharp,
+                                size: 35,
+                                color: Colors.black,
+                              )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text(
+                            "Proceed",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
+                          )
+                        ],
+                      ))
                 ],
               );
             },

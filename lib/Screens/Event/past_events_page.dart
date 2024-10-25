@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +16,8 @@ import 'package:volunterring/Services/logService.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
+import 'package:http/http.dart' as http;
+
 
 class PastEventsPage extends StatefulWidget {
   const PastEventsPage({super.key});
@@ -75,6 +79,11 @@ class _PastEventsPageState extends State<PastEventsPage> {
   List<TextEditingController> startTimeControllers = [];
   List<DateTime> startDateTimes = [];
   List<DateTime> endDateTimes = [];
+  var uuid = Uuid();
+  String? _sessionToken;
+  // Generate a v1 (time-based) id
+  bool _showPlaceList = false;
+  List<dynamic>_placeList = [];
 
   @override
   void initState() {
@@ -82,6 +91,37 @@ class _PastEventsPageState extends State<PastEventsPage> {
     _fetchGroupNames();
     // Initialize with one date and time controller
     _addDateTimeController();
+    locationController.addListener(() {
+      _onChanged();
+      setState(() {
+        _showPlaceList = locationController.text.isNotEmpty;
+      });
+    });
+  }
+
+  _onChanged() {
+    if (_sessionToken == null) {
+      setState(() {
+        _sessionToken = uuid.v4();
+      });
+    }
+    getSuggestion(locationController.text);
+  }
+
+  void getSuggestion(String input) async {
+    String kPLACES_API_KEY = "AIzaSyDBytohYWyW41AVjU3A04QOrilB0fmqsDA";
+    String type = '(regions)';
+    String baseURL =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    var response = await http.get(Uri.parse(request));
+    if (response.statusCode == 200) {
+      setState(() {
+        _placeList = json.decode(response.body)['predictions'];
+      });
+    } else {
+      throw Exception('Failed to load predictions');
+    }
   }
 
   Future<void> _fetchGroupNames() async {
@@ -227,7 +267,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
         startTimeControllers[index].text.isNotEmpty &&
         endTimeControllers[index].text.isNotEmpty) {
       DateTime date =
-          DateFormat('dd/MM/yyyy').parse(dateControllers[index].text);
+          DateFormat('mm/dd/yyyy').parse(dateControllers[index].text);
 
       // Parse start time
       TimeOfDay startTime = _parseTimeOfDay(startTimeControllers[index].text);
@@ -379,6 +419,24 @@ class _PastEventsPageState extends State<PastEventsPage> {
                   ),
                   hintText: '123 Main St., New York, NY 10001',
                 ),
+                if (_showPlaceList)
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: _placeList.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: (){
+                          setState(() {
+                            locationController.text = _placeList[index]["description"];
+                            _showPlaceList = false;
+
+                          });
+                        },
+                        title: Text(_placeList[index]["description"]),
+                      );
+                    },
+                  ),
                 const SizedBox(height: 20),
                 const Text(
                   'Date',
@@ -443,12 +501,12 @@ class _PastEventsPageState extends State<PastEventsPage> {
                               context: context,
                               initialDate: DateTime.now(),
                               firstDate: DateTime(2000),
-                              lastDate: DateTime(2025),
+                              lastDate: DateTime.now(),
                             );
                             if (picked != null) {
                               setState(() {
                                 dateControllers[index].text =
-                                    DateFormat('dd/MM/yyyy').format(picked);
+                                    DateFormat('mm/dd/yyyy').format(picked);
                                 _combineDateTimeForIndex(index);
                               });
                             }
