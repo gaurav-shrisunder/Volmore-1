@@ -250,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Visibility(
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
-                        title: 'Graduation Year',
+                        title: 'High School Graduation Year',
                         controller: gradYearController,
                         maxlines: 1,
                         hintText: "Enter your graduation year",

@@ -49,28 +49,31 @@ class User {
   String? userId;
   String? userName;
   String? emailId;
-  String? school;
+  String? organizationName;
   String? university;
   int? yearOfStudy;
   String? profilePicture;
+  String? contactNumber;
 
   User(
       {this.userId,
-        this.userName,
-        this.emailId,
-        this.school,
-        this.university,
-        this.yearOfStudy,
-        this.profilePicture});
+      this.userName,
+      this.emailId,
+      this.organizationName,
+      this.university,
+      this.yearOfStudy,
+      this.contactNumber,
+      this.profilePicture});
 
   User.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     userName = json['userName'];
     emailId = json['emailId'];
-    school = json['school'];
+    organizationName = json['organizationName'];
     university = json['university'];
     yearOfStudy = json['yearOfStudy'];
     profilePicture = json['profilePicture'];
+    contactNumber = json['contactNumber'];
   }
 
   Map<String, dynamic> toJson() {
@@ -78,10 +81,11 @@ class User {
     data['userId'] = userId;
     data['userName'] = userName;
     data['emailId'] = emailId;
-    data['organizationName'] = school;
+    data['organizationName'] = organizationName;
     data['university'] = university;
     data['yearOfStudy'] = yearOfStudy;
     data['profilePicture'] = profilePicture;
+    data['contactNumber'] = contactNumber;
     return data;
   }
 }
