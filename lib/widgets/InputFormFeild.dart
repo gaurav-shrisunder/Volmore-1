@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
-
 class InputFeildWidget extends StatefulWidget {
   final String title;
   final TextEditingController controller;
@@ -12,7 +11,7 @@ class InputFeildWidget extends StatefulWidget {
   final bool isPassword;
   final String? Function(String?)? validator;
 
-  InputFeildWidget({
+  const InputFeildWidget({
     super.key,
     required this.title,
     required this.controller,
@@ -38,18 +37,24 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
     });
   }
 
+  bool isObsecure = false;
+  void togglePassword() {
+    setState(() {
+      isObsecure = !isObsecure;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         TextFormField(
           enabled: widget.isEnabled,
           controller: widget.controller,
           maxLines: widget.maxlines,
-          obscureText: widget.isPassword,
+          obscureText: widget.isPassword && !isObsecure,
           decoration: InputDecoration(
             filled: true,
             labelText: widget.title,
@@ -59,8 +64,8 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
                 fontSize: 18,
                 fontWeight: FontWeight.w400),
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          //  fillColor: Colors.white,
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            //  fillColor: Colors.white,
             prefixIcon: widget.prefixicon,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -69,6 +74,17 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
                 width: 1.0,
               ),
             ),
+
+            suffixIcon: widget.isPassword
+                ? IconButton(
+                    icon: isObsecure
+                        ? const Icon(Icons.visibility)
+                        : const Icon(Icons.visibility_off),
+                    onPressed: () {
+                      togglePassword();
+                    },
+                  )
+                : const SizedBox(),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(
@@ -136,4 +152,3 @@ String? phoneValidator(String? value) {
   }
   return null;
 }
-

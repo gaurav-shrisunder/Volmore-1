@@ -1,17 +1,19 @@
 
+import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
+
 class UpdateProfileResponseModel {
   String? message;
-  UpdatedUser? user;
+  User? user;
 
   UpdateProfileResponseModel({this.message, this.user});
 
   UpdateProfileResponseModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
-    user = json['user'] != null ? new UpdatedUser.fromJson(json['user']) : null;
+    user = json['user'] != null ?  User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data =  Map<String, dynamic>();
     data['message'] = this.message;
     if (this.user != null) {
       data['user'] = this.user!.toJson();

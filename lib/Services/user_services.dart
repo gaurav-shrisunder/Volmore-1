@@ -1,18 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:volunterring/Models/request_models/reset_password_request_model.dart';
 import 'package:volunterring/Models/response_models/update_user_response_model.dart';
 
-import '../Models/UserModel.dart';
-import '../Models/event_data_model.dart';
 import '../Models/request_models/update_Profile_request_model.dart';
 import '../Utils/shared_prefs.dart';
 import '../api_constants.dart';
@@ -21,24 +14,25 @@ import '../api_handler.dart';
 class UserServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
 
-  Future<UpdateProfileResponseModel> updateUserApi(UpdateProfileRequest requestBody) async {
+  Future<UpdateProfileResponseModel> updateUserApi(
+      UpdateProfileRequest requestBody) async {
     // var userId = await getUserId();
-    Response? response = await apiHandler.put("api/v1/users/profile", requestBody);
+    Response? response =
+        await apiHandler.put("api/v1/users/profile", requestBody);
     if (response != null && response.statusCode == 200) {
       final UpdateProfileResponseModel responseModel =
-      UpdateProfileResponseModel.fromJson(response.body);
+          UpdateProfileResponseModel.fromJson(response.data);
+      await setUser(responseModel.user!);
       return responseModel;
     } else {
       if (kDebugMode) {
         print('Failed to update data');
       }
-      return response?.body['message'];
+      return UpdateProfileResponseModel.fromJson(response!.data);
     }
   }
 
-
   Future<dynamic> changePassword(String oldPass, String newPass) async {
-
     var userId = await getUserId();
     var reqBody = {
       "userId": "$userId",
@@ -46,31 +40,29 @@ class UserServices {
       "newPassword": newPass
     };
 
-    Response? response = await apiHandler.put("api/v1/users/$userId/profile", reqBody);
+    Response? response =
+        await apiHandler.post("api/v1/users/changePassword", reqBody);
     if (response != null && response.statusCode == 200) {
-      return response.body['message'];
+      return response.data['message'];
     } else {
       if (kDebugMode) {
         print('Failed to load token data');
       }
-      return response?.body['message'];
+      return response?.data['errors'][0];
     }
   }
 
   Future<dynamic> resetPassword(ResetPasswordRequestModel reqBody) async {
-
     Response? response = await apiHandler.post(resetPasswordApi, reqBody);
     if (response != null && response.statusCode == 200) {
-      return response.body['message'];
+      return response.data['message'];
     } else {
       if (kDebugMode) {
         print('Failed to load token data');
       }
-      return response?.body['message'];
+      return response?.data['message'];
     }
   }
-
-
 
   /*final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -89,8 +81,8 @@ class UserServices {
         print('User:::: ${user.data()}');
         userModel.name = user.get("name");
         userModel.state = */
-/*user.get("state") ??*//* "Michigan";
-        userModel.gradYear = *//*user.get("grad_year") ?? */
+/*user.get("state") ??*/ /* "Michigan";
+        userModel.gradYear = */ /*user.get("grad_year") ?? */
 /* "2024";
         userModel.totalMinutes = user.get("total_minutes");
         userModel.minutesInfluenced = user.get("minutes_influenced");
