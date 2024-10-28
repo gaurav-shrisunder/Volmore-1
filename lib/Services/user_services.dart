@@ -41,7 +41,7 @@ class UserServices {
     };
 
     Response? response =
-        await apiHandler.post("api/v1/users/changePassword", reqBody);
+        await apiHandler.post(changePasswordApi, reqBody);
     if (response != null && response.statusCode == 200) {
       return response.data['message'];
     } else {
