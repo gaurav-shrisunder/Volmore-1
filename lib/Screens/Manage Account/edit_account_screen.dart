@@ -13,6 +13,7 @@ import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:volunterring/widgets/button.dart';
+import 'package:volunterring/widgets/profile_image_widget.dart';
 
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../widgets/InputFormFeild.dart';
@@ -58,6 +59,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     // TODO: implement initState
     super.initState();
     setVariables();
+    Future.delayed(const Duration(seconds: 1));
   }
 
   @override
@@ -72,6 +74,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Center(
+                child: ProfileImageWidget(),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
               InputFeildWidget(
                 title: 'Name',
                 controller: nameController,

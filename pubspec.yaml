@@ -65,6 +65,7 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   change_app_package_name: ^1.4.0
   pinput:
+  image_picker: ^1.0.8
 
 dev_dependencies:
   flutter_test:
