@@ -16,6 +16,7 @@ import 'package:volunterring/Services/logService.dart';
 
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
+import 'package:volunterring/widgets/button.dart';
 
 import '../../widgets/InputFormFeild.dart';
 
@@ -174,9 +175,23 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              const Text(
-                "Signature",
-                style: TextStyle(fontSize: 18, color: headingBlue),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Verifier's Signature",
+                    style: TextStyle(fontSize: 18, color: headingBlue),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      _signatureController.clear();
+                    },
+                    child: Text(
+                      "Clear",
+                      style: TextStyle(fontSize: 16, color: headingBlue),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: screenHeight * 0.007,
@@ -198,12 +213,54 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                 height: 15,
               ),
               TextFormField(
+                controller: _phoneNumberController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: "Verifier's Mobile Number",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  errorText: _errorMessage, // Display the error message
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: Colors.red[400]!,
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  _validateInput();
+                },
+
+                // validator: phoneValidator,
+              ),
+              SizedBox(
+                height:  15
+              ),
+              TextFormField(
                 controller: _notesController,
                 keyboardType: TextInputType.text,
                 maxLines: 3,
                 maxLength: 100,
                 decoration: InputDecoration(
-                  labelText: 'Notes(Optional)',
+                  labelText: "Verifier's Notes(Optional)",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(9.0),
                     borderSide: BorderSide(
@@ -232,87 +289,15 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              const Text(
-                "Volunteer Seeker's Phone Number",
+          /*    const Text(
+                "Verifier's Phone Number",
                 style: TextStyle(fontSize: 18, color: headingBlue),
               ),
               SizedBox(
                 height: screenHeight * 0.007,
-              ),
-              Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(9),
-                        border: Border.all(color: Colors.grey[300]!)),
-                    child: DropdownButton<String>(
-                      underline: Container(),
-                      borderRadius: BorderRadius.circular(9),
-                      style: const TextStyle(fontSize: 20, color: Colors.black),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 7),
-                      value: selectedCountryCode,
-                      items: countryCodes.map((String code) {
-                        return DropdownMenuItem<String>(
-                          value: code,
-                          child: Text(code),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedCountryCode = newValue!;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _phoneNumberController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Mobile Number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(9.0),
-                          borderSide: BorderSide(
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
+              ),*/
 
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(9.0),
-                          borderSide: BorderSide(
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(9.0),
-                          borderSide: BorderSide(
-                            color: Colors.blue[200]!,
-                          ),
-                        ),
-                        errorText: _errorMessage, // Display the error message
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.red[400]!,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        _validateInput();
-                      },
-
-                      // validator: phoneValidator,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: screenHeight * 0.03,
-              ),
-              GestureDetector(
+           /*   GestureDetector(
                 onTap: () async {
                   String signatureString = await _exportSignatureAsString();
 
@@ -342,7 +327,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
 
                     requestBody.userNotes = _notesController.text;
                     requestBody.verifierSignatureHash =
-                        _signatureController.toString();
+                        _signatureController.toImage().toString();
                     requestBody.verifierInformation =
                         _phoneNumberController.text;
                     requestBody.verifierNotes = _notesController.text;
@@ -379,9 +364,62 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                         fontWeight: FontWeight.bold),
                   )),
                 ),
-              )
+              )*/
             ]),
       )),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        child: MyButtons(onTap: ()async {
+          String signatureString = await _exportSignatureAsString();
+
+          if (_errorMessage != null) {
+            Fluttertoast.showToast(
+                msg: "Enter valid phone number",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          } else if (_signatureController.isEmpty) {
+            Fluttertoast.showToast(
+                msg: "Enter Signature",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          } else {
+            LogEventRequestModel requestBody = LogEventRequestModel();
+
+            requestBody.userId = await getUserId();
+            requestBody.eventInstanceId = widget.eventInstanceId;
+
+            requestBody.userNotes = _notesController.text;
+            requestBody.verifierSignatureHash =
+                signatureString;
+            requestBody.verifierInformation =
+                _phoneNumberController.text;
+            requestBody.verifierNotes = _notesController.text;
+            requestBody.userEndDateTime = null;
+            requestBody.userStartDateTime = null;
+            requestBody.userHours = null;
+
+            dynamic res =
+            await EventsServices().logEventData(requestBody);
+            if (res["message"].toString().contains("success")) {
+              Fluttertoast.showToast(
+                  msg: "Hours verified successfully");
+              Get.back();
+            } else {
+              Fluttertoast.showToast(msg: "Some error occured");
+              Get.back();
+            }
+            // submitEvent(context, _phoneNumberController.text);
+          }
+        }, text: "Submit Event"),
+      ),
     );
   }
 }

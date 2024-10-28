@@ -295,7 +295,7 @@ class _VolunteerConfirmationScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Signature",
+                    "Verifier's Signature",
                     style: TextStyle(fontSize: 18, color: headingBlue),
                   ),
                   GestureDetector(
@@ -326,7 +326,52 @@ class _VolunteerConfirmationScreenState
                 ),
               ),
               SizedBox(
-                height: screenHeight * 0.03,
+                height: 15,
+              ),
+              TextFormField(
+                controller: _phoneNumberController,
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
+                decoration: InputDecoration(
+                  labelText: "Verifier's Mobile Number",
+
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.grey[300]!,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(9.0),
+                    borderSide: BorderSide(
+                      color: Colors.blue[200]!,
+                    ),
+                  ),
+                  errorText: _errorMessage,
+                  // Display the error message
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: Colors.red[400]!,
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  _validateInput();
+                },
+
+                // validator: phoneValidator,
+              ),
+              SizedBox(
+                height: 15,
               ),
               TextFormField(
                 controller: _notesController,
@@ -334,7 +379,7 @@ class _VolunteerConfirmationScreenState
                 maxLines: 3,
                 maxLength: 100,
                 decoration: InputDecoration(
-                  labelText: 'Notes(Optional)',
+                  labelText: "Verifier's Notes(Optional)",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(9.0),
                     borderSide: BorderSide(
@@ -361,16 +406,9 @@ class _VolunteerConfirmationScreenState
                 // validator: phoneValidator,
               ),
               const SizedBox(width: 10),
-              const Text(
-                "Volunteer Seeker's Phone Number",
-                style: TextStyle(fontSize: 18, color: headingBlue),
-              ),
-              SizedBox(
-                height: screenHeight * 0.007,
-              ),
               Row(
                 children: [
-                  Container(
+                /*  Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(9),
                         border: Border.all(color: Colors.grey[300]!)),
@@ -393,55 +431,15 @@ class _VolunteerConfirmationScreenState
                         });
                       },
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _phoneNumberController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Mobile Number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(9.0),
-                          borderSide: BorderSide(
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
+                  ),*/
+             /*     const SizedBox(width: 10),*/
 
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(9.0),
-                          borderSide: BorderSide(
-                            color: Colors.grey[300]!,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(9.0),
-                          borderSide: BorderSide(
-                            color: Colors.blue[200]!,
-                          ),
-                        ),
-                        errorText: _errorMessage,
-                        // Display the error message
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.red[400]!,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        _validateInput();
-                      },
-
-                      // validator: phoneValidator,
-                    ),
-                  ),
                 ],
               ),
               SizedBox(
                 height: screenHeight * 0.03,
               ),
+              checkboxItems.length >0 ?
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -464,7 +462,7 @@ class _VolunteerConfirmationScreenState
                   //       });
                   //     })
                 ],
-              ),
+              ): SizedBox(),
 
           ListView.builder(
               shrinkWrap: true,
@@ -536,6 +534,7 @@ class _VolunteerConfirmationScreenState
         //  height: 40,
           child: MyButtons(
               onTap:() async {
+                String signatureString = await _exportSignatureAsString();
           if (_errorMessage != null) {
           Fluttertoast.showToast(
           msg: "Enter valid phone number",
@@ -564,7 +563,7 @@ class _VolunteerConfirmationScreenState
           requestBody.userHours = 4;
           requestBody.userEarnPoints = 4;
           requestBody.verifierSignatureHash =
-          _signatureController.toString();
+              signatureString;
           requestBody.verifierInformation = "Verifier name";
           requestBody.verifierNotes = _notesController.text;
           HostInformation hostInfo = HostInformation();

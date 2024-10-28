@@ -16,6 +16,7 @@ import '../../Services/events_services.dart';
 import '../../Utils/Colors.dart';
 import '../../Utils/shared_prefs.dart';
 import '../CreateLogScreen.dart';
+import '../HomePage.dart';
 import 'events_widget.dart';
 import 'log_now_page.dart';
 
@@ -576,9 +577,7 @@ class _EventsScreenState extends State<EventsScreen>
                                 );
                             }else{
                               return Center(
-                                child: ActionChip(label: Text("Reload"),onPressed: (){
-                                  main();
-                                },),
+                                child: CircularProgressIndicator(),
                               );
                             }
 
