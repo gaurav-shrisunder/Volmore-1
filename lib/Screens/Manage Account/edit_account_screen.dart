@@ -167,10 +167,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           setVariables();
 
                           setState(() {});
-                          // Navigator.pushReplacement(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (_) => const UserProfilePage()));
+                     
                         } else {
                           Get.back();
                           Fluttertoast.showToast(
@@ -180,15 +177,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           setState(() {});
                         }
                       });
-                      /*   if(oldPasswordController.text.isNotEmpty && newPasswordController.text.isNotEmpty && confirmPasswordController.text.isNotEmpty){
-                        AuthMethod().changePassword(
-                            oldPassword: oldPasswordController.text,
-                            newPassword: newPasswordController.text,
-                            confirmNewPassword: confirmPasswordController.text);
-                      }else{
-                        Fluttertoast.showToast(msg: "Password fields cannot be empty");
-
-                      }*/
+                 
                     },
                     child: const Text(
                       "Apply",

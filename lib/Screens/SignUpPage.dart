@@ -33,6 +33,61 @@ class _SignUpPageState extends State<SignUpPage> {
   String selectedCountryCode = '+1'; // Default country code
 
   final List<String> countryCodes = ['+1', '+91', '+44', '+61', '+81'];
+  String? selectedState;
+
+  // List of all US states with their abbreviations
+  final List<Map<String, String>> states = [
+    {"name": "Alabama", "abbreviation": "AL"},
+    {"name": "Alaska", "abbreviation": "AK"},
+    {"name": "Arizona", "abbreviation": "AZ"},
+    {"name": "Arkansas", "abbreviation": "AR"},
+    {"name": "California", "abbreviation": "CA"},
+    {"name": "Colorado", "abbreviation": "CO"},
+    {"name": "Connecticut", "abbreviation": "CT"},
+    {"name": "Delaware", "abbreviation": "DE"},
+    {"name": "Florida", "abbreviation": "FL"},
+    {"name": "Georgia", "abbreviation": "GA"},
+    {"name": "Hawaii", "abbreviation": "HI"},
+    {"name": "Idaho", "abbreviation": "ID"},
+    {"name": "Illinois", "abbreviation": "IL"},
+    {"name": "Indiana", "abbreviation": "IN"},
+    {"name": "Iowa", "abbreviation": "IA"},
+    {"name": "Kansas", "abbreviation": "KS"},
+    {"name": "Kentucky", "abbreviation": "KY"},
+    {"name": "Louisiana", "abbreviation": "LA"},
+    {"name": "Maine", "abbreviation": "ME"},
+    {"name": "Maryland", "abbreviation": "MD"},
+    {"name": "Massachusetts", "abbreviation": "MA"},
+    {"name": "Michigan", "abbreviation": "MI"},
+    {"name": "Minnesota", "abbreviation": "MN"},
+    {"name": "Mississippi", "abbreviation": "MS"},
+    {"name": "Missouri", "abbreviation": "MO"},
+    {"name": "Montana", "abbreviation": "MT"},
+    {"name": "Nebraska", "abbreviation": "NE"},
+    {"name": "Nevada", "abbreviation": "NV"},
+    {"name": "New Hampshire", "abbreviation": "NH"},
+    {"name": "New Jersey", "abbreviation": "NJ"},
+    {"name": "New Mexico", "abbreviation": "NM"},
+    {"name": "New York", "abbreviation": "NY"},
+    {"name": "North Carolina", "abbreviation": "NC"},
+    {"name": "North Dakota", "abbreviation": "ND"},
+    {"name": "Ohio", "abbreviation": "OH"},
+    {"name": "Oklahoma", "abbreviation": "OK"},
+    {"name": "Oregon", "abbreviation": "OR"},
+    {"name": "Pennsylvania", "abbreviation": "PA"},
+    {"name": "Rhode Island", "abbreviation": "RI"},
+    {"name": "South Carolina", "abbreviation": "SC"},
+    {"name": "South Dakota", "abbreviation": "SD"},
+    {"name": "Tennessee", "abbreviation": "TN"},
+    {"name": "Texas", "abbreviation": "TX"},
+    {"name": "Utah", "abbreviation": "UT"},
+    {"name": "Vermont", "abbreviation": "VT"},
+    {"name": "Virginia", "abbreviation": "VA"},
+    {"name": "Washington", "abbreviation": "WA"},
+    {"name": "West Virginia", "abbreviation": "WV"},
+    {"name": "Wisconsin", "abbreviation": "WI"},
+    {"name": "Wyoming", "abbreviation": "WY"}
+  ];
 
   bool isLoading = false;
   String? _errorMessage;
@@ -271,10 +326,43 @@ class _SignUpPageState extends State<SignUpPage> {
                     Visibility(
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
-                        title: 'College/University Name',
-                        controller: collegeNameController,
+                        title: 'High School Name',
+                        controller: schoolNameController,
                         maxlines: 1,
                         hintText: "Enter your graduation year",
+                      ),
+                    ),
+                    Visibility(
+                      visible: !isIndividualChecked,
+                      child: SizedBox(
+                        height: height * 0.009,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedState,
+                          hint: const Text('Select a state'),
+                          isExpanded: true,
+                          items: states.map((Map<String, String> state) {
+                            return DropdownMenuItem<String>(
+                              value: state['name'],
+                              child: Text(
+                                  '${state['name']} (${state['abbreviation']})'),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedState = newValue;
+                            });
+                            if (newValue != null) {}
+                          },
+                        ),
                       ),
                     ),
                     Visibility(
@@ -286,8 +374,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     Visibility(
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
-                        title: 'School Name',
-                        controller: schoolNameController,
+                        title: 'College/University Name',
+                        controller: collegeNameController,
                         maxlines: 1,
                         hintText: "Enter your graduation year",
                       ),
@@ -339,7 +427,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               SignUpRequestModel();
                           signUpRequestBody.userName = nameController.text;
                           signUpRequestBody.emailId = emailController.text;
-
+                          signUpRequestBody.locationState = selectedState;
                           signUpRequestBody.passwordHash =
                               passwordController.text;
                           signUpRequestBody.userRoleId =

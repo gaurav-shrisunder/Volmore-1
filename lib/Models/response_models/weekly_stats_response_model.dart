@@ -30,9 +30,9 @@ class WeeklyStatsResponseModel {
       eventDetails: (json['eventDetails'] as List)
           .map((event) => EventDetail.fromJson(event))
           .toList(),
-      userHoursByDay: UserHoursByDay.fromJson(json['userHoursByDay']),
-      weekTotalHour: json['weekTotalHour'] ?? 0,
-      lifeTimeHours: json['lifeTimeHours'] ?? 0,
+      userHoursByDay: UserHoursByDay.fromJson(json['userMinutesByDay']),
+      weekTotalHour: json['weekTotalMinutes'] ?? 0,
+      lifeTimeHours: json['lifeTimeMinutes'] ?? 0,
     );
   }
 }
