@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
@@ -82,14 +83,13 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
       debugPrint('userId: $userId'); // Log userId for debugging
 
       // Construct and log the full URL
-      final url =
-          Uri.parse('https://dev.volmore.maizelab-cloud.com/api/v1/users/$userId/updateProfilePicture');
+      final url = Uri.parse('https://dev.volmore.maizelab-cloud.com/api/v1/users/$userId/updateProfilePicture');
       debugPrint('Request URL: ${url.toString()}');
 
       final request = http.MultipartRequest('PUT', url);
 
       // Add userId to request field
-      request.fields['userId'] = userId;
+      // request.fields['x-userid'] = userId;
 
       // Add file to request
       final file = await http.MultipartFile.fromPath(
@@ -102,16 +102,16 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
       // Add headers
       final token = await getBearerToken();
       request.headers.addAll({
-        'Authorization': token,
-        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'Accept': '*/*',
         'Content-Type': 'multipart/form-data', // Add content type header
+        'x-userid': userId
       });
 
       // Log request details for debugging
       debugPrint('Request headers: ${request.headers}');
       debugPrint('Request fields: ${request.fields}');
-      debugPrint(
-          'Request files: ${request.files.map((f) => f.filename).toList()}');
+      debugPrint('Request files: ${request.files.map((f) => f.filename).toList()}');
 
       // Send request
       final streamedResponse = await request.send();

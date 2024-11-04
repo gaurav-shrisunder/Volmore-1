@@ -37,8 +37,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         await leaderboardServices.getInflucendLeaderboard("participationBoard");
 
     setState(() {
-      userList = leaderboardDatatotal?.leaderBoardDetails?.users ?? [];
-      influencedList = leaderboardData?.leaderBoardDetails?.users ?? [];
+      userList = leaderboardDatatotal?.leaderBoardDetails ?? [];
+      influencedList = leaderboardData?.leaderBoardDetails ?? [];
       isLoading = false;
     });
   }

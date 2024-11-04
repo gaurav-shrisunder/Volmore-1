@@ -1,6 +1,6 @@
 class LeaderboardInfluencedResponseModel {
   String? message;
-  LeaderBoardDetails? leaderBoardDetails;
+  List<LeaderboardUser>? leaderBoardDetails;
 
   LeaderboardInfluencedResponseModel({this.message, this.leaderBoardDetails});
 
@@ -9,63 +9,42 @@ class LeaderboardInfluencedResponseModel {
     return LeaderboardInfluencedResponseModel(
       message: json['message'],
       leaderBoardDetails: json['leaderBoardDetails'] != null
-          ? LeaderBoardDetails.fromJson(json['leaderBoardDetails'])
-          : null,
+    ? (json['leaderBoardDetails'] as List)
+        .map((user) => LeaderboardUser.fromJson(user))
+        .toList()
+        : []
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'leaderBoardDetails': leaderBoardDetails?.toJson(),
+      'leaderBoardDetails': leaderBoardDetails?.map((user) => user.toJson()).toList(),
     };
   }
 }
 
-class LeaderBoardDetails {
-  List<LeaderboardUser>? users;
-  Pagination? pagination;
 
-  LeaderBoardDetails({this.users, this.pagination});
-
-  factory LeaderBoardDetails.fromJson(Map<String, dynamic> json) {
-    return LeaderBoardDetails(
-      users: json['users'] != null
-          ? (json['users'] as List)
-              .map((user) => LeaderboardUser.fromJson(user))
-              .toList()
-          : [],
-      pagination: json['pagination'] != null
-          ? Pagination.fromJson(json['pagination'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'users': users?.map((user) => user.toJson()).toList(),
-      'pagination': pagination?.toJson(),
-    };
-  }
-}
 
 class LeaderboardUser {
   String? userId;
   String? userName;
+  String? locationState;
   int? hostInfluenceHours;
   int? yearOfStudy;
   int? participantHours;
 
   LeaderboardUser(
-      {this.userId, this.userName, this.hostInfluenceHours, this.yearOfStudy,this.participantHours});
+      {this.userId, this.userName, this.hostInfluenceHours, this.yearOfStudy,this.participantHours, this.locationState});
 
   factory LeaderboardUser.fromJson(Map<String, dynamic> json) {
     return LeaderboardUser(
       userId: json['userId'],
       userName: json['userName'],
-      hostInfluenceHours: json['hostInfluenceHours'] ?? 0,
+        locationState: json['locationState'],
+      hostInfluenceHours: json['hostInfluenceMinutes'] ?? 0,
       yearOfStudy: json['yearOfStudy'] ?? 0,
-      participantHours: json['participantHours'] ?? 0
+      participantHours: json['participantMinutes'] ?? 0
     );
   }
 
@@ -73,9 +52,10 @@ class LeaderboardUser {
     return {
       'userId': userId,
       'userName': userName,
-      'hostInfluenceHours': hostInfluenceHours,
+      'locationState': locationState,
+      'hostInfluenceMinutes': hostInfluenceHours,
       'yearOfStudy': yearOfStudy,
-      'participantHours': participantHours
+      'participantMinutes': participantHours
     };
   }
 }
