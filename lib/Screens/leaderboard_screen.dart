@@ -37,8 +37,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         await leaderboardServices.getInflucendLeaderboard("participationBoard");
 
     setState(() {
-      userList = leaderboardDatatotal?.leaderBoardDetails?.users ?? [];
-      influencedList = leaderboardData?.leaderBoardDetails?.users ?? [];
+      userList = leaderboardDatatotal?.leaderBoardDetails ?? [];
+      influencedList = leaderboardData?.leaderBoardDetails ?? [];
       isLoading = false;
     });
   }
@@ -207,28 +207,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                       color: Colors.black, fontSize: 16),
                                 ),
                                 userList[index]!.yearOfStudy != 0
-                                    ? Row(
-                                        children: [
-                                          Chip(
-                                            side: const BorderSide(
-                                                color: Colors.transparent,
-                                                width: 0),
-                                            padding: EdgeInsets.zero,
-                                            label: Text(
-                                              userList[index]!
-                                                  .yearOfStudy
-                                                  .toString(),
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                            ),
-                                            backgroundColor:
-                                                Colors.orange.shade50,
-                                          ),
-                                          const SizedBox(width: 8),
-                                        ],
-                                      )
-                                    : const SizedBox(),
-                                    userList[index]!.yearOfStudy != 0
                                     ? Row(
                                         children: [
                                           Chip(

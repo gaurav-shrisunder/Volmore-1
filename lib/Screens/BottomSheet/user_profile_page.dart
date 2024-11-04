@@ -233,9 +233,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   child: WeeklyStatsChart(
                     xAxisList: const [
                       "Mon",
-                      "Tues",
+                      "Tue",
                       "Wed",
-                      "Thru",
+                      "Thur",
                       "Fri",
                       "Sat",
                       "Sun"
@@ -276,11 +276,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                 ),
               ),
-              // SizedBox(height: height * 0.02),
-              // Column(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: generateWeeklyLogWidgets(events!),
-              // ),
+            
               SizedBox(height: height * 0.02),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -291,33 +287,54 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     )),
               ),
               SizedBox(height: height * 0.02),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columnSpacing: width * 0.16,
-                  columns: const [
-                    DataColumn(
-                        label: Text(
-                      'Title',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )),
-                    DataColumn(
-                        label: Text(
-                      'Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )),
-                    DataColumn(
-                        label: Text(
-                      'Location',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )),
-                  ],
-                  rows: generateWeeklyLogRows(weeklyStats!.eventDetails!),
-                  border:
-                      TableBorder.all(borderRadius: BorderRadius.circular(8)),
-                  // TableBorder.symmetric(outside: const BorderSide())
-                ),
-              ),
+              weeklyStats!.eventDetails!.isEmpty
+                  ? Card(
+                      elevation: 10,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding: const EdgeInsets.only(top: 20, right: 20),
+                        decoration: BoxDecoration(
+                          color:
+                              Colors.white, // Background color of the container
+                          borderRadius:
+                              BorderRadius.circular(20), // Rounded corners
+                        ),
+                        child: const Center(
+                            child: Text(
+                          "No data this week",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      // scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columnSpacing: width * 0.16,
+                        columns: const [
+                          DataColumn(
+                              label: Text(
+                            'Title',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Date',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Location',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                        ],
+                        rows: generateWeeklyLogRows(weeklyStats!.eventDetails!),
+                        border: TableBorder.all(
+                            borderRadius: BorderRadius.circular(8)),
+                        // TableBorder.symmetric(outside: const BorderSide())
+                      ),
+                    ),
             ],
           ),
         ),

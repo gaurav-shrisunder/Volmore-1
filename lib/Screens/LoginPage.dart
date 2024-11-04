@@ -59,7 +59,8 @@ class _LoginPageState extends State<LoginPage> {
       // show error
       Fluttertoast.showToast(
           msg: res?.message ?? "Something went wrong!!",
-          toastLength: Toast.LENGTH_LONG);
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP);
       // showSnackBar(context, res);
     }
   }
@@ -144,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                   title: 'Password*',
                   controller: passwordController,
                   maxlines: 1,
+                  isPassword: true,
                   hintText: "Enter Your Password",
                 ),
                 SizedBox(

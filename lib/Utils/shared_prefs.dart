@@ -74,12 +74,10 @@ Future<void> setUser(User user) async {
 // Function to retrieve the user object from SharedPreferences
 Future<User?> getUser() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? userJson =
-      prefs.getString('user'); 
+  String? userJson = prefs.getString('user');
   if (userJson != null) {
-    Map<String, dynamic> userMap =
-        jsonDecode(userJson);
-    return User.fromJson(userMap); 
+    Map<String, dynamic> userMap = jsonDecode(userJson);
+    return User.fromJson(userMap);
   }
   return null; // Return null if no user is stored
 }

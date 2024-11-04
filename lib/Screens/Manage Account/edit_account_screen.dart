@@ -13,6 +13,7 @@ import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/FormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:volunterring/widgets/button.dart';
+import 'package:volunterring/widgets/profile_image_widget.dart';
 
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../widgets/InputFormFeild.dart';
@@ -35,26 +36,37 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   var oldPasswordController = TextEditingController();
   var newPasswordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
+  bool isLoading = false;
+
+  void setVariables() async {
+    User user = await getUser() ?? widget.userData;
+    nameController.text = user.userName!;
+    emailController.text = user.emailId!;
+    if (user.university != null) {
+      universityController.text = user.university!;
+    }
+    if (user.contactNumber != null) {
+      phoneController.text = user.contactNumber!;
+    }
+    print("School ${user.school}");
+    if (user.school != null) {
+      schoolController.text = user.school!;
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    nameController.text = widget.userData.userName!;
-    emailController.text = widget.userData.emailId!;
-    if( widget.userData.university!=null){
-      universityController.text = widget.userData.university!;
-    }
-    if(widget.userData.school!=null){
-      schoolController.text = widget.userData.school!;
-    }
+    setVariables();
+    Future.delayed(const Duration(seconds: 1));
   }
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-    //  backgroundColor: Colors.white,
+      //  backgroundColor: Colors.white,
       appBar: simpleAppBar(context, "Edit Profile"),
       body: Padding(
         padding: const EdgeInsets.all(18),
@@ -62,13 +74,21 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Center(
+                child: ProfileImageWidget(),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
               InputFeildWidget(
                 title: 'Name',
                 controller: nameController,
                 hintText: 'Enter your name',
                 validator: nameValidator,
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'Email',
                 isEnabled: false,
@@ -76,83 +96,113 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 hintText: 'Enter your email address',
                 validator: phoneValidator,
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'Phone',
                 controller: phoneController,
                 hintText: 'Enter your phone number',
                 validator: phoneValidator,
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'School',
                 controller: schoolController,
                 hintText: 'Enter your School name',
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'University',
                 controller: universityController,
                 hintText: 'Enter your University name',
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 18.0),
                 child: ElevatedButton(
                     style: const ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(headingBlue)),
                     onPressed: () async {
-                      UpdateProfileRequest updateProfile =  UpdateProfileRequest();
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          });
+                      UpdateProfileRequest updateProfile =
+                          UpdateProfileRequest();
                       updateProfile.userId = await getUserId();
-                      updateProfile.userName = nameController.text.isEmpty ? null : nameController.text;
-                      updateProfile.school = schoolController.text.isEmpty ? null : schoolController.text;
-                      updateProfile.university = universityController.text.isEmpty ? null : universityController.text;
+                      updateProfile.userName = nameController.text.isEmpty
+                          ? null
+                          : nameController.text;
+                      updateProfile.school = schoolController.text.isEmpty
+                          ? null
+                          : schoolController.text;
+                      updateProfile.university =
+                          universityController.text.isEmpty
+                              ? null
+                              : universityController.text;
                       //    updateProfile.yearOfStudy = yearOfGradController.text;
-                      updateProfile.contactNumber = phoneController.text.isEmpty? null : phoneController.text;
-
+                      updateProfile.contactNumber = phoneController.text.isEmpty
+                          ? null
+                          : phoneController.text;
 
                       print('Payload:::: ${jsonEncode(updateProfile)}');
 
-                      await UserServices().updateUserApi(updateProfile).then((onValue){
-                        if(onValue.message!.contains("successfully")){
-                          Fluttertoast.showToast(msg: onValue.toString());
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserProfilePage()));
+                      await UserServices()
+                          .updateUserApi(updateProfile)
+                          .then((onValue) {
+                        if (onValue.message!.contains("successfully")) {
+                          Get.back();
+                          Fluttertoast.showToast(
+                              msg: "Profile Updated Successfully");
+                          setVariables();
 
-                        }else{
-                          Fluttertoast.showToast(msg: onValue.toString());
+                          setState(() {});
+                     
+                        } else {
+                          Get.back();
+                          Fluttertoast.showToast(
+                              msg: "Some Error Try again later",
+                              backgroundColor: Colors.red);
+
+                          setState(() {});
                         }
                       });
-                      /*   if(oldPasswordController.text.isNotEmpty && newPasswordController.text.isNotEmpty && confirmPasswordController.text.isNotEmpty){
-                        AuthMethod().changePassword(
-                            oldPassword: oldPasswordController.text,
-                            newPassword: newPasswordController.text,
-                            confirmNewPassword: confirmPasswordController.text);
-                      }else{
-                        Fluttertoast.showToast(msg: "Password fields cannot be empty");
-
-                      }*/
-
+                 
                     },
                     child: const Text(
                       "Apply",
                       style: TextStyle(color: Colors.white),
                     )),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'Old Password',
                 controller: oldPasswordController,
                 hintText: 'Enter your old password',
               ),
-              SizedBox(height: 10,),
-
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'New Password',
                 controller: newPasswordController,
                 hintText: 'Enter new password here',
-
               ),
-              SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               InputFeildWidget(
                 title: 'Confirm Password',
                 controller: confirmPasswordController,
@@ -167,19 +217,31 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     style: const ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(headingBlue)),
                     onPressed: () async {
-                      if(oldPasswordController.text.isNotEmpty && newPasswordController.text.isNotEmpty && confirmPasswordController.text.isNotEmpty){
-                     await   UserServices().changePassword(oldPasswordController.text, newPasswordController.text).then((onValue){
-                       if(onValue.contains("successfully")){
-                         Fluttertoast.showToast(msg: onValue);
-                       }else{
-                         Fluttertoast.showToast(msg: onValue);
-                       }
-                     });
-                      }else{
-                        Fluttertoast.showToast(msg: "Password fields cannot be empty");
-
+                      if (oldPasswordController.text.isNotEmpty &&
+                          newPasswordController.text.isNotEmpty &&
+                          confirmPasswordController.text.isNotEmpty) {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            });
+                        await UserServices()
+                            .changePassword(oldPasswordController.text,
+                                newPasswordController.text)
+                            .then((onValue) {
+                          Get.back();
+                          if (onValue.contains("successfully")) {
+                            Fluttertoast.showToast(msg: onValue);
+                          } else {
+                            Fluttertoast.showToast(msg: onValue);
+                          }
+                        });
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Password fields cannot be empty");
                       }
-
                     },
                     child: const Text(
                       "Change Password",
@@ -230,30 +292,39 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     onPressed: () {
                       //  Get.to(const EditAccountScreen());
 
-                      showDialog(context: context, builder: (_){
-                        return SimpleDialog(
-                          title: Text("Are you sure you want to delete your account?"),
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      showDialog(
+                          context: context,
+                          builder: (_) {
+                            return SimpleDialog(
+                              title: const Text(
+                                  "Are you sure you want to delete your account?"),
                               children: [
-                                ActionChip(label:  Text("No"),onPressed: (){
-                                  Navigator.pop(context);
-                                }),
-                               /* ElevatedButton(
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ActionChip(
+                                        label: const Text("No"),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        }),
+                                    /* ElevatedButton(
                                     onPressed: (){
                                   Navigator.pop(context);
                                 }, child: Text("No")),*/
-                                ActionChip(onPressed: (){
-                                  Navigator.pop(context);
-                                  Fluttertoast.showToast(msg: "Oops! Something went wrong. Please try after sometime.");
-
-                                }, label: Text("Yes"))
+                                    ActionChip(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  "Oops! Something went wrong. Please try after sometime.");
+                                        },
+                                        label: const Text("Yes"))
+                                  ],
+                                )
                               ],
-                            )
-                          ],
-                        );
-                      });
+                            );
+                          });
                     },
                     child: const Text(
                       "Delete Account",

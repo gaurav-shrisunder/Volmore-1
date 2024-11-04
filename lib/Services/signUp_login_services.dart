@@ -54,7 +54,7 @@ class SignupLoginServices {
       if (kDebugMode) {
         print('Failed to load user data');
       }
-      return SignUpLoginResponseModel(message: response?.data["message"]);
+      return SignUpLoginResponseModel(message: response?.data["errors"][0]);
     }
   }
 
@@ -90,15 +90,12 @@ class SignupLoginServices {
     }
   }
 
-
   Future<UserRoleResponseModel?> sendOtp(String email) async {
-    var reqBody ={
-      "emailId":email
-    };
+    var reqBody = {"emailId": email};
     Response? response = await apiHandler.post(sendOtpApi, reqBody);
     if (response != null && response.statusCode == 200) {
       final UserRoleResponseModel userRole =
-      UserRoleResponseModel.fromJson(response.data);
+          UserRoleResponseModel.fromJson(response.data);
       return userRole;
     } else {
       if (kDebugMode) {
@@ -109,13 +106,11 @@ class SignupLoginServices {
   }
 
   Future<UserRoleResponseModel?> verifyOtp(String email, String otp) async {
-    var reqBody ={
-      "emailId":email,
-      "otp": otp
-    };
+    var reqBody = {"emailId": email, "otp": otp};
     Response? response = await apiHandler.post(verifyOtpApi, reqBody);
     if (response != null && response.statusCode == 200) {
-      final UserRoleResponseModel userRole = UserRoleResponseModel.fromJson(response.data);
+      final UserRoleResponseModel userRole =
+          UserRoleResponseModel.fromJson(response.data);
       return userRole;
     } else {
       if (kDebugMode) {
@@ -124,6 +119,4 @@ class SignupLoginServices {
       return UserRoleResponseModel(message: response?.data["message"]);
     }
   }
-
-
 }
