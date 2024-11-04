@@ -30,6 +30,14 @@
 	<string>We need your location to track your current position for event logging.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to track your current position even when the app is in the background.</string>
+	<key>NSPhotoLibraryUsageDescription </key>
+	<string>To upload user profile</string>
+	<key>NSCameraUsageDescription </key>
+	<string>To Click user profile from camera</string>
+	<key>NSMicrophoneUsageDescription </key>
+	<string>To Click and record user video for profile and post</string>
+
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

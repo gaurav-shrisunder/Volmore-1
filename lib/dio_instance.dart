@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/Services/signUp_login_services.dart';
 import 'package:volunterring/api_constants.dart';
 import 'package:volunterring/main.dart';
@@ -13,7 +15,7 @@ import 'Utils/shared_prefs.dart';
 class DioInstance {
   static Dio? _instance;
   static bool _isRefreshing = false;
-  static List<Function> _queue = [];
+  static final List<Function> _queue = [];
 
   static Future<Dio> createInstance() async {
     if (_instance == null) {
@@ -22,7 +24,7 @@ class DioInstance {
           baseUrl: baseUrl, // Replace with your base URL
           responseType: ResponseType.json,
           contentType: 'application/json',
-          headers: {"Accept-Language" : "en"},
+          headers: {"Accept-Language": "en"},
         ),
       );
 
@@ -45,10 +47,10 @@ class DioInstance {
         onRequest: (options, handler) async {
           if (!_shouldSkipAuth(options.path)) {
             var token = await getBearerToken();
-            var userId = await getUserId();  // Fetch the userId
+            var userId = await getUserId(); // Fetch the userId
             if (token != null && userId != null) {
               options.headers['Authorization'] = 'Bearer $token';
-              options.headers['x-userid'] = userId;  // Add x-userid to headers
+              options.headers['x-userid'] = userId; // Add x-userid to headers
             }
           }
           return handler.next(options);
@@ -58,9 +60,11 @@ class DioInstance {
               !_shouldSkipAuth(error.requestOptions.path)) {
             if (await _refreshToken()) {
               var newToken = await getBearerToken();
-              var userId = await getUserId();  // Fetch the userId
-              error.requestOptions.headers['Authorization'] = 'Bearer $newToken';
-              error.requestOptions.headers['x-userid'] = userId;  // Add x-userid to retried request
+              var userId = await getUserId(); // Fetch the userId
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $newToken';
+              error.requestOptions.headers['x-userid'] =
+                  userId; // Add x-userid to retried request
               final retryReq = await _instance!.request(
                 error.requestOptions.path,
                 options: Options(
@@ -75,13 +79,15 @@ class DioInstance {
               _handleTokenExpiration();
               return handler.next(error);
             }
-          } else    if (error.response?.statusCode == 403 &&
+          } else if (error.response?.statusCode == 403 &&
               !_shouldSkipAuth(error.requestOptions.path)) {
             if (await _refreshToken()) {
               var newToken = await getBearerToken();
-              var userId = await getUserId();  // Fetch the userId
-              error.requestOptions.headers['Authorization'] = 'Bearer $newToken';
-              error.requestOptions.headers['x-userid'] = userId;  // Add x-userid to retried request
+              var userId = await getUserId(); // Fetch the userId
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $newToken';
+              error.requestOptions.headers['x-userid'] =
+                  userId; // Add x-userid to retried request
               final retryReq = await _instance!.request(
                 error.requestOptions.path,
                 options: Options(
@@ -96,9 +102,7 @@ class DioInstance {
               _handleTokenExpiration();
               return handler.next(error);
             }
-          }
-
-          else {
+          } else {
             return handler.next(error);
           }
         },
@@ -118,7 +122,8 @@ class DioInstance {
     }
 
     try {
-      RefreshTokenResponseModel? newTokens = await SignupLoginServices().refreshTokenService(oldRefreshToken);
+      RefreshTokenResponseModel? newTokens =
+          await SignupLoginServices().refreshTokenService(oldRefreshToken);
       if (newTokens != null && newTokens.token?.accessToken != null) {
         await setBearerToken(newTokens.token!.accessToken!);
         _isRefreshing = false;
@@ -128,12 +133,14 @@ class DioInstance {
         _handleTokenExpiration();
         _isRefreshing = false;
         _processQueue(false);
+
         return false;
       }
     } catch (e) {
       _handleTokenExpiration();
       _isRefreshing = false;
       _processQueue(false);
+
       return false;
     }
   }
@@ -151,8 +158,8 @@ class DioInstance {
 
   static void _handleTokenExpiration() {
     clearPreferences();
-    main();
-   // logoutAndNavigateToLogin();
+    Get.to(const LoginPage());
+    // logoutAndNavigateToLogin();
   }
 
   static bool _shouldSkipAuth(String path) {
@@ -160,4 +167,3 @@ class DioInstance {
     return skipAuthPaths.contains(path);
   }
 }
-

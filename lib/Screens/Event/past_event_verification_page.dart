@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
 import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
+import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 
 import 'package:volunterring/Models/response_models/events_data_response_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
@@ -152,21 +153,21 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               //   height: screenHeight * 0.01,
               // ),
               Text(
-                "Duration :- ${widget.event.eventParticipant?.userHours ?? "00:00"} Hrs",
+                "Duration :- ${((widget.event.eventParticipant?.userHours ?? 0) ~/ 60)} Hrs",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "Start Time :-  ${DateFormat.Hm().format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!))}",
+                "Start Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!))}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "End Time :-  ${DateFormat.Hm().format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!))}",
+                "End Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!))}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -183,10 +184,10 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                     style: TextStyle(fontSize: 18, color: headingBlue),
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       _signatureController.clear();
                     },
-                    child: Text(
+                    child: const Text(
                       "Clear",
                       style: TextStyle(fontSize: 16, color: headingBlue),
                     ),
@@ -215,6 +216,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               TextFormField(
                 controller: _phoneNumberController,
                 keyboardType: TextInputType.phone,
+                maxLength: 10,
                 decoration: InputDecoration(
                   labelText: "Verifier's Mobile Number",
                   border: OutlineInputBorder(
@@ -251,9 +253,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
 
                 // validator: phoneValidator,
               ),
-              SizedBox(
-                height:  15
-              ),
+              const SizedBox(height: 15),
               TextFormField(
                 controller: _notesController,
                 keyboardType: TextInputType.text,
@@ -289,7 +289,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-          /*    const Text(
+              /*    const Text(
                 "Verifier's Phone Number",
                 style: TextStyle(fontSize: 18, color: headingBlue),
               ),
@@ -297,7 +297,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                 height: screenHeight * 0.007,
               ),*/
 
-           /*   GestureDetector(
+              /*   GestureDetector(
                 onTap: () async {
                   String signatureString = await _exportSignatureAsString();
 
@@ -369,56 +369,72 @@ class _PastEventVerificationState extends State<PastEventVerification> {
       )),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
-        child: MyButtons(onTap: ()async {
-          String signatureString = await _exportSignatureAsString();
+        child: MyButtons(
+            onTap: () async {
+              String signatureString = await _exportSignatureAsString();
 
-          if (_errorMessage != null) {
-            Fluttertoast.showToast(
-                msg: "Enter valid phone number",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          } else if (_signatureController.isEmpty) {
-            Fluttertoast.showToast(
-                msg: "Enter Signature",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          } else {
-            LogEventRequestModel requestBody = LogEventRequestModel();
+              if (_errorMessage != null) {
+                Fluttertoast.showToast(
+                    msg: "Enter valid phone number",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              } else if (_signatureController.isEmpty) {
+                Fluttertoast.showToast(
+                    msg: "Enter Signature",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              } else {
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) {
+                      return const Center(child: CircularProgressIndicator());
+                    });
+                LogEventRequestModel requestBody = LogEventRequestModel();
 
-            requestBody.userId = await getUserId();
-            requestBody.eventInstanceId = widget.eventInstanceId;
+                requestBody.userId = await getUserId();
+                requestBody.eventInstanceId = widget.eventInstanceId;
 
-            requestBody.userNotes = _notesController.text;
-            requestBody.verifierSignatureHash =
-                signatureString;
-            requestBody.verifierInformation =
-                _phoneNumberController.text;
-            requestBody.verifierNotes = _notesController.text;
-            requestBody.userEndDateTime = null;
-            requestBody.userStartDateTime = null;
-            requestBody.userHours = null;
+                requestBody.userNotes = null;
+                requestBody.verifierSignatureHash = signatureString;
+                requestBody.verifierInformation = _phoneNumberController.text;
+                requestBody.verifierNotes = _notesController.text.isNotEmpty
+                    ? _notesController.text
+                    : null;
+                requestBody.userEndDateTime = null;
+                requestBody.userStartDateTime = null;
+                requestBody.userHours = null;
 
-            dynamic res =
-            await EventsServices().logEventData(requestBody);
-            if (res["message"].toString().contains("success")) {
-              Fluttertoast.showToast(
-                  msg: "Hours verified successfully");
-              Get.back();
-            } else {
-              Fluttertoast.showToast(msg: "Some error occured");
-              Get.back();
-            }
-            // submitEvent(context, _phoneNumberController.text);
-          }
-        }, text: "Submit Event"),
+                EventCategoryResponseModel res =
+                    await EventsServices().logEventData(requestBody);
+                if (res.message!.contains("success")) {
+                  Get.back();
+                  Fluttertoast.showToast(
+                      msg: "Hours verified successfully",
+                      gravity: ToastGravity.TOP,
+                      toastLength: Toast.LENGTH_SHORT,
+                      backgroundColor: Colors.green);
+                  Get.to(const HomePage());
+                } else {
+                  Get.back();
+                  Fluttertoast.showToast(
+                      msg: "Some error occured \n \t${res.message}\t",
+                      gravity: ToastGravity.TOP,
+                      toastLength: Toast.LENGTH_SHORT,
+                      backgroundColor: Colors.red);
+                }
+                // submitEvent(context, _phoneNumberController.text);
+              }
+            },
+            text: "Submit Event"),
       ),
     );
   }

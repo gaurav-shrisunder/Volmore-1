@@ -8,6 +8,7 @@ class SignUpRequestModel {
   Organization? organization;
   String? university;
   String? school;
+  String? locationState;
 
   SignUpRequestModel(
       {this.userName,
@@ -18,6 +19,7 @@ class SignUpRequestModel {
       this.userRoleId,
       this.school,
       this.university,
+      this.locationState,
       this.organization});
 
   SignUpRequestModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class SignUpRequestModel {
     userRoleId = json['userRoleId'];
     university = json['university'];
     school = json['school'];
+    locationState = json['locationState'];
     organization = json['organization'] != null
         ? Organization.fromJson(json['organization'])
         : null;
@@ -44,6 +47,7 @@ class SignUpRequestModel {
     data['userRoleId'] = userRoleId;
     data['school'] = school;
     data['university'] = university;
+    data['locationState'] = locationState;
     if (organization != null) {
       data['organization'] = organization!.toJson();
     }

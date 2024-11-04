@@ -100,12 +100,12 @@ class EventsServices {
     }
   }
 
-  Future<EventCategoryResponseModel> logEventData(LogEventRequestModel requestPayload) async {
+  Future<EventCategoryResponseModel> logEventData(
+      LogEventRequestModel requestPayload) async {
     print('Payload::: ${jsonEncode(requestPayload)}');
     Response? response =
         await apiHandler.post(eventParticipantsApi, requestPayload);
-    if (response != null &&
-        (response.statusCode == 200)) {
+    if (response != null && (response.statusCode == 200)) {
       print('Event Created:::${response.data}');
       final EventCategoryResponseModel eventCategory =
           EventCategoryResponseModel.fromJson(response.data);
@@ -114,12 +114,11 @@ class EventsServices {
       if (kDebugMode) {
         print('Failed to load create Event data');
       }
-      return EventCategoryResponseModel(message:response?.data["message"]);
+      return EventCategoryResponseModel(message: response?.data["errors"][0]);
     }
   }
 
   Future<GetEventResponseModel> getEventDetails(String eventInstanceID) async {
-    
     Response? response = await apiHandler.get(getEvent + eventInstanceID);
     if (response != null && response.statusCode == 200) {
       final GetEventResponseModel event =
@@ -134,13 +133,14 @@ class EventsServices {
     }
   }
 
-
-  Future<NonVerifiedEventsResponseModel> getNonVerifiedEventDetails(String eventCategoryID) async {
+  Future<NonVerifiedEventsResponseModel> getNonVerifiedEventDetails(
+      String eventCategoryID) async {
     var userId = await getUserId();
-    Response? response = await apiHandler.get("${getNonVerifiedEventApi+userId}/$eventCategoryID");
+    Response? response = await apiHandler
+        .get("${getNonVerifiedEventApi + userId}/$eventCategoryID");
     if (response != null && response.statusCode == 200) {
       final NonVerifiedEventsResponseModel event =
-      NonVerifiedEventsResponseModel.fromJson(response.data);
+          NonVerifiedEventsResponseModel.fromJson(response.data);
       return event;
     } else {
       if (kDebugMode) {

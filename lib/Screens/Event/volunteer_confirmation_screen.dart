@@ -52,7 +52,8 @@ class _VolunteerConfirmationScreenState
   final LogServices _logMethod = LogServices();
   final EventsServices _eventsServices = EventsServices();
   bool isSelectedAllPreviousCheckbox = false;
-  NonVerifiedEventsResponseModel nonVerifiedEvents = NonVerifiedEventsResponseModel();
+  NonVerifiedEventsResponseModel nonVerifiedEvents =
+      NonVerifiedEventsResponseModel();
   List<CheckboxItem> checkboxItems = [];
 
   String? _errorMessage;
@@ -67,29 +68,25 @@ class _VolunteerConfirmationScreenState
   @override
   void initState() {
     super.initState();
-   // _eventsFuture = _logMethod.fetchAllEventsWithLogs();
+    // _eventsFuture = _logMethod.fetchAllEventsWithLogs();
     getPreviousEventApiCalling();
   }
 
-  getPreviousEventApiCalling()async{
-    nonVerifiedEvents =  await _eventsServices.getNonVerifiedEventDetails(
-        widget.event.eventCategoryId!);
-    nonVerifiedEvents.nonVerifiedEvents?.forEach((action){
+  getPreviousEventApiCalling() async {
+    nonVerifiedEvents = await _eventsServices
+        .getNonVerifiedEventDetails(widget.event.eventCategoryId!);
+    nonVerifiedEvents.nonVerifiedEvents?.forEach((action) {
       checkboxItems.add(CheckboxItem(
           eventName: action.eventTitle!,
           isChecked: false,
           time: DateFormat.yMMMMEEEEd()
               .format(DateTime.parse(action.eventStartDate!)),
           userLocation: action.userLocation,
-          verifierSignatureHash:
-          action.verifierSignatureHash,eventInstanceId: action.eventInstanceId));
+          verifierSignatureHash: action.verifierSignatureHash,
+          eventInstanceId: action.eventInstanceId));
     });
 
-    setState(() {
-
-    });
-
-
+    setState(() {});
   }
 
   final SignatureController _signatureController = SignatureController(
@@ -131,7 +128,7 @@ class _VolunteerConfirmationScreenState
     if (event.logs == null) return null;
 
     for (var log in event.logs!) {
-      if (log.date != null && isSameDate(log.date.toDate(), date)) {
+      if (isSameDate(log.date.toDate(), date)) {
         return log;
       }
     }
@@ -176,7 +173,7 @@ class _VolunteerConfirmationScreenState
         ),
         actions: [
           GestureDetector(
-            onTap: ()async  {
+            onTap: () async {
               if (_errorMessage != null) {
                 Fluttertoast.showToast(
                     msg: "Enter valid phone number",
@@ -232,7 +229,7 @@ class _VolunteerConfirmationScreenState
         ],
       ),
       body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Column(
@@ -263,9 +260,15 @@ class _VolunteerConfirmationScreenState
                   const SizedBox(
                     width: 5,
                   ),
-                  Text(
-                    widget.event.eventLocationName ?? "",
-                    style: const TextStyle(fontSize: 16, color: greyColor),
+                  SizedBox(
+                    width: Get.width * 0.82,
+                    child: Text(
+                      widget.event.eventLocationName ?? "",
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: greyColor,
+                          overflow: TextOverflow.ellipsis),
+                    ),
                   ),
                 ],
               ),
@@ -299,10 +302,10 @@ class _VolunteerConfirmationScreenState
                     style: TextStyle(fontSize: 18, color: headingBlue),
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       _signatureController.clear();
                     },
-                    child: Text(
+                    child: const Text(
                       "Clear",
                       style: TextStyle(fontSize: 16, color: headingBlue),
                     ),
@@ -325,7 +328,7 @@ class _VolunteerConfirmationScreenState
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               TextFormField(
@@ -370,7 +373,7 @@ class _VolunteerConfirmationScreenState
 
                 // validator: phoneValidator,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               TextFormField(
@@ -406,9 +409,9 @@ class _VolunteerConfirmationScreenState
                 // validator: phoneValidator,
               ),
               const SizedBox(width: 10),
-              Row(
+              const Row(
                 children: [
-                /*  Container(
+                  /*  Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(9),
                         border: Border.all(color: Colors.grey[300]!)),
@@ -432,170 +435,173 @@ class _VolunteerConfirmationScreenState
                       },
                     ),
                   ),*/
-             /*     const SizedBox(width: 10),*/
-
+                  /*     const SizedBox(width: 10),*/
                 ],
               ),
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              checkboxItems.length >0 ?
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Sign for all previous events",
-                    style: TextStyle(fontSize: 18, color: Colors.black),
-                  ),
-                  // Checkbox(
-                  //     value: isSelectedAllPreviousCheckbox,
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         !isSelectedAllPreviousCheckbox ?   checkboxItems.forEach((action) => action.isChecked =true) : checkboxItems.forEach((action) => action.isChecked =false);
-                  //
-                  //         isSelectedAllPreviousCheckbox =
-                  //             !isSelectedAllPreviousCheckbox;
-                  //
-                  //         if(checkboxItems.any((test) => test.isChecked !=true)){
-                  //           isSelectedAllPreviousCheckbox = false;
-                  //         }
-                  //       });
-                  //     })
-                ],
-              ): SizedBox(),
-
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: checkboxItems.length,
-
-              physics: BouncingScrollPhysics(),
-              itemBuilder: (context,index){
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
+              checkboxItems.isNotEmpty
+                  ? const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Sign for all previous events",
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
+                        // Checkbox(
+                        //     value: isSelectedAllPreviousCheckbox,
+                        //     onChanged: (value) {
+                        //       setState(() {
+                        //         !isSelectedAllPreviousCheckbox ?   checkboxItems.forEach((action) => action.isChecked =true) : checkboxItems.forEach((action) => action.isChecked =false);
+                        //
+                        //         isSelectedAllPreviousCheckbox =
+                        //             !isSelectedAllPreviousCheckbox;
+                        //
+                        //         if(checkboxItems.any((test) => test.isChecked !=true)){
+                        //           isSelectedAllPreviousCheckbox = false;
+                        //         }
+                        //       });
+                        //     })
+                      ],
+                    )
+                  : const SizedBox(),
+              ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: checkboxItems.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Checkbox(value: checkboxItems[index].isChecked, onChanged: (value){
-                            setState(() {
-                              checkboxItems[index].isChecked = value!;
-
-                            });
-                          }),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: [
-                              Text(checkboxItems[index].eventName, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                              Text(checkboxItems[index].time!),
+                              Checkbox(
+                                  value: checkboxItems[index].isChecked,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      checkboxItems[index].isChecked = value!;
+                                    });
+                                  }),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    checkboxItems[index].eventName,
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(checkboxItems[index].time!),
+                                ],
+                              ),
                             ],
                           ),
-
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                color: checkboxItems[index]
+                                        .userLocation!
+                                        .isNotEmpty
+                                    ? Colors.black
+                                    : Colors.grey.shade400,
+                                size: 30,
+                              ),
+                              const SizedBox(width: 5),
+                              SvgPicture.asset(
+                                "assets/icons/signature_icon.svg",
+                                color: checkboxItems[index]
+                                        .verifierSignatureHash!
+                                        .isNotEmpty
+                                    ? Colors.black
+                                    : Colors.grey.shade400,
+                              ),
+                              const SizedBox(width: 5),
+                              const Icon(
+                                Icons.timer,
+                                color: Colors.black,
+                                size: 30,
+                              ),
+                            ],
+                          )
                         ],
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: checkboxItems[index].userLocation!.isNotEmpty
-                                ? Colors.black
-                                : Colors.grey.shade400,
-                            size: 30,
-                          ),
-                          const SizedBox(width: 5),
-                          SvgPicture.asset(
-                            "assets/icons/signature_icon.svg",
-                            color: checkboxItems[index]
-                                .verifierSignatureHash!.isNotEmpty
-                                ? Colors.black
-                                : Colors.grey.shade400,
-                          ),
-                          const SizedBox(width: 5),
-                          Icon(
-                            Icons.timer,
-                            color:
-                            Colors.black,
-                            size: 30,
-                          ),
-                        ],
-                      )
-
-                    ],
-                  ),
-                );
-
-          }),
+                    );
+                  }),
             ],
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
-        //  height: 40,
+          color: Colors.transparent,
+          //  height: 40,
           child: MyButtons(
-              onTap:() async {
+              onTap: () async {
                 String signatureString = await _exportSignatureAsString();
-          if (_errorMessage != null) {
-          Fluttertoast.showToast(
-          msg: "Enter valid phone number",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-          } else {
-          LogEventRequestModel requestBody = LogEventRequestModel();
-          requestBody.userId = await getUserId();
-          requestBody.eventInstanceId =
-          widget.eventInstance.eventInstanceId;
-          requestBody.userStartDateTime = widget
-              .event.eventParticipatedDuration
-              ?.split("::")
-              .first;
-          requestBody.userEndDateTime = widget
-              .event.eventParticipatedDuration
-              ?.split("::")
-              .last;
-          requestBody.userLocationName =
-          widget.event.eventLocationName;
-          requestBody.userNotes = _notesController.text;
-          requestBody.userHours = 4;
-          requestBody.userEarnPoints = 4;
-          requestBody.verifierSignatureHash =
-              signatureString;
-          requestBody.verifierInformation = "Verifier name";
-          requestBody.verifierNotes = _notesController.text;
-          HostInformation hostInfo = HostInformation();
-          hostInfo.eventId = widget.event.eventId;
-          hostInfo.hostId = widget.event.hostId;
-          hostInfo.hours = 4;
-          requestBody.hostInformation = hostInfo;
-          for (var val in checkboxItems) {
-            if(val.isChecked){
-              requestBody.instancesToBeVerified?.add(val.eventInstanceId!);
-            }
-          }
+                if (_errorMessage != null) {
+                  Fluttertoast.showToast(
+                      msg: "Enter valid phone number",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                } else {
+                  LogEventRequestModel requestBody = LogEventRequestModel();
+                  requestBody.userId = await getUserId();
+                  requestBody.eventInstanceId =
+                      widget.eventInstance.eventInstanceId;
+                  requestBody.userStartDateTime =
+                      widget.event.eventParticipatedDuration?.split("::").first;
+                  requestBody.userEndDateTime =
+                      widget.event.eventParticipatedDuration?.split("::").last;
+                  requestBody.userLocationName = widget.event.eventLocationName;
+                  requestBody.userNotes = null;
+                  requestBody.userHours = null;
+                  requestBody.userEarnPoints = null;
+                  requestBody.verifierSignatureHash = signatureString;
+                  requestBody.verifierInformation = "Verifier name";
+                  requestBody.verifierNotes = _notesController.text;
+                  HostInformation hostInfo = HostInformation();
+                  hostInfo.eventId = widget.event.eventId;
+                  hostInfo.hostId = widget.event.hostId;
+                  hostInfo.hours = 4;
+                  requestBody.hostInformation = hostInfo;
+                  for (var val in checkboxItems) {
+                    if (val.isChecked) {
+                      requestBody.instancesToBeVerified
+                          ?.add(val.eventInstanceId!);
+                    }
+                  }
 
-          await EventsServices().logEventData(requestBody).then((onValue){
-            if(onValue.message!.contains("updated successfully")){
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
-                    (Route<dynamic> route) =>
-                false, // This condition makes sure all the routes are removed.
-              );
-              Fluttertoast.showToast(
-                  msg: onValue.message!, toastLength: Toast.LENGTH_LONG);
-
-            }else{
-              Fluttertoast.showToast(
-                  msg: onValue.message ?? "Something went wrong.", toastLength: Toast.LENGTH_LONG);
-            }
-          });
-          // submitEvent(context, _phoneNumberController.text);
-          }
-          }, text: "Submit")),
+                  await EventsServices()
+                      .logEventData(requestBody)
+                      .then((onValue) {
+                    if (onValue.message!.contains("updated successfully")) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
+                        (Route<dynamic> route) =>
+                            false, // This condition makes sure all the routes are removed.
+                      );
+                      Fluttertoast.showToast(
+                          msg: onValue.message!,
+                          toastLength: Toast.LENGTH_LONG);
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: onValue.message ?? "Something went wrong.",
+                          toastLength: Toast.LENGTH_LONG);
+                    }
+                  });
+                  // submitEvent(context, _phoneNumberController.text);
+                }
+              },
+              text: "Submit")),
     );
   }
 
@@ -789,8 +795,6 @@ class _VolunteerConfirmationScreenState
         signatureString, number, selectedEvents);*/
   }
 
-
-
   Widget buildCheckboxItem(CheckboxItem item) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
@@ -812,11 +816,11 @@ class _VolunteerConfirmationScreenState
           ),
 
           // Spacer to push icons to the right
-          Spacer(),
+          const Spacer(),
 
           // Icons aligned to the right
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.edit, color: Colors.blue),
               SizedBox(width: 8),
               Icon(Icons.delete, color: Colors.red),
@@ -828,8 +832,6 @@ class _VolunteerConfirmationScreenState
       ),
     );
   }
-
-
 }
 
 class CheckboxItem {
