@@ -203,7 +203,7 @@ class _VolunteerConfirmationScreenState
                     widget.event.eventLocationName;
                 requestBody.userNotes = _notesController.text;
                 requestBody.userHours = 4;
-                requestBody.userEarnPoints = 4;
+             //   requestBody.userEarnPoints = 4;
                 requestBody.verifierSignatureHash =
                     _signatureController.toString();
                 requestBody.verifierInformation = "Verifier name";
