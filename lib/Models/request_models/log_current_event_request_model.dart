@@ -5,7 +5,7 @@ class LogEventRequestModel {
   String? userEndDateTime;
   String? userLocationName;
   String? userNotes;
-  int? userHours;
+  int? userMinutes;
   HostInformation? hostInformation;
   int? userEarnPoints;
   String? verifierSignatureHash;
@@ -20,7 +20,7 @@ class LogEventRequestModel {
       this.userEndDateTime,
       this.userLocationName,
       this.userNotes,
-      this.userHours,
+      this.userMinutes,
       this.hostInformation,
       this.userEarnPoints,
       this.verifierSignatureHash,
@@ -36,7 +36,7 @@ class LogEventRequestModel {
     userEndDateTime = json['userEndDateTime'];
     userLocationName = json['userLocationName'];
     userNotes = json['userNotes'];
-    userHours = json['userHours'];
+    userMinutes = json['userMinutes'];
     hostInformation = json['hostInformation'] != null
         ? HostInformation.fromJson(json['hostInformation'])
         : null;
@@ -64,8 +64,8 @@ class LogEventRequestModel {
     if (userNotes != null) {
       data['userNotes'] = userNotes;
     }
-    if (userHours != null) {
-      data['userHours'] = userHours;
+    if (userMinutes != null) {
+      data['userMinutes'] = userMinutes;
     }
 
     if (hostInformation != null) {
@@ -92,21 +92,21 @@ class LogEventRequestModel {
 class HostInformation {
   String? eventId;
   String? hostId;
-  int? hours;
+  int? minutes;
 
-  HostInformation({this.eventId, this.hostId, this.hours});
+  HostInformation({this.eventId, this.hostId, this.minutes});
 
   HostInformation.fromJson(Map<String, dynamic> json) {
     eventId = json['eventId'];
     hostId = json['hostId'];
-    hours = json['hours'];
+    minutes = json['minutes'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['eventId'] = eventId;
     data['hostId'] = hostId;
-    data['hours'] = hours;
+    data['minutes'] = minutes;
     return data;
   }
 }

@@ -57,7 +57,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     unselectedLabelColor: Colors.grey,
                     tabs: [
                       Tab(text: "Hours Volunteered"),
-                      Tab(text: "Hour Influenced"),
+                      Tab(text: "Hours Influenced"),
                     ],
                   ),
                   Expanded(

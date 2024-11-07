@@ -24,7 +24,7 @@ void showEventPopup(String eventId) async {
     requestBody.userId = await getUserId();
     requestBody.userEndDateTime = null;
     requestBody.userStartDateTime = null;
-    requestBody.userHours = null;
+    requestBody.userMinutes = null;
     dynamic res = await EventsServices().logEventData(requestBody);
     if (res["message"].toString().contains("success")) {
       Fluttertoast.showToast(msg: "Event Accepted Successfully");

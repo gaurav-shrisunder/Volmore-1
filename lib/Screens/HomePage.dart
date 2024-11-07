@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage>
             onPressed: _showSettingsBottomSheet,
           ),
           const SizedBox(width: 10),
-          IconButton(
+         /* IconButton(
             icon: Icon(
               themeManager.themeData.brightness == Brightness.dark
                   ? Icons.light_mode
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage>
             style: const ButtonStyle(
                 shape: MaterialStatePropertyAll(CircleBorder())),
             splashRadius: 24.0,
-          )
+          )*/
         ],
       ),
       body: Center(child: _pages[_selectedIndex]),

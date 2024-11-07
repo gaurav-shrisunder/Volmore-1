@@ -64,7 +64,7 @@ class _EventsScreenState extends State<EventsScreen>
             controller: _tabController,
             labelStyle: const TextStyle(fontSize: 14),
             tabs: const [
-              Tab(text: "Today's"),
+              Tab(text: "Today"),
               Tab(text: "Upcoming"),
               Tab(text: "Past"),
             ],

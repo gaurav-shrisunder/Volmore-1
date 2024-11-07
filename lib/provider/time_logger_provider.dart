@@ -91,10 +91,15 @@ class TimerProvider with ChangeNotifier {
     if (_isLogging) {
       // Stop the timer
       _isLogging = false;
+      resetTimer();
+     // _elapsedTime = 0;
       notifyListeners(); // Update the UI with the stopped state
     } else {
       // Start the timer
-      _startTime = DateTime.now();
+      if(elapsedTime < 1){
+        _startTime = DateTime.now();
+
+      }
       _isLogging = true;
       _endTime = null; // Reset _endTime when starting fresh
       _startTimer();
@@ -107,8 +112,9 @@ class TimerProvider with ChangeNotifier {
     if (_isLogging) {
       // Set end time and stop the timer
       _endTime = DateTime.now();
-      if (_startTime != null &&
-          _startTime!.difference(_endTime!).inMinutes.abs() >= 1) {
+      print('Elapsed:::$elapsedTime');
+      if ((_startTime != null &&
+          _startTime!.difference(_endTime!).inMinutes.abs() >= 1 ) ) {
         _isLogging = false; // Stop logging
         notifyListeners(); // Update UI to reflect stopped state
         log('Logged duration: ${_startTime!.toIso8601String()} - ${_endTime!.toIso8601String()}');
@@ -123,6 +129,17 @@ class TimerProvider with ChangeNotifier {
     if (_startTime != null && _endTime != null) {
       event.eventParticipatedDuration =
       "${_startTime!.toIso8601String()}::${_endTime!.toIso8601String()}";
+
+      if(_address.isNotEmpty){
+        event.eventLocationName = _address;
+      }else{
+        event.eventLocationName = "Not enabled!";
+      }
+
+      print('Addresss::: $_address');
+
+     // resetTimer();
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -265,7 +282,7 @@ class TimerProvider with ChangeNotifier {
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
       Placemark place = placemarks[0];
       _address =
-          "${place.street},\n ${place.locality}, ${place.postalCode}, ${place.country}";
+          "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
     } catch (e) {
       if (kDebugMode) {
         print(e);

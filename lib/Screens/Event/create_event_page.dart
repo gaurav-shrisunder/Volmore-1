@@ -432,7 +432,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   controller: descriptionController,
                   maxlines: 5,
                   hintText: 'Job Description',
-                  validator: nameValidator,
                 ),
                 const SizedBox(height: 20),
                 InputFeildWidget(
