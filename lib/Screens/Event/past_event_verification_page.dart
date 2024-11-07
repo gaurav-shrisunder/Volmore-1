@@ -66,20 +66,16 @@ class _PastEventVerificationState extends State<PastEventVerification> {
 
   @override
   Widget build(BuildContext context) {
-    bool isSameDate(DateTime date1, DateTime date2) {
-      return date1.year == date2.year &&
-          date1.month == date2.month &&
-          date1.day == date2.day;
-    }
+   
 
     Color color = HexColor(widget.event.event!.eventColorCode!);
 
     // double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    String selectedCountryCode = '+1'; // Default country code
+   // Default country code
     // LogModel? log = getLogForDate(widget.event, widget.date);
 
-    final List<String> countryCodes = ['+1', '+91', '+44', '+61', '+81'];
+  
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
