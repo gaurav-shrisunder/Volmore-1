@@ -411,7 +411,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                     : null;
                 requestBody.userEndDateTime = null;
                 requestBody.userStartDateTime = null;
-                requestBody.userHours = null;
+                requestBody.userMinutes = null;
 
                 EventCategoryResponseModel res =
                     await EventsServices().logEventData(requestBody);

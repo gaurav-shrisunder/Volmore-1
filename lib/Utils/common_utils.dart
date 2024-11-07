@@ -13,3 +13,15 @@ String formatTime(String isoDate) {
   // Use DateFormat to format the date in a readable format.
   return DateFormat('hh:mm:ss a').format(dateTime);
 }
+
+int getDifferenceInMinutes(String startTime, String endTime) {
+  // Parse the start and end times from the UTC strings
+  DateTime start = DateTime.parse(startTime);
+  DateTime end = DateTime.parse(endTime);
+
+  // Calculate the difference
+  Duration difference = end.difference(start);
+
+  // Return the difference in minutes
+  return difference.inMinutes;
+}

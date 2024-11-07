@@ -372,6 +372,17 @@ class _EventPageState extends State<EventPage>
 
   Widget buildEventList(String title, List<EventListDataModel> events,
       {bool isToday = false, bool isUpcoming = false, bool isPast = false}) {
+    if (_selectedOption == SortOption.az) {
+      events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+    } else if (_selectedOption == SortOption.za) {
+      events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+    } else if (_selectedOption == SortOption.dateAsc) {
+      events.sort((a, b) => a.date.compareTo(b.date));
+    } else if (_selectedOption == SortOption.dateDesc) {
+      events.sort((a, b) => b.date.compareTo(a.date));
+    }else{
+      events;
+    }
     return Column(
       children: [
         const SizedBox(height: 15),
@@ -448,7 +459,7 @@ class _EventPageState extends State<EventPage>
                                           _selectedOption = selectedOption;
 
                                           //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                                          //   _updateEventList(events); // Update the main event list
+                                          //  _updateEventList(events); // Update the main event list
                                         });
                                         Navigator.of(context).pop();
                                       },
@@ -461,7 +472,7 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
-                                          //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+                                           //  events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
                                           //    _updateEventList(events); // Update the main event list
                                         });
                                         Navigator.of(context).pop();
@@ -475,6 +486,7 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
+                                         // events.sort((a, b) => a.event!.date!.compareTo(b.event!.date!));
                                         });
                                         Navigator.of(context).pop();
                                       },
@@ -487,6 +499,8 @@ class _EventPageState extends State<EventPage>
                                         setState(() {
                                           selectedOption = value;
                                           _selectedOption = selectedOption;
+                                        //  events.sort((a, b) => b.event!.date!.compareTo(a.event!.date!));
+
                                         });
                                         Navigator.of(context).pop();
                                       },
@@ -573,6 +587,25 @@ class _EventPageState extends State<EventPage>
               ),
       ],
     );
+  }
+
+
+  List<EventListDataModel> getSortedEvents(List<EventListDataModel> events) {
+    print('Selected Sort:: ${_selectedOption}');
+
+    if (_selectedOption == SortOption.az) {
+      events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+    } else if (_selectedOption == SortOption.za) {
+      events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
+    } else if (_selectedOption == SortOption.dateAsc) {
+      events.sort((a, b) => a.date.compareTo(b.date));
+    } else if (_selectedOption == SortOption.dateDesc) {
+      events.sort((a, b) => b.date.compareTo(a.date));
+    } else if(_selectedOption == SortOption.def){
+
+    }
+      return events;
+
   }
 }
 

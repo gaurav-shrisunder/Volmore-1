@@ -70,6 +70,8 @@ class _VolunteerConfirmationScreenState
     super.initState();
     // _eventsFuture = _logMethod.fetchAllEventsWithLogs();
     getPreviousEventApiCalling();
+    print('Start Time UTC : ${widget.event.eventParticipatedDuration!.split("::").first}');
+    print('End Time UTC : ${widget.event.eventParticipatedDuration!.split("::").last}');
   }
 
   getPreviousEventApiCalling() async {
@@ -184,7 +186,10 @@ class _VolunteerConfirmationScreenState
                     textColor: Colors.white,
                     fontSize: 16.0);
               } else {
+                Uint8List? pngBytes = await _signatureController.toPngBytes();
+                String? signBase64Value =  await convertSignatureToBase64(pngBytes);
                 LogEventRequestModel requestBody = LogEventRequestModel();
+                int differenceInMinutes = getDifferenceInMinutes(widget.event.eventParticipatedDuration!.split("::").first, widget.event.eventParticipatedDuration!.split("::").last);
                 requestBody.userId = await getUserId();
                 requestBody.eventInstanceId =
                     widget.eventInstance.eventInstanceId;
@@ -196,22 +201,43 @@ class _VolunteerConfirmationScreenState
                     .event.eventParticipatedDuration
                     ?.split("::")
                     .last;
-                requestBody.userLocationName =
-                    widget.event.eventLocationName;
-                requestBody.userNotes = _notesController.text;
-                requestBody.userHours = 4;
+                requestBody.userLocationName = widget.event.eventLocationName!.toLowerCase().contains("not enabled!")? null : widget.event.eventLocationName;
+                requestBody.userNotes = null;
+                requestBody.userMinutes = differenceInMinutes;
              //   requestBody.userEarnPoints = 4;
-                requestBody.verifierSignatureHash =
-                    _signatureController.toString();
-                requestBody.verifierInformation = "Verifier name";
-                requestBody.verifierNotes = _notesController.text;
+                requestBody.verifierSignatureHash = _signatureController.isEmpty ? null : signBase64Value;
+                requestBody.verifierInformation = _phoneNumberController.text.isEmpty ? null : _phoneNumberController.text;
+                requestBody.verifierNotes = _notesController.text.isEmpty ? null : _notesController.text;
                 HostInformation hostInfo = HostInformation();
                 hostInfo.eventId = widget.event.eventId;
                 hostInfo.hostId = widget.event.hostId;
-                hostInfo.hours = 4;
+                hostInfo.minutes = differenceInMinutes;
                 requestBody.hostInformation = hostInfo;
 
-                await EventsServices().logEventData(requestBody);
+                checkboxItems.any((test){
+                  if(!test.isChecked){
+                    requestBody.instancesToBeVerified = null;
+                    return false;
+                  }else{
+                    requestBody.instancesToBeVerified
+                        ?.add(test.eventInstanceId!);
+                    return true;
+                  }
+                });
+
+
+                await EventsServices().logEventData(requestBody).then((onValue){
+                  if(onValue.message!.contains("Event participant information updated successfully")){
+                    Fluttertoast.showToast(msg: onValue.message!);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage()),
+                          (Route<dynamic> route) =>
+                      false, // This condition makes sure all the routes are removed.
+                    );
+                  }
+                });
                 // submitEvent(context, _phoneNumberController.text);
               }
             },
@@ -297,9 +323,16 @@ class _VolunteerConfirmationScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Verifier's Signature",
-                    style: TextStyle(fontSize: 18, color: headingBlue),
+                  GestureDetector(
+                    onTap: () async {
+                      Uint8List? pngBytes = await _signatureController.toPngBytes();
+                     String? signBase64Value =  await convertSignatureToBase64(pngBytes);
+                      print('Siggnnnnn: ${signBase64Value}');
+                    },
+                    child: const Text(
+                      "Verifier's Signature",
+                      style: TextStyle(fontSize: 18, color: headingBlue),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -551,32 +584,49 @@ class _VolunteerConfirmationScreenState
                       textColor: Colors.white,
                       fontSize: 16.0);
                 } else {
+                  Uint8List? pngBytes = await _signatureController.toPngBytes();
+                  String? signBase64Value =  await convertSignatureToBase64(pngBytes);
                   LogEventRequestModel requestBody = LogEventRequestModel();
+                  int differenceInMinutes = getDifferenceInMinutes(widget.event.eventParticipatedDuration!.split("::").first, widget.event.eventParticipatedDuration!.split("::").last);
                   requestBody.userId = await getUserId();
                   requestBody.eventInstanceId =
                       widget.eventInstance.eventInstanceId;
-                  requestBody.userStartDateTime =
-                      widget.event.eventParticipatedDuration?.split("::").first;
-                  requestBody.userEndDateTime =
-                      widget.event.eventParticipatedDuration?.split("::").last;
-                  requestBody.userLocationName = widget.event.eventLocationName;
+                  requestBody.userStartDateTime = widget
+                      .event.eventParticipatedDuration
+                      ?.split("::")
+                      .first;
+                  requestBody.userEndDateTime = widget
+                      .event.eventParticipatedDuration
+                      ?.split("::")
+                      .last;
+                  requestBody.userLocationName = widget.event.eventLocationName!.toLowerCase().contains("not enabled!")? null : widget.event.eventLocationName;
                   requestBody.userNotes = null;
-                  requestBody.userHours = null;
-                  requestBody.userEarnPoints = null;
-                  requestBody.verifierSignatureHash = signatureString;
-                  requestBody.verifierInformation = "Verifier name";
-                  requestBody.verifierNotes = _notesController.text;
+                  requestBody.userMinutes = differenceInMinutes;
+                  //   requestBody.userEarnPoints = 4;
+                  requestBody.verifierSignatureHash = _signatureController.toString().isEmpty ? null : signBase64Value;
+                  requestBody.verifierInformation = _phoneNumberController.text.isEmpty ? null : _phoneNumberController.text;
+                  requestBody.verifierNotes = _notesController.text.isEmpty ? null : _notesController.text;
                   HostInformation hostInfo = HostInformation();
                   hostInfo.eventId = widget.event.eventId;
                   hostInfo.hostId = widget.event.hostId;
-                  hostInfo.hours = 4;
+                  hostInfo.minutes = differenceInMinutes;
                   requestBody.hostInformation = hostInfo;
-                  for (var val in checkboxItems) {
+                  checkboxItems.any((test){
+                    if(!test.isChecked){
+                      requestBody.instancesToBeVerified = null;
+                      return false;
+                    }else{
+                      requestBody.instancesToBeVerified
+                          ?.add(test.eventInstanceId!);
+                      return true;
+                    }
+                  });
+                /*  for (var val in checkboxItems) {
                     if (val.isChecked) {
                       requestBody.instancesToBeVerified
                           ?.add(val.eventInstanceId!);
                     }
-                  }
+                  }*/
 
                   await EventsServices()
                       .logEventData(requestBody)
@@ -778,6 +828,12 @@ class _VolunteerConfirmationScreenState
       ],
     );
   }*/
+
+
+  Future<String?> convertSignatureToBase64(Uint8List? pngBytes) async {
+    if (pngBytes == null) return null; // Check if bytes are null
+    return base64Encode(pngBytes); // Encode to Base64
+  }
 
   void submitEvent(BuildContext context, String number) async {
     final timerProvider = Provider.of<TimerProvider>(context, listen: false);
