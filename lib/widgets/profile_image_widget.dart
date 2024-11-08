@@ -10,6 +10,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Models/response_models/update_user_response_model.dart';
+import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
 
@@ -144,6 +145,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
           msg: "Profile Updated Successfully",
           backgroundColor: Colors.green,
         );
+        Get.to(const HomePage());
         // Refresh user data
       } else {
         String errorMessage = 'Failed to update profile';
