@@ -18,11 +18,15 @@ import '../api_handler.dart';
 class EventsServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
 
-  Future<EventsDataResponseModel?> getEventsData(String endpoint) async {
+  Future<EventsDataResponseModel?> getEventsData(String endpoint,{required String sortBy, required String sortDirection}) async {
     var userId = await getUserId();
+   var query = {
+      "sortBy": sortBy,
+     "sortDirection":sortDirection
+    };
 
     Response? response =
-        await apiHandler.get("${getEventApi + userId}/$endpoint");
+        await apiHandler.getWithQuery("${getEventApi + userId}/$endpoint",query);
     if (response != null && response.statusCode == 200) {
       final EventsDataResponseModel userRole =
           EventsDataResponseModel.fromJson(response.data);
