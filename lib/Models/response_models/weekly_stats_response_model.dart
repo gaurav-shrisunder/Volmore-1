@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 class WeeklyStatsResponseModel {
   List<EventDetail>? eventDetails;
   UserHoursByDay? userHoursByDay;
@@ -8,19 +7,19 @@ class WeeklyStatsResponseModel {
   int? lifeTimeHours;
 
   WeeklyStatsResponseModel({
-     this.eventDetails,
-     this.userHoursByDay,
-     this.weekTotalHour,
-     this.lifeTimeHours,
+    this.eventDetails,
+    this.userHoursByDay,
+    this.weekTotalHour,
+    this.lifeTimeHours,
   });
 
   // Method to convert Dart object to JSON format
   Map<String, dynamic> toJson() {
     return {
       'eventDetails': eventDetails?.map((event) => event.toJson()).toList(),
-      'userHoursByDay': userHoursByDay?.toJson(),
-      'weekTotalHour': weekTotalHour,
-      'lifeTimeHours': lifeTimeHours,
+      'userMinutesByDay': userHoursByDay?.toJson(),
+      'weekTotalMinutes': weekTotalHour,
+      'lifeTimeMinutes': lifeTimeHours,
     };
   }
 

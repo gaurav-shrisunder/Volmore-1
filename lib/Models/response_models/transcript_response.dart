@@ -6,7 +6,7 @@ class TranscriptResponse {
 
   factory TranscriptResponse.fromJson(Map<String, dynamic> json) {
     return TranscriptResponse(
-      lifeTimeHour: json['lifeTimeHour'],
+      lifeTimeHour: json['lifeTimeMinutes'],
       transcripts: json['transcripts'] != null
           ? (json['transcripts'] as List)
               .map((i) => Transcript.fromJson(i))
@@ -17,7 +17,7 @@ class TranscriptResponse {
 
   Map<String, dynamic> toJson() {
     return {
-      'lifeTimeHour': lifeTimeHour,
+      'lifeTimeMinutes': lifeTimeHour,
       'transcripts': transcripts?.map((e) => e.toJson()).toList(),
     };
   }
@@ -39,7 +39,7 @@ class Transcript {
     return Transcript(
       eventCategoryName: json['eventCategoryName'],
       eventColorCode: json['eventColorCode'],
-      totalHours: json['totalHours'],
+      totalHours: json['totalMinutes'],
       event: json['event'] != null
           ? (json['event'] as List).map((i) => Event.fromJson(i)).toList()
           : null,
@@ -50,7 +50,7 @@ class Transcript {
     return {
       'eventCategoryName': eventCategoryName,
       'eventColorCode': eventColorCode,
-      'totalHours': totalHours,
+      'totalMinutes': totalHours,
       'event': event?.map((e) => e.toJson()).toList(),
     };
   }
@@ -83,7 +83,7 @@ class Event {
     return Event(
       eventTitle: json['eventTitle'],
       eventDateTime: json['eventDateTime'],
-      hour: json['hour'],
+      hour: json['minutes'],
       hostName: json['hostName'],
       userDateTime: json['userDateTime'],
       userLocation: json['userLocation'],
@@ -97,7 +97,7 @@ class Event {
     return {
       'eventTitle': eventTitle,
       'eventDateTime': eventDateTime,
-      'hour': hour,
+      'minutes': hour,
       'hostName': hostName,
       'userDateTime': userDateTime,
       'userLocation': userLocation,

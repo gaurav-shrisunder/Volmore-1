@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Controllers/event_controller.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
+import 'package:volunterring/Screens/splash_screen.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/provider/theme_manager_provider.dart';
 import 'package:volunterring/provider/time_logger_provider.dart';
@@ -17,9 +18,7 @@ import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-
-  );
+  await Firebase.initializeApp();
   Get.put(EventController());
 
   runApp(
@@ -53,8 +52,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // Handle dynamic link when the app is launched via a deep link
     handleDynamicLink();
 
- 
-   // clearPreferences();
+    // clearPreferences();
     checkLocalStorage();
   }
 
@@ -73,10 +71,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (initialLink != null) {
       final Uri deepLink = initialLink.link;
       final String? eventId = deepLink.queryParameters['eventId'];
-     
+
       if (eventId != null) {
         // Show the event popup
-        showEventPopup( eventId);
+        showEventPopup(eventId);
       }
     }
 
@@ -84,10 +82,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
       final Uri deepLink = data.link;
       final String? eventId = deepLink.queryParameters['eventId'];
-     
+
       if (eventId != null) {
         // Show the event popup
-        showEventPopup( eventId);
+        showEventPopup(eventId);
       }
     }).onError((error) {
       print('Dynamic Link Failed: $error');
@@ -102,7 +100,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       title: 'VOLMORE',
       debugShowCheckedModeBanner: false,
       theme: themeManager.themeData,
-      home: isLoggedIn ? const HomePage() : const LoginPage(),
+      home: const SplashScreen(),
+
+      // home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }
 

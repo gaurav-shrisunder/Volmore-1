@@ -136,10 +136,10 @@ String? emailValidator(String? value) {
 }
 
 String? nameValidator(String? value) {
-  if (value == null || value.isEmpty) {
+  if (value == null || value.trim().isEmpty) {
     return 'Name cannot be empty';
-  } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-    return 'Enter a valid name';
+  } else if (!RegExp(r'^[a-zA-Z0-9\s]+$').hasMatch(value.trim())) {
+    return 'Enter a valid name (letters, numbers, and spaces only)';
   }
   return null;
 }

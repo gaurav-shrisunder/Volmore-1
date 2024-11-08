@@ -39,19 +39,22 @@ class _EventsScreenState extends State<EventsScreen>
   late Future<EventsDataResponseModel?> pastEventFuture;
   late Future<EventsDataResponseModel?> upcomingEventFuture;
   late Future<EventsDataResponseModel?> todayEventFuture;
+  String sortByValue = "eventStartDateTime";
+  String sortDirectionValue = "desc";
+
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _selectedOption = widget.initialSortOption;
-    apiCalling();
+    apiCalling(sortByValue, sortDirectionValue);
   }
 
-  apiCalling() async {
-    pastEventFuture = _eventsServices.getEventsData("past");
-    upcomingEventFuture = _eventsServices.getEventsData("upcoming");
-    todayEventFuture = _eventsServices.getEventsData("today");
+  apiCalling(String sortByValue, String sortDirectionValue) async {
+    pastEventFuture = _eventsServices.getEventsData("past",sortBy: sortByValue,sortDirection: sortDirectionValue);
+    upcomingEventFuture = _eventsServices.getEventsData("upcoming",sortBy: sortByValue,sortDirection: sortDirectionValue);
+    todayEventFuture = _eventsServices.getEventsData("today",sortBy: sortByValue,sortDirection: sortDirectionValue);
   }
 
   @override
@@ -144,16 +147,32 @@ class _EventsScreenState extends State<EventsScreen>
                                           children: [
                                             RadioListTile<SortOption>(
                                               title: const Text(
-                                                  'Default: By Name'),
+                                                  'Date: Descending - Default'),
                                               value: SortOption.def,
+                                              groupValue: selectedOption,
+                                              onChanged: (SortOption? value) {
+                                                setState(() {
+                                                  selectedOption = value;
+                                                  _selectedOption = selectedOption;
+                                                  apiCalling(sortByValue, sortDirectionValue);
+
+                                                  //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
+                                                  // Update the main event list
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            RadioListTile<SortOption>(
+                                              title: const Text(
+                                                  'Date: Ascending'),
+                                              value: SortOption.dateDesc,
                                               groupValue: selectedOption,
                                               onChanged: (SortOption? value) {
                                                 setState(() {
                                                   selectedOption = value;
                                                   _selectedOption =
                                                       selectedOption;
-                                                  //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
-                                                  // Update the main event list
+                                                  apiCalling(sortByValue, "asc");
                                                 });
                                                 Navigator.of(context).pop();
                                               },
@@ -167,6 +186,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                   selectedOption = value;
                                                   _selectedOption =
                                                       selectedOption;
+                                                  apiCalling("eventTitle", "asc");
 
                                                   //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
                                                   //   _updateEventList(events); // Update the main event list
@@ -183,36 +203,9 @@ class _EventsScreenState extends State<EventsScreen>
                                                   selectedOption = value;
                                                   _selectedOption =
                                                       selectedOption;
+                                                  apiCalling("eventTitle", sortDirectionValue);
                                                   //   events.sort((a, b) => b.event!.title!.compareTo(a.event!.title!));
                                                   //    _updateEventList(events); // Update the main event list
-                                                });
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                            RadioListTile<SortOption>(
-                                              title:
-                                                  const Text('Date: Ascending'),
-                                              value: SortOption.dateAsc,
-                                              groupValue: selectedOption,
-                                              onChanged: (SortOption? value) {
-                                                setState(() {
-                                                  selectedOption = value;
-                                                  _selectedOption =
-                                                      selectedOption;
-                                                });
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                            RadioListTile<SortOption>(
-                                              title: const Text(
-                                                  'Date: Descending'),
-                                              value: SortOption.dateDesc,
-                                              groupValue: selectedOption,
-                                              onChanged: (SortOption? value) {
-                                                setState(() {
-                                                  selectedOption = value;
-                                                  _selectedOption =
-                                                      selectedOption;
                                                 });
                                                 Navigator.of(context).pop();
                                               },

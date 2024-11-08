@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/response_models/leaderboard_influenced_response_model.dart';
@@ -9,9 +8,18 @@ import 'package:volunterring/api_handler.dart';
 class LeaderboardServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
   Future<LeaderboardInfluencedResponseModel?> getInflucendLeaderboard(
-      String endpoint) async {
-   
-    Response? response = await apiHandler.get("$leaderboardApi/$endpoint");
+      String endpoint,
+      {String? locationState,
+      String? yearOfStudy}) async {
+    Map<String, dynamic> queryParams = {};
+    if (locationState != null) queryParams['locationState'] = locationState;
+    if (yearOfStudy != null) queryParams['yearOfStudy'] = yearOfStudy;
+
+     String queryString = queryParams.isEmpty
+        ? ''
+        : '?' + queryParams.entries.map((e) => '${e.key}=${e.value}').join('&');
+
+    Response? response = await apiHandler.get("$leaderboardApi/$endpoint$queryString");
     if (response != null && response.statusCode == 200) {
       final LeaderboardInfluencedResponseModel topInfluencedUser =
           LeaderboardInfluencedResponseModel.fromJson(response.data);
