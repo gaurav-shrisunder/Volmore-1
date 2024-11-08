@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
+import 'package:volunterring/Models/response_models/update_user_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
 
@@ -83,7 +85,8 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
       debugPrint('userId: $userId'); // Log userId for debugging
 
       // Construct and log the full URL
-      final url = Uri.parse('https://dev.volmore.maizelab-cloud.com/api/v1/users/$userId/updateProfilePicture');
+      final url = Uri.parse(
+          'https://dev.volmore.maizelab-cloud.com/api/v1/users/$userId/updateProfilePicture');
       debugPrint('Request URL: ${url.toString()}');
 
       final request = http.MultipartRequest('PUT', url);
@@ -111,7 +114,8 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
       // Log request details for debugging
       debugPrint('Request headers: ${request.headers}');
       debugPrint('Request fields: ${request.fields}');
-      debugPrint('Request files: ${request.files.map((f) => f.filename).toList()}');
+      debugPrint(
+          'Request files: ${request.files.map((f) => f.filename).toList()}');
 
       // Send request
       final streamedResponse = await request.send();
@@ -125,6 +129,9 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
+        final UpdateProfileResponseModel responseModel =
+            UpdateProfileResponseModel.fromJson(jsonDecode(response.body));
+        await setUser(responseModel.user!);
         Fluttertoast.showToast(
           msg: "Profile Updated Successfully",
           backgroundColor: Colors.green,
@@ -201,8 +208,17 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
                       } else if (user!.profilePicture != null &&
                           user!.profilePicture!.isNotEmpty) {
                         try {
+                          String formattedString = user!.profilePicture!;
+                          if (!user!.profilePicture!.startsWith("data:image")) {
+                            formattedString =
+                                "data:image/png;base64,${user!.profilePicture!}";
+                          }
+
+                          // Decode the base64 string
+                          Uint8List bytes =
+                              base64Decode(formattedString.split(",").last);
                           return Image.memory(
-                            base64Decode(user!.profilePicture!),
+                            bytes,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 _buildFallbackImage(),

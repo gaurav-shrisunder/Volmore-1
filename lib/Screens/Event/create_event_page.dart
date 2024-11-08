@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,21 +10,19 @@ import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Models/UserModel.dart';
-import 'package:volunterring/Models/event_data_model.dart';
+
 import 'package:volunterring/Models/request_models/create_event_request_model.dart';
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Screens/dashboard.dart';
-import 'package:volunterring/Services/authentication.dart';
+
 import 'package:volunterring/Services/deep_links.dart';
 import 'package:volunterring/Services/events_services.dart';
-import 'package:volunterring/Utils/Colors.dart';
+
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:uuid/uuid.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
-
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -56,11 +53,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   List<String> _groupNames = [];
 
   String? _selectedGroup;
-  var uuid = Uuid();
+  var uuid = const Uuid();
   String? _sessionToken;
   // Generate a v1 (time-based) id
   bool _showPlaceList = false;
-  List<dynamic>_placeList = [];
+  List<dynamic> _placeList = [];
   List<EventCategories> eventCategoriesList = [];
 
   DateTime? startDate;
@@ -105,10 +102,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   Future<void> _selectEndDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: startDate ?? DateTime.now(),
+      firstDate: startDate ?? DateTime(2000),
       lastDate: DateTime(2101),
     );
+
     if (picked != null && picked != endDate) {
       setState(() {
         endDate = picked;
@@ -119,15 +117,40 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
   // Function to pick the end time
   Future<void> _selectEndTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null && picked != endTime) {
-      setState(() {
-        endTime = picked;
-        _combineEndDateTime(); // Combine date and time
-      });
+    if (startDate != null) {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (picked != null && picked != endTime) {
+        if (endDate!.day == startDate!.day &&
+            (picked.hour < startTime!.hour ||
+                (picked.hour == startTime!.hour &&
+                    picked.minute < startTime!.minute))) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('End time cannot be before start time on the same day'),
+            ),
+          );
+        } else {
+          setState(() {
+            endTime = picked;
+            _combineEndDateTime(); // Combine date and time
+          });
+        }
+      }
+    } else {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (picked != null && picked != endTime) {
+        setState(() {
+          endTime = picked;
+          _combineEndDateTime(); // Combine date and time
+        });
+      }
     }
   }
 
@@ -171,7 +194,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   void initState() {
     super.initState();
-   // _sessionToken = uuid.v1();
+    // _sessionToken = uuid.v1();
     _fetchGroupNames();
     locationController.addListener(() {
       _onChanged();
@@ -191,11 +214,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   }
 
   void getSuggestion(String input) async {
-    String kPLACES_API_KEY = "AIzaSyDBytohYWyW41AVjU3A04QOrilB0fmqsDA";
+    String kplacesApiKey = "AIzaSyDBytohYWyW41AVjU3A04QOrilB0fmqsDA";
     String type = '(regions)';
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String request =
+        '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
       setState(() {
@@ -445,23 +469,23 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   hintText: '123 Main St New York, NY 10001',
                 ),
                 if (_showPlaceList)
-                ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: _placeList.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: (){
-                        setState(() {
-                          locationController.text = _placeList[index]["description"];
-                          _showPlaceList = false;
-
-                        });
-                      },
-                      title: Text(_placeList[index]["description"]),
-                    );
-                  },
-                ),
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: _placeList.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {
+                          setState(() {
+                            locationController.text =
+                                _placeList[index]["description"];
+                            _showPlaceList = false;
+                          });
+                        },
+                        title: Text(_placeList[index]["description"]),
+                      );
+                    },
+                  ),
                 const SizedBox(height: 20),
                 const Text(
                   'Occurrence',
@@ -940,8 +964,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                               await SharedPreferences
                                                   .getInstance();
                                           final String? uid = await getUserId();
-                                          String url =
-                                              await createDynamicLink(eventId: "2");
+                                          String url = await createDynamicLink(
+                                              eventId: "2");
                                           Share.share(url);
                                           Navigator.pushAndRemoveUntil(
                                               context,

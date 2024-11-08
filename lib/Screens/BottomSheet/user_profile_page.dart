@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -32,8 +35,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
     if (temp != null) {
       setState(() {
         weeklyStats = temp;
-        isLoading = false;
+
         user = user;
+        isLoading = false;
       });
     }
   }
@@ -102,9 +106,55 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             Get.to(EditAccountScreen(user!));
                           },
                           icon: const Icon(Icons.edit)))),
-              const CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage("assets/images/profile_avatar.png"),
+              // const CircleAvatar(
+              //   radius: 60,
+              //   backgroundImage: AssetImage("assets/images/profile_avatar.png"),
+              // ),
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor,
+                    width: 2,
+                  ),
+                ),
+                child: user == null
+                    ? Center(child: _buildFallbackImage())
+                    : ClipOval(
+                        child: Builder(
+                          builder: (context) {
+                            print(
+                                "user Profile Picture ${user?.profilePicture ?? ""}");
+                            if (user!.profilePicture != null &&
+                                user!.profilePicture!.isNotEmpty) {
+                              try {
+                                String formattedString = user!.profilePicture!;
+                                if (!user!.profilePicture!
+                                    .startsWith("data:image")) {
+                                  formattedString =
+                                      "data:image/png;base64,${user!.profilePicture!}";
+                                }
+
+                                // Decode the base64 string
+                                Uint8List bytes = base64Decode(
+                                    formattedString.split(",").last);
+                                return Image.memory(
+                                  bytes,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      _buildFallbackImage(),
+                                );
+                              } catch (e) {
+                                print("error in image $e");
+                                return _buildFallbackImage();
+                              }
+                            }
+                            return _buildFallbackImage();
+                          },
+                        ),
+                      ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -276,7 +326,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                 ),
               ),
-            
+
               SizedBox(height: height * 0.02),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -339,6 +389,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFallbackImage() {
+    return Image.network(
+      'https://ui-avatars.com/api/?name=${user?.userName ?? "User"}',
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(
+          Icons.person,
+          size: 60,
+          color: Colors.grey,
+        );
+      },
     );
   }
 }
