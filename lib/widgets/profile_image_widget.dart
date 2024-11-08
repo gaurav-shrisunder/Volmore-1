@@ -81,8 +81,15 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
 
   Future<void> _uploadImage(XFile image) async {
     try {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            return const Center(child: CircularProgressIndicator());
+          });
       final userId = await getUserId();
-      debugPrint('userId: $userId'); // Log userId for debugging
+      debugPrint('userId: $userId');
+      // Log userId for debugging
 
       // Construct and log the full URL
       final url = Uri.parse(
@@ -132,6 +139,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
         final UpdateProfileResponseModel responseModel =
             UpdateProfileResponseModel.fromJson(jsonDecode(response.body));
         await setUser(responseModel.user!);
+        Get.back();
         Fluttertoast.showToast(
           msg: "Profile Updated Successfully",
           backgroundColor: Colors.green,
@@ -139,7 +147,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
         // Refresh user data
       } else {
         String errorMessage = 'Failed to update profile';
-
+        Get.back();
         // Try to parse error message from response
         try {
           if (response.body.isNotEmpty) {
@@ -163,7 +171,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
       // Log detailed error information
       debugPrint('Error uploading image: $e');
       debugPrint('Stack trace: $stackTrace');
-
+      Get.back();
       if (mounted) {
         Fluttertoast.showToast(
           msg: "Network error occurred",
