@@ -18,7 +18,6 @@ import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
 
-
 class PastEventsPage extends StatefulWidget {
   const PastEventsPage({super.key});
 
@@ -79,11 +78,11 @@ class _PastEventsPageState extends State<PastEventsPage> {
   List<TextEditingController> startTimeControllers = [];
   List<DateTime> startDateTimes = [];
   List<DateTime> endDateTimes = [];
-  var uuid = Uuid();
+  var uuid = const Uuid();
   String? _sessionToken;
   // Generate a v1 (time-based) id
   bool _showPlaceList = false;
-  List<dynamic>_placeList = [];
+  List<dynamic> _placeList = [];
 
   @override
   void initState() {
@@ -109,11 +108,12 @@ class _PastEventsPageState extends State<PastEventsPage> {
   }
 
   void getSuggestion(String input) async {
-    String kPLACES_API_KEY = "AIzaSyDBytohYWyW41AVjU3A04QOrilB0fmqsDA";
+    String kplacesApiKey = "AIzaSyDBytohYWyW41AVjU3A04QOrilB0fmqsDA";
     String type = '(regions)';
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request = '$baseURL?input=$input&key=$kPLACES_API_KEY&sessiontoken=$_sessionToken';
+    String request =
+        '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
     if (response.statusCode == 200) {
       setState(() {
@@ -421,16 +421,16 @@ class _PastEventsPageState extends State<PastEventsPage> {
                 ),
                 if (_showPlaceList)
                   ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: _placeList.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        onTap: (){
+                        onTap: () {
                           setState(() {
-                            locationController.text = _placeList[index]["description"];
+                            locationController.text =
+                                _placeList[index]["description"];
                             _showPlaceList = false;
-
                           });
                         },
                         title: Text(_placeList[index]["description"]),
@@ -506,7 +506,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                             if (picked != null) {
                               setState(() {
                                 dateControllers[index].text =
-                                    DateFormat('mm/dd/yyyy').format(picked);
+                                    DateFormat('MM/dd/yyyy').format(picked);
                                 _combineDateTimeForIndex(index);
                               });
                             }
