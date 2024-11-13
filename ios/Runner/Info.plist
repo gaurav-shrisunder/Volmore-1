@@ -36,8 +36,6 @@
 	<string>To Click user profile from camera</string>
 	<key>NSMicrophoneUsageDescription </key>
 	<string>To Click and record user video for profile and post</string>
-
-
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -45,17 +43,19 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>ITSAppUsesNonExemptEncryption</key>
-    <false/>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We need your location to log your event accurately and provide location-based services.</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>12.0</string>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to log your event accurately and provide location-based services.</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>12.0</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to allow you to upload photo.</string>
 </dict>
 </plist>

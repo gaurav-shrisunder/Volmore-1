@@ -191,8 +191,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                   selectedOption = value;
                                                   _selectedOption =
                                                       selectedOption;
-                                                  apiCalling(
-                                                      "eventTitle", "asc");
+                                                  apiCalling("eventTitle", "asc");
 
                                                   //   events.sort((a, b) => a.event!.title!.compareTo(b.event!.title!));
                                                   //   _updateEventList(events); // Update the main event list
@@ -265,8 +264,12 @@ class _EventsScreenState extends State<EventsScreen>
                                       .eventDetails
                                       ?.events![index]
                                       .eventParticipant
-                                      ?.verifierSignatureHash !=
-                                  null; /*isLogSignatureVerified(event, date);*/
+                                      ?.verifierSignatureHash != null && snapshot
+                                  .data!
+                                  .eventDetails
+                                  ?.events![index]
+                                  .eventParticipant
+                                  ?.verifierSignatureHash  != ""; /*isLogSignatureVerified(event, date);*/
                               if (isVerified) {
                                 isEnabled = false;
                                 buttonText = "Verified";

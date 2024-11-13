@@ -96,12 +96,14 @@ class _TermsScreenState extends State<TermsScreen> {
                           });
                         },
                       ),
-                      Text(
-                        'Agree to the terms and conditions',
-                        style: TextStyle(
-                          decorationColor: bodyBlue,
-                          color: headingBlue,
-                          fontSize: Get.height * 0.022,
+                      Expanded(
+                        child: Text(
+                          'Agree to the terms and conditions',
+                          style: TextStyle(
+                            decorationColor: bodyBlue,
+                            color: headingBlue,
+                            fontSize: Get.height * 0.022,
+                          ),
                         ),
                       ),
                     ],
@@ -118,12 +120,14 @@ class _TermsScreenState extends State<TermsScreen> {
                           });
                         },
                       ),
-                      Text(
-                        'Disagree to the terms and conditions',
-                        style: TextStyle(
-                          decorationColor: bodyBlue,
-                          color: headingBlue,
-                          fontSize: Get.height * 0.022,
+                      Expanded(
+                        child: Text(
+                          'Disagree to the terms and conditions',
+                          style: TextStyle(
+                            decorationColor: bodyBlue,
+                            color: headingBlue,
+                            fontSize: Get.height * 0.022,
+                          ),
                         ),
                       ),
                     ],

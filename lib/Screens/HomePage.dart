@@ -136,8 +136,8 @@ class _HomePageState extends State<HomePage>
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const CreateLogScreen())),
+             /* _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined,
+                  () => Get.to(const CreateLogScreen())),*/
               _buildSettingsTile(
                   'Support - I need help',
                   Icons.arrow_forward_ios_outlined,

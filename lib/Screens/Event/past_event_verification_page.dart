@@ -395,6 +395,8 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                       return const Center(child: CircularProgressIndicator());
                     });
                 LogEventRequestModel requestBody = LogEventRequestModel();
+                Uint8List? pngBytes = await _signatureController.toPngBytes();
+                String? signBase64Value =  await convertSignatureToBase64(pngBytes);
 
                 requestBody.userId = await getUserId();
                 requestBody.eventInstanceId = widget.eventInstanceId;
@@ -433,5 +435,10 @@ class _PastEventVerificationState extends State<PastEventVerification> {
             text: "Submit Event"),
       ),
     );
+  }
+
+  Future<String?> convertSignatureToBase64(Uint8List? pngBytes) async {
+    if (pngBytes == null) return null; // Check if bytes are null
+    return base64Encode(pngBytes); // Encode to Base64
   }
 }
