@@ -650,12 +650,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     )*/
                   ],
                 ),
-                /*  selectedOccurrence == 'No occurrence'*/ true
+                selectedOccurrence != 'No occurrence'
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'End Date & Time:',
+                            'When to stop Occurrence',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
