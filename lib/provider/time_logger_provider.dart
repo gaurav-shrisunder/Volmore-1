@@ -126,10 +126,10 @@ class TimerProvider with ChangeNotifier {
 
   Future<void> submitLogging(
       BuildContext context, Event event, EventInstance eventInstance) async {
-    if (_startTime != null && _endTime != null) {
-      event.eventParticipatedDuration =
+    if (true) {
+    /*  event.eventParticipatedDuration =
       "${_startTime!.toIso8601String()}::${_endTime!.toIso8601String()}";
-
+*/
       if(_address.isNotEmpty){
         event.eventLocationName = _address;
       }else{

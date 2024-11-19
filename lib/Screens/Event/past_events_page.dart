@@ -266,8 +266,9 @@ class _PastEventsPageState extends State<PastEventsPage> {
     if (dateControllers[index].text.isNotEmpty &&
         startTimeControllers[index].text.isNotEmpty &&
         endTimeControllers[index].text.isNotEmpty) {
-      DateTime date =
-          DateFormat('mm/dd/yyyy').parse(dateControllers[index].text);
+      print('before parsing: ${dateControllers[index].text}');
+      DateTime date = DateFormat('mm/dd/yyyy').parse(dateControllers[index].text);
+      print('after parsing: ${date}');
 
       // Parse start time
       TimeOfDay startTime = _parseTimeOfDay(startTimeControllers[index].text);
@@ -341,12 +342,14 @@ class _PastEventsPageState extends State<PastEventsPage> {
         eventLocationName: locationController.text,
         createdBy: await getUserId(), // Implement getUserId() method
         dates: datesList);
+
+    print('Dates send:: ${jsonEncode(datesList.first)}');
     try {
       var res = await EventsServices().logPastEventData(requestModel);
       if (res == true) {
-        Fluttertoast.showToast(msg: "Past Hours Logged Successfully");
+        Fluttertoast.showToast(msg: "Past event created successfully");
       } else {
-        Fluttertoast.showToast(msg: "Some error occured Try again later");
+        Fluttertoast.showToast(msg: "Something went wrong! Try again later");
       }
 
       Navigator.pop(context);
@@ -457,15 +460,15 @@ class _PastEventsPageState extends State<PastEventsPage> {
                             filled: true,
                             labelText: 'Date',
                             suffixIcon: const Icon(Icons.calendar_today),
-
                             hintStyle: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400),
+                              color: Colors.grey[400],
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
-                            //  fillColor: Colors.white,
-                            // prefixIcon: widget.prefixicon,
+                              horizontal: 20,
+                              vertical: 20,
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: const BorderSide(
@@ -480,7 +483,6 @@ class _PastEventsPageState extends State<PastEventsPage> {
                                 width: 2.0,
                               ),
                             ),
-                            // Display the error message
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide(
@@ -505,14 +507,16 @@ class _PastEventsPageState extends State<PastEventsPage> {
                             );
                             if (picked != null) {
                               setState(() {
-                                dateControllers[index].text =
-                                    DateFormat('MM/dd/yyyy').format(picked);
-                                _combineDateTimeForIndex(index);
+                                // Display the selected date in mm/dd/yyyy format
+                                dateControllers[index].text = DateFormat('MM/dd/yyyy').format(picked);
+                                // Store the UTC date format for API
+                              //  _selectedDates[index] = picked.toUtc().toIso8601String();
                               });
                             }
                           },
                           readOnly: true,
-                        ),
+                        )
+                        ,
                         const SizedBox(
                           height: 15,
                         ),
@@ -759,6 +763,7 @@ class _PastEventsPageState extends State<PastEventsPage> {
                             return const Center(
                                 child: CircularProgressIndicator());
                           });
+
                       submitData();
                     } else {
                       Fluttertoast.showToast(msg: "All fields are mandatory");

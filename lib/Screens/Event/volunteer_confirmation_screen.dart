@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -160,21 +161,27 @@ class _VolunteerConfirmationScreenState
 
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBody: true,
+       extendBodyBehindAppBar: false,
       appBar: AppBar(
+        titleSpacing: 0,
         title: const Text(
           "Volunteer Confirmation",
           style: TextStyle(
               fontSize: 26, fontWeight: FontWeight.bold, color: headingBlue),
         ),
-        automaticallyImplyLeading: true,
+        leading:  IconButton(onPressed: (){
+          Navigator.pop(context);
+        }, icon: const Icon(CupertinoIcons.chevron_left)),
+      //  automaticallyImplyLeading: true,
         // elevation: 4,
-        bottom: PreferredSize(
+     /*   bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3.0),
           child: Container(
             color: Colors.grey[200],
             height: 3.0,
           ),
-        ),
+        ),*/
         actions: [
           GestureDetector(
             onTap: () async {
@@ -302,6 +309,7 @@ class _VolunteerConfirmationScreenState
                     width: Get.width * 0.82,
                     child: Text(
                       widget.event.eventLocationName ?? "",
+                      maxLines: 2,
                       style: const TextStyle(
                           fontSize: 16,
                           color: greyColor,
@@ -323,7 +331,7 @@ class _VolunteerConfirmationScreenState
                     width: 5,
                   ),
                   Text(
-                    "${formatTime(widget.event.eventParticipatedDuration!.split("::").first)} to ${formatTime(widget.event.eventParticipatedDuration!.split("::").last)}" ??
+                    "${formatTime(DateTime.parse(widget.event.eventParticipatedDuration!.split("::").first).toLocal().toString())} to ${formatTime(DateTime.parse(widget.event.eventParticipatedDuration!.split("::").last).toLocal().toString())}" ??
                         "",
                     style: const TextStyle(fontSize: 16, color: greyColor),
                   ),
@@ -516,7 +524,8 @@ class _VolunteerConfirmationScreenState
               ListView.builder(
                   shrinkWrap: true,
                   itemCount: checkboxItems.length,
-                  physics: const BouncingScrollPhysics(),
+               scrollDirection: Axis.vertical,
+               //   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -583,6 +592,7 @@ class _VolunteerConfirmationScreenState
         ),
       ),
       bottomNavigationBar: BottomAppBar(
+
           color: Colors.transparent,
           //  height: 40,
           child: MyButtons(

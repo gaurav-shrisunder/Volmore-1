@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
@@ -21,6 +22,7 @@ import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';
 import '../Services/logService.dart';
 import '../Utils/Colors.dart';
+import '../Utils/common_utils.dart';
 
 class TranscriptScreen extends StatefulWidget {
   const TranscriptScreen({super.key});
@@ -216,7 +218,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                   cellStyle: const pw.TextStyle(fontSize: 10),
                   headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                   headerDecoration:
-                      const pw.BoxDecoration(color: PdfColors.grey300),
+                      const pw.BoxDecoration(color: PdfColors.grey300,),
                   headers: [
                     'Title',
                     'Host',
@@ -226,12 +228,17 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                     'Location',
                   ],
                   data: data.map((record) {
+                    var startDate = DateTime.parse(record.userDateTime!.split("|").first).toLocal().toIso8601String();
+                    var endDate = DateTime.parse(record.userDateTime!.split("|").last).toLocal().toIso8601String();
                     return [
                       record.eventTitle,
                       record.hostName,
                       record.userLocation,
-                      record.userDateTime,
-                      record.verifierSignatureHash,
+                   //   record.userDateTime,
+                      "$startDate to $endDate",
+                      record.verifierSignatureHash!.isNotEmpty ? "Yes" : "No",
+                    //  Image.memory( base64Decode(record.verifierSignatureHash!)),
+                    //  record.verifierSignatureHash,
                       record.userLocation,
                     ];
                   }).toList(),

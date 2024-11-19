@@ -7,6 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
+import 'package:volunterring/Screens/Event/timer_screen.dart';
 import 'package:volunterring/main.dart';
 
 import '../../Models/event_data_model.dart';
@@ -230,12 +231,22 @@ class _EventsScreenState extends State<EventsScreen>
                   ),
                 ),
                 snapshot.data?.eventDetails?.events?.length == 0
-                    ? const Expanded(
+                    ?  Expanded(
                         child: Center(
-                          child: Text(
-                            "No Events Found",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
+                          child: InkWell(
+                            onTap: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TimerScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "No Events Found",
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       )
@@ -435,7 +446,7 @@ class _EventsScreenState extends State<EventsScreen>
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
-                                              " Start Time: ${DateFormat("HH:mm aa").format(DateTime.parse(snapshot.data!.eventDetails!.events![index].eventInstance?.eventStartDateTime ?? "2024-11-23T15:48:00.000Z"))}",
+                                              " Start Time: ${DateFormat("hh:mm aa").format(DateTime.parse(snapshot.data!.eventDetails!.events![index].eventInstance?.eventStartDateTime ?? "2024-11-23T15:48:00.000Z").toLocal())}",
                                               style: const TextStyle(
                                                   fontSize: 14,
                                                   color: Colors.black,
