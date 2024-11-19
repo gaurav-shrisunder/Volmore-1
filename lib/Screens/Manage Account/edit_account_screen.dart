@@ -80,174 +80,236 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               const SizedBox(
                 height: 15,
               ),
-              InputFeildWidget(
-                title: 'Name',
-                controller: nameController,
-                hintText: 'Enter your name',
-                validator: nameValidator,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InputFeildWidget(
-                title: 'Email',
-                isEnabled: false,
-                controller: emailController,
-                hintText: 'Enter your email address',
-                validator: phoneValidator,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InputFeildWidget(
-                title: 'Phone',
-                controller: phoneController,
-                hintText: 'Enter your phone number',
-                validator: phoneValidator,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InputFeildWidget(
-                title: 'School',
-                controller: schoolController,
-                hintText: 'Enter your School name',
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InputFeildWidget(
-                title: 'University',
-                controller: universityController,
-                hintText: 'Enter your University name',
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 18.0),
-                child: ElevatedButton(
-                    style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(headingBlue)),
-                    onPressed: () async {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          });
-                      UpdateProfileRequest updateProfile =
-                          UpdateProfileRequest();
-                      updateProfile.userId = await getUserId();
-                      updateProfile.userName = nameController.text.isEmpty
-                          ? null
-                          : nameController.text;
-                      updateProfile.school = schoolController.text.isEmpty
-                          ? null
-                          : schoolController.text;
-                      updateProfile.university =
-                          universityController.text.isEmpty
-                              ? null
-                              : universityController.text;
-                      //    updateProfile.yearOfStudy = yearOfGradController.text;
-                      updateProfile.contactNumber = phoneController.text.isEmpty
-                          ? null
-                          : phoneController.text;
+              ExpansionTile(
+                title: const Text("Update Profile"),
+                collapsedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    side: BorderSide(color: Colors.grey[200]!)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    side: BorderSide(color: Colors.grey[200]!)),
+                childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'Name',
+                    controller: nameController,
+                    hintText: 'Enter your name',
+                    validator: nameValidator,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'Email',
+                    isEnabled: false,
+                    controller: emailController,
+                    hintText: 'Enter your email address',
+                    validator: phoneValidator,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'Phone',
+                    controller: phoneController,
+                    hintText: 'Enter your phone number',
+                    validator: phoneValidator,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'School',
+                    controller: schoolController,
+                    hintText: 'Enter your School name',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'University',
+                    controller: universityController,
+                    hintText: 'Enter your University name',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: ElevatedButton(
+                            style: const ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll(headingBlue)),
+                            onPressed: () async {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (_) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  });
+                              UpdateProfileRequest updateProfile =
+                                  UpdateProfileRequest();
+                              updateProfile.userId = await getUserId();
+                              updateProfile.userName =
+                                  nameController.text.isEmpty
+                                      ? null
+                                      : nameController.text;
+                              updateProfile.school =
+                                  schoolController.text.isEmpty
+                                      ? null
+                                      : schoolController.text;
+                              updateProfile.university =
+                                  universityController.text.isEmpty
+                                      ? null
+                                      : universityController.text;
+                              //    updateProfile.yearOfStudy = yearOfGradController.text;
+                              updateProfile.contactNumber =
+                                  phoneController.text.isEmpty
+                                      ? null
+                                      : phoneController.text;
 
-                      print('Payload:::: ${jsonEncode(updateProfile)}');
+                              print('Payload:::: ${jsonEncode(updateProfile)}');
 
-                      await UserServices()
-                          .updateUserApi(updateProfile)
-                          .then((onValue) {
-                        if (onValue.message!.contains("successfully")) {
-                          Get.back();
-                          Fluttertoast.showToast(
-                              msg: "Profile Updated Successfully");
-                          setVariables();
+                              await UserServices()
+                                  .updateUserApi(updateProfile)
+                                  .then((onValue) {
+                                if (onValue.message!.contains("successfully")) {
+                                  Get.back();
+                                  Fluttertoast.showToast(
+                                      msg: "Profile Updated Successfully");
+                                  setVariables();
 
-                          setState(() {});
-                     
-                        } else {
-                          Get.back();
-                          Fluttertoast.showToast(
-                              msg: "Some Error Try again later",
-                              backgroundColor: Colors.red);
+                                  setState(() {});
+                                } else {
+                                  Get.back();
+                                  Fluttertoast.showToast(
+                                      msg: "Some Error Try again later",
+                                      backgroundColor: Colors.red);
 
-                          setState(() {});
-                        }
-                      });
-                 
-                    },
-                    child: const Text(
-                      "Apply",
-                      style: TextStyle(color: Colors.white),
-                    )),
+                                  setState(() {});
+                                }
+                              });
+                            },
+                            child: const Text(
+                              "Apply",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 10,
               ),
-              InputFeildWidget(
-                title: 'Old Password',
-                controller: oldPasswordController,
-                hintText: 'Enter your old password',
+              ExpansionTile(
+                title: const Text("Change Password"),
+                collapsedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    side: BorderSide(color: Colors.grey[200]!)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    side: BorderSide(color: Colors.grey[200]!)),
+                childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'Old Password',
+                    controller: oldPasswordController,
+                    hintText: 'Enter your old password',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'New Password',
+                    controller: newPasswordController,
+                    hintText: 'Enter new password here',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  InputFeildWidget(
+                    title: 'Confirm Password',
+                    controller: confirmPasswordController,
+                    hintText: 'Re-enter new password',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0, bottom: 15),
+                        child: ElevatedButton(
+                            style: const ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll(headingBlue)),
+                            onPressed: () async {
+                              if (newPasswordController.text !=
+                                  confirmPasswordController.text) {
+                                Fluttertoast.showToast(
+                                    msg:
+                                        "New Passwords and Confirm Password does not match",
+                                    backgroundColor: Colors.red,
+                                    gravity: ToastGravity.TOP);
+                                return;
+                              }
+                              if (oldPasswordController.text.isNotEmpty &&
+                                  newPasswordController.text.isNotEmpty &&
+                                  confirmPasswordController.text.isNotEmpty) {
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (_) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    });
+                                await UserServices()
+                                    .changePassword(oldPasswordController.text,
+                                        newPasswordController.text)
+                                    .then((onValue) {
+                                  Get.back();
+                                  if (onValue.contains("successfully")) {
+                                    Fluttertoast.showToast(
+                                        msg: onValue,
+                                        backgroundColor: Colors.green,
+                                        gravity: ToastGravity.TOP);
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: onValue,
+                                        backgroundColor: Colors.red,
+                                        gravity: ToastGravity.TOP);
+                                  }
+                                });
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Password fields cannot be empty");
+                              }
+                            },
+                            child: const Text(
+                              "Change Password",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              InputFeildWidget(
-                title: 'New Password',
-                controller: newPasswordController,
-                hintText: 'Enter new password here',
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              InputFeildWidget(
-                title: 'Confirm Password',
-                controller: confirmPasswordController,
-                hintText: 'Re-enter new password',
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 18.0),
-                child: ElevatedButton(
-                    style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(headingBlue)),
-                    onPressed: () async {
-                      if (oldPasswordController.text.isNotEmpty &&
-                          newPasswordController.text.isNotEmpty &&
-                          confirmPasswordController.text.isNotEmpty) {
-                        showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            });
-                        await UserServices()
-                            .changePassword(oldPasswordController.text,
-                                newPasswordController.text)
-                            .then((onValue) {
-                          Get.back();
-                          if (onValue.contains("successfully")) {
-                            Fluttertoast.showToast(msg: onValue);
-                          } else {
-                            Fluttertoast.showToast(msg: onValue);
-                          }
-                        });
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: "Password fields cannot be empty");
-                      }
-                    },
-                    child: const Text(
-                      "Change Password",
-                      style: TextStyle(color: Colors.white),
-                    )),
-              ),
+
               /* Align(
                       alignment: Alignment.centerLeft,
                       child: GestureDetector(
