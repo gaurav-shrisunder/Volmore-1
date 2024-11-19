@@ -329,7 +329,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         title: 'High School Name',
                         controller: schoolNameController,
                         maxlines: 1,
-                        hintText: "Enter your graduation year",
+                        hintText: "Enter your High School Name",
                       ),
                     ),
                     Visibility(
@@ -377,7 +377,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         title: 'College/University Name',
                         controller: collegeNameController,
                         maxlines: 1,
-                        hintText: "Enter your graduation year",
+                        hintText: "Enter your College/University Name",
                       ),
                     ),
                     Visibility(

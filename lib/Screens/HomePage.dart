@@ -136,8 +136,8 @@ class _HomePageState extends State<HomePage>
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const CreateLogScreen())),
+             /* _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined,
+                  () => Get.to(const CreateLogScreen())),*/
               _buildSettingsTile(
                   'Support - I need help',
                   Icons.arrow_forward_ios_outlined,
@@ -152,10 +152,10 @@ class _HomePageState extends State<HomePage>
                   'Terms and Conditions',
                   Icons.arrow_forward_ios_outlined,
                   () => Get.to(const TermsScreen())),
-              _buildSettingsTile(
+             /* _buildSettingsTile(
                   'Manage your Account',
                   Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const UserProfilePage())),
+                  () => Get.to(const UserProfilePage())),*/
               _buildSettingsTile(
                   'Log Out', Icons.arrow_forward_ios_outlined, logout),
             ],

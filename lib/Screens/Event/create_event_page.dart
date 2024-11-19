@@ -650,12 +650,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     )*/
                   ],
                 ),
-                /*  selectedOccurrence == 'No occurrence'*/ true
+                selectedOccurrence != 'No occurrence'
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'End Date & Time:',
+                            'When to stop Occurrence',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
@@ -829,10 +829,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         });
                     titleController.text = titleController.text;
 
+                    print('Selected Group::: ${_selectedGroup}');
+
                     if (titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&
-                        selectedOccurrence.isNotEmpty) {
+                        selectedOccurrence.isNotEmpty && _selectedGroup != null) {
                       /*  DateTime endDate = selectedOccurrence == 'No occurrence'
                           ? selectedDate
                           : DateFormat('dd/MM/yyyy')
@@ -855,7 +857,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       Recurrence recurrence = Recurrence();
                       recurrence.eventStartDateTime = startUtcDateTime;
                       print(' Payload ::: $endUtcDateTime');
-                      recurrence.eventEndDateTime = endUtcDateTime;
+                      recurrence.eventEndDateTime = endUtcDateTime.isEmpty  ? null : endUtcDateTime;
                       recurrence.recurInterval = 1;
                       recurrence.weekdays = _selectedGroup == "Weekly"
                           ? DateFormat('EEEE').format(
