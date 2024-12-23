@@ -66,6 +66,7 @@ class Event {
   String? verifierInformation;
   String? verifierSignatureHash;
   String? verifierNotes;
+  bool? isLoggedAsPast;
 
   Event({
     this.eventTitle,
@@ -77,6 +78,7 @@ class Event {
     this.verifierInformation,
     this.verifierSignatureHash,
     this.verifierNotes,
+    this.isLoggedAsPast
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -90,6 +92,7 @@ class Event {
       verifierInformation: json['verifierInformation'],
       verifierSignatureHash: json['verifierSignatureHash'],
       verifierNotes: json['verifierNotes'],
+      isLoggedAsPast: json['isLoggedAsPast'],
     );
   }
 
@@ -104,6 +107,7 @@ class Event {
       'verifierInformation': verifierInformation,
       'verifierSignatureHash': verifierSignatureHash,
       'verifierNotes': verifierNotes,
+      'isLoggedAsPast': isLoggedAsPast,
     };
   }
 }

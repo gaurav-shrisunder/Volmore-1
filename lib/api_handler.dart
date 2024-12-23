@@ -100,8 +100,14 @@ class ApiBaseHelper {
     var apiResponse;
     try {
       Dio instance = await DioInstance.createInstance();
-      final response = await instance.delete(url, data: body);
-      apiResponse = _returnResponse(response);
+      if(body == null){
+        final response = await instance.delete(url);
+        apiResponse = _returnResponse(response);
+      }else{
+        final response = await instance.delete(url, data: body);
+        apiResponse = _returnResponse(response);
+      }
+
     } on DioException catch (e) {
       print('DioError caught: ${e.response}');
       throw e.response ??

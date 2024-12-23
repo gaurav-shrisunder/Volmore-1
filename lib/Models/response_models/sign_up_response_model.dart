@@ -1,10 +1,12 @@
 class SignUpLoginResponseModel {
   String? message;
+  List<dynamic>? errors;
   UserDetails? userDetails;
 
-  SignUpLoginResponseModel({this.message, this.userDetails});
+  SignUpLoginResponseModel({this.message, this.userDetails, this.errors});
 
   SignUpLoginResponseModel.fromJson(Map<String, dynamic> json) {
+    errors = (json['errors'] as List?) ?? [];
     message = json['message'];
     userDetails = json['userDetails'] != null
         ? UserDetails.fromJson(json['userDetails'])
@@ -14,6 +16,7 @@ class SignUpLoginResponseModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['message'] = message;
+    data['errors'] = errors as List;
     if (userDetails != null) {
       data['userDetails'] = userDetails!.toJson();
     }

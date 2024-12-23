@@ -37,8 +37,8 @@ class SignupLoginServices {
   }
 
   Future<SignUpLoginResponseModel?> loginUser(
-      String email, String password) async {
-    var requestBody = {"emailId": email, "password": password};
+      String email, String password, String sessionId) async {
+    var requestBody = {"emailId": email, "password": password, "sessionId":sessionId };
     Response? response = await apiHandler.post(loginApi, requestBody);
     if (response != null && response.statusCode == 200) {
       SignUpLoginResponseModel? userModel =

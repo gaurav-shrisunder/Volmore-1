@@ -10,6 +10,7 @@ import 'package:volunterring/Models/response_models/events_data_response_model.d
 import 'package:volunterring/Models/response_models/get_event_response_model.dart';
 import 'package:volunterring/Models/response_models/nonverified_events_response.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
+import 'package:volunterring/Models/response_models/update_event_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
 import 'package:volunterring/api_constants.dart';
 
@@ -83,6 +84,64 @@ class EventsServices {
         print('Failed to load create Event data');
       }
       return EventCategoryResponseModel(
+          message: response?.data["message"].toString());
+    }
+  }
+
+  Future<EventCategoryResponseModel> deleteEvent(
+      String eventId) async {
+
+    Response? response = await apiHandler.delete("$deleteEventApi/$eventId", null);
+    if (response != null && response.statusCode == 200) {
+
+      print('Event Created:::${response.data}');
+      final EventCategoryResponseModel eventCategory =
+      EventCategoryResponseModel.fromJson(response.data);
+      return eventCategory;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load create Event data');
+      }
+      return EventCategoryResponseModel(
+          message: response?.data["message"].toString());
+    }
+  }
+
+  Future<EventCategoryResponseModel> deleteEventInstance(
+      String eventInstanceId) async {
+
+    Response? response = await apiHandler.delete("$deleteEventInstanceApi/$eventInstanceId", null);
+    if (response != null && response.statusCode == 200) {
+
+      print('Event Created:::${response.data}');
+      final EventCategoryResponseModel eventCategory =
+      EventCategoryResponseModel.fromJson(response.data);
+      return eventCategory;
+
+    } else {
+      if (kDebugMode) {
+        print('Failed to load create Event data');
+      }
+      return EventCategoryResponseModel(
+          message: response?.data["message"].toString());
+    }
+  }
+
+  Future<UpdateEventResponseModel> updateEventData(
+      CreateEventRequestModel requestPayload, String eventInstanceId) async {
+
+    print('Payload::: ${jsonEncode(requestPayload)} :: ');
+    Response? response = await apiHandler.put("$createEventApi/$eventInstanceId", requestPayload);
+    if (response != null && response.statusCode == 200) {
+      print('Event Updated:::${response.data}');
+      final UpdateEventResponseModel eventCategory =
+      UpdateEventResponseModel.fromJson(response.data);
+      return eventCategory;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load create Event data');
+      }
+      return UpdateEventResponseModel(
           message: response?.data["message"].toString());
     }
   }

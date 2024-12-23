@@ -30,18 +30,20 @@ class LeaderboardUser {
   String? userId;
   String? userName;
   String? locationState;
+  String? profilePicture;
   int? hostInfluenceHours;
   int? yearOfStudy;
   int? participantHours;
 
   LeaderboardUser(
-      {this.userId, this.userName, this.hostInfluenceHours, this.yearOfStudy,this.participantHours, this.locationState});
+      {this.userId, this.userName, this.hostInfluenceHours, this.yearOfStudy,this.participantHours, this.locationState, this.profilePicture});
 
   factory LeaderboardUser.fromJson(Map<String, dynamic> json) {
     return LeaderboardUser(
       userId: json['userId'],
       userName: json['userName'],
         locationState: json['locationState'],
+        // profilePicture: json['profilePicture'],
       hostInfluenceHours: json['hostInfluenceMinutes'] ?? 0,
       yearOfStudy: json['yearOfStudy'] ?? 0,
       participantHours: json['participantMinutes'] ?? 0
@@ -55,6 +57,7 @@ class LeaderboardUser {
       'locationState': locationState,
       'hostInfluenceMinutes': hostInfluenceHours,
       'yearOfStudy': yearOfStudy,
+      // 'profilePicture': profilePicture,
       'participantMinutes': participantHours
     };
   }

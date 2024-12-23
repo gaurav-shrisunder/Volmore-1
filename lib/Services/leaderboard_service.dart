@@ -7,7 +7,7 @@ import 'package:volunterring/api_handler.dart';
 
 class LeaderboardServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
-  Future<LeaderboardInfluencedResponseModel?> getInflucendLeaderboard(
+  Future<LeaderboardInfluencedResponseModel?> getLeaderboardData(
       String endpoint,
       {String? locationState,
       String? yearOfStudy}) async {
@@ -23,6 +23,7 @@ class LeaderboardServices {
     if (response != null && response.statusCode == 200) {
       final LeaderboardInfluencedResponseModel topInfluencedUser =
           LeaderboardInfluencedResponseModel.fromJson(response.data);
+
       return topInfluencedUser;
     } else {
       if (kDebugMode) {

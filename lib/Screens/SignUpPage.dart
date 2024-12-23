@@ -204,33 +204,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Row(
                       children: [
-                        // Container(
-                        //   decoration: BoxDecoration(
-                        //       borderRadius: BorderRadius.circular(9),
-                        //       border: Border.all(color: Colors.grey[300]!)),
-                        //   child: DropdownButton<String>(
-                        //     dropdownColor: Colors.white,
-                        //     underline: Container(),
-                        //     borderRadius: BorderRadius.circular(9),
-                        //     style: const TextStyle(
-                        //         fontSize: 20, color: Colors.black),
-                        //     padding: const EdgeInsets.symmetric(
-                        //         horizontal: 10, vertical: 3),
-                        //     value: selectedCountryCode,
-                        //     items: countryCodes.map((String code) {
-                        //       return DropdownMenuItem<String>(
-                        //         value: code,
-                        //         child: Text(code),
-                        //       );
-                        //     }).toList(),
-                        //     onChanged: (String? newValue) {
-                        //       setState(() {
-                        //         selectedCountryCode = newValue!;
-                        //       });
-                        //     },
-                        //   ),
-                        // ),
-
                         // const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
@@ -317,11 +290,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         hintText: "Enter your graduation year",
                       ),
                     ),
-                    Visibility(
+               /*     Visibility(
                       visible: !isIndividualChecked,
                       child: SizedBox(
                         height: height * 0.009,
                       ),
+                    ),*/
+
+                    SizedBox(
+                      height: height * 0.009,
                     ),
                     Visibility(
                       visible: !isIndividualChecked,
@@ -332,12 +309,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         hintText: "Enter your High School Name",
                       ),
                     ),
-                    Visibility(
+                    SizedBox(
+                      height: height * 0.009,
+                    ),
+                 /*   Visibility(
                       visible: !isIndividualChecked,
                       child: SizedBox(
                         height: height * 0.009,
                       ),
-                    ),
+                    ),*/
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
                       decoration: BoxDecoration(
@@ -346,6 +326,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
+                          dropdownColor: Colors.white,
                           value: selectedState,
                           hint: const Text('Select a state'),
                           isExpanded: true,
@@ -365,12 +346,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                     ),
-                    Visibility(
+                    SizedBox(
+                      height: height * 0.009,
+                    ),
+                 /*   Visibility(
                       visible: !isIndividualChecked,
                       child: SizedBox(
                         height: height * 0.009,
                       ),
-                    ),
+                    ),*/
                     Visibility(
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
@@ -386,7 +370,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: height * 0.009,
                       ),
                     ),
-                    Row(
+              /*      Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Checkbox(
@@ -403,7 +387,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         )
                       ],
-                    ),
+                    ),*/
                     SizedBox(
                       height: height * 0.009,
                     ),
@@ -430,8 +414,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           signUpRequestBody.locationState = selectedState;
                           signUpRequestBody.passwordHash =
                               passwordController.text;
-                          signUpRequestBody.userRoleId =
-                              isIndividualChecked ? "3" : "4";
+                         /* signUpRequestBody.userRoleId =
+                              isIndividualChecked ? "3" : "4";*/
                           if (!isIndividualChecked) {
                             signUpRequestBody.yearOfStudy =
                                 int.parse(gradYearController.text);
@@ -442,6 +426,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           }
                           signUpRequestBody.contactNumber =
                               selectedCountryCode + numberController.text;
+                          signUpRequestBody.sessionId =  "app-${emailController.text.split("@").first}";
 
                           signUp(signUpRequestBody);
                         },

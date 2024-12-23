@@ -54,6 +54,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
           enabled: widget.isEnabled,
           controller: widget.controller,
           maxLines: widget.maxlines,
+          keyboardType: TextInputType.name,
           obscureText: widget.isPassword && !isObsecure,
           decoration: InputDecoration(
             filled: true,

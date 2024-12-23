@@ -190,68 +190,81 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     const pageFormat = PdfPageFormat.a4;
     const margin = 20.0;
 
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: pageFormat,
-        margin: const pw.EdgeInsets.all(margin),
-        build: (pw.Context context) {
-          return [
-            pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text(
-                  'Volmore',
-                  style: pw.TextStyle(
-                    fontSize: 24,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
+    // Define the maximum rows per page for better pagination
+    const maxRowsPerPage = 30; // Adjust this number as needed for spacing
+    final chunkedData = List.generate(
+      (data.length / maxRowsPerPage).ceil(),
+          (index) => data.skip(index * maxRowsPerPage).take(maxRowsPerPage).toList(),
+    );
+
+    try {
+      for (var chunk in chunkedData) {
+        pdf.addPage(
+          pw.MultiPage(
+            pageFormat: pageFormat,
+            margin: const pw.EdgeInsets.all(margin),
+            build: (pw.Context context) {
+              return [
+                // Header Section
+                pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'Volmore',
+                      style: pw.TextStyle(
+                        fontSize: 24,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.SizedBox(height: 20),
+                    pw.Text('Name: ${user.userName}'),
+                    pw.Text('Email: ${user.emailId}'),
+                    pw.Text('Year of Study: ${user.yearOfStudy}'),
+                    pw.Text('University: ${user.university}'),
+                    pw.SizedBox(height: 20),
+                  ],
                 ),
-                pw.SizedBox(height: 20),
-                pw.Text('Name: ${user.userName}'),
-                pw.Text('Email: ${user.emailId}'),
-                pw.Text('Year of Study: ${user.yearOfStudy}'),
-                pw.Text('University: ${user.university}'),
-                pw.SizedBox(height: 20),
+                // Table Section
                 pw.TableHelper.fromTextArray(
-                  border:
-                      pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+                  border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
                   cellStyle: const pw.TextStyle(fontSize: 10),
                   headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  headerDecoration:
-                      const pw.BoxDecoration(color: PdfColors.grey300,),
+                  headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
                   headers: [
                     'Title',
                     'Host',
                     'Address',
                     'Time Elapsed',
                     'Sign',
-                    'Location',
+                    'User Location',
                   ],
-                  data: data.map((record) {
-                    var startDate = DateTime.parse(record.userDateTime!.split("|").first).toLocal().toIso8601String();
-                    var endDate = DateTime.parse(record.userDateTime!.split("|").last).toLocal().toIso8601String();
+                  data: chunk.map((record) {
+
+                    var startDate =  DateFormat('MM/dd/yyyy  hh:mm a').format(DateTime.parse(record.userDateTime!.split("|").first).toLocal());
+                    var endDate = DateFormat('MM/dd/yyyy  hh:mm a').format(DateTime.parse(record.userDateTime!.split("|").last).toLocal());
                     return [
                       record.eventTitle,
                       record.hostName,
                       record.userLocation,
-                   //   record.userDateTime,
                       "$startDate to $endDate",
                       record.verifierSignatureHash!.isNotEmpty ? "Yes" : "No",
-                    //  Image.memory( base64Decode(record.verifierSignatureHash!)),
-                    //  record.verifierSignatureHash,
-                      record.userLocation,
+                     record.isLoggedAsPast! ? "NA" : record.userLocation,
                     ];
                   }).toList(),
                 ),
-              ],
-            ),
-          ];
-        },
-      ),
-    );
+              ];
+            },
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error generating PDF: $e");
+      // Optionally, notify the user or take corrective action
+    }
 
     return pdf;
   }
+
 
   Future<void> saveAndSharePdf(pw.Document pdf) async {
     await Printing.sharePdf(
@@ -369,6 +382,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     Event? event = transcripts.event?[index];
+
                     return Card(
                       margin: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 15),
@@ -431,7 +445,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                   children: [
                                     Icon(
                                       Icons.location_on_outlined,
-                                      color: event.userLocation!.isNotEmpty
+                                      color: event.isLoggedAsPast! ?  Colors.grey.shade400 : event.userLocation!.isNotEmpty
                                           ? HexColor(
                                               transcripts.eventColorCode!)
                                           : Colors.grey.shade400,
@@ -449,8 +463,10 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                     const SizedBox(width: 5),
                                     Icon(
                                       Icons.timer,
-                                      color:
-                                          HexColor(transcripts.eventColorCode!),
+                                      color:event.isLoggedAsPast! ?  Colors.grey.shade400 : event.userLocation!.isNotEmpty
+                                          ? HexColor(
+                                          transcripts.eventColorCode!)
+                                          : Colors.grey.shade400,
                                       size: 30,
                                     ),
                                   ],
