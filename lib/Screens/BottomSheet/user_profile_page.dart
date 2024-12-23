@@ -359,7 +359,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     )
                   : SingleChildScrollView(
-                      // scrollDirection: Axis.horizontal,
+                       scrollDirection: Axis.horizontal,
                       child: DataTable(
                         columnSpacing: width * 0.16,
                         columns: const [

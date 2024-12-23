@@ -2,11 +2,22 @@ import 'package:flutter/material.dart';
 // import 'package:url_launcher/url_launcher.dart';
 import 'package:volunterring/Utils/Colors.dart';
 
-class SupportPage extends StatelessWidget {
+
+
+
+
+class SupportPage extends StatefulWidget {
   const SupportPage({super.key});
 
   @override
+  State<SupportPage> createState() => _SupportPageState();
+}
+
+class _SupportPageState extends State<SupportPage> {
+
+  @override
   Widget build(BuildContext context) {
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -104,7 +115,7 @@ class SupportPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    Text('Help.Volmore@gmail.com',
+                    Text('support@maize-lab.com',
                         style: TextStyle(
                           fontSize: height * 0.025,
                           color: headingBlue,
@@ -188,6 +199,7 @@ class SupportPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(height: height * 0.02),
                   ],
                 ),
               ),

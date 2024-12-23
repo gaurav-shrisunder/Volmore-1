@@ -156,14 +156,14 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                 height: screenHeight * 0.01,
               ),
               Text(
-                "Start Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!))}",
+                "Start Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!).toLocal())}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "End Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!))}",
+                "End Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!).toLocal())}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(

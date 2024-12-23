@@ -18,14 +18,14 @@ import 'package:volunterring/widgets/InputFormFeild.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
 
-class PastEventsPage extends StatefulWidget {
-  const PastEventsPage({super.key});
+class CreatePastEventsPage extends StatefulWidget {
+  const CreatePastEventsPage({super.key});
 
   @override
-  State<PastEventsPage> createState() => _PastEventsPageState();
+  State<CreatePastEventsPage> createState() => _CreatePastEventsPageState();
 }
 
-class _PastEventsPageState extends State<PastEventsPage> {
+class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
@@ -266,41 +266,95 @@ class _PastEventsPageState extends State<PastEventsPage> {
     if (dateControllers[index].text.isNotEmpty &&
         startTimeControllers[index].text.isNotEmpty &&
         endTimeControllers[index].text.isNotEmpty) {
-      print('before parsing: ${dateControllers[index].text}');
-      DateTime date = DateFormat('mm/dd/yyyy').parse(dateControllers[index].text);
-      print('after parsing: ${date}');
 
-      // Parse start time
-      TimeOfDay startTime = _parseTimeOfDay(startTimeControllers[index].text);
+      try {
+        // Parse the date
+        DateTime date = DateFormat('MM/dd/yyyy').parse(dateControllers[index].text);
+        print('date:: ${dateControllers[index].text}');
+        print('Time:: ${startTimeControllers[index].text}');
 
-      // Parse end time
-      TimeOfDay endTime = _parseTimeOfDay(endTimeControllers[index].text);
+        // Parse start time
+        TimeOfDay startTime = _parseTimeOfDay(startTimeControllers[index].text);
 
-      startDateTimes[index] = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        startTime.hour,
-        startTime.minute,
-      );
+        // Parse end time
+        TimeOfDay endTime = _parseTimeOfDay(endTimeControllers[index].text);
 
-      endDateTimes[index] = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        endTime.hour,
-        endTime.minute,
-      );
 
-      // If end time is before start time, assume it's the next day
-      if (endDateTimes[index].isBefore(startDateTimes[index])) {
-        endDateTimes[index] = endDateTimes[index].add(const Duration(days: 1));
+        // Define the format of the input string
+        DateFormat localFormat = DateFormat("MM/dd/yyyy h:mm a");
+
+        // Parse the local time string into a DateTime object
+        DateTime localDateTime = localFormat.parse("${dateControllers[index].text} ${startTimeControllers[index].text}");
+        DateTime localEndDateTime = localFormat.parse("${dateControllers[index].text} ${endTimeControllers[index].text}");
+
+        // Convert the local DateTime to UTC
+        DateTime utcDateTime = localDateTime.toUtc();
+        DateTime utcEndDateTime = localEndDateTime.toUtc();
+
+        // Combine date and start time
+        startDateTimes[index] = utcDateTime;
+
+        // Combine date and end time
+        endDateTimes[index] = utcEndDateTime;
+
+        // Adjust if end time is before start time
+        if (endDateTimes[index].isBefore(startDateTimes[index])) {
+          endDateTimes[index] = endDateTimes[index].add(const Duration(days: 1));
+        }
+      } catch (e) {
+        print("Error combining date and time: $e");
+        throw const FormatException("Invalid date or time format.");
       }
-
-      print("Combined start date time: ${startDateTimes[index]}");
-      print("Combined end date time: ${endDateTimes[index]}");
     }
   }
+
+  String convertToUtcIso8601(DateTime dateTime) {
+    return dateTime.toUtc().toString();
+  }
+
+  void submitData() async {
+    try {
+      List<Dates> datesList = [];
+
+      for (int i = 0; i < dateControllers.length; i++) {
+        _combineDateTimeForIndex(i);
+        datesList.add(Dates(
+          startDateTime: convertToUtcIso8601(startDateTimes[i]),
+          endDateTime: convertToUtcIso8601(endDateTimes[i]),
+        ));
+      }
+
+      LogPastEventRequestModel requestModel = LogPastEventRequestModel(
+        eventTitle: titleController.text.trim(),
+        eventDescription: descriptionController.text.trim(),
+        eventCategoryId: eventCategoriesList
+            .firstWhere((category) => category.eventCategoryName == _selectedGroup)
+            .eventCategoryId,
+        eventLocationName: locationController.text.trim(),
+        createdBy: await getUserId(),
+        dates: datesList,
+      );
+
+      print('Request model: ${jsonEncode(requestModel)}');
+
+      // Send API request
+      var res = await EventsServices().logPastEventData(requestModel);
+      if (res) {
+        Fluttertoast.showToast(msg: "Past event created successfully");
+        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        Fluttertoast.showToast(msg: "Something went wrong! Try again later");
+      }
+    } catch (e) {
+      print("Error submitting data: $e");
+      Fluttertoast.showToast(msg: "Error submitting data. Please try again.");
+    }
+  }
+
 
   TimeOfDay _parseTimeOfDay(String timeString) {
     // First, try parsing with AM/PM
@@ -319,48 +373,49 @@ class _PastEventsPageState extends State<PastEventsPage> {
     }
   }
 
-  String convertToUtcIso8601(DateTime dateTime) {
-    return dateTime.toUtc().toIso8601String();
-  }
-
-  void submitData() async {
-    List<Dates> datesList = [];
-
-    for (int i = 0; i < dateControllers.length; i++) {
-      _combineDateTimeForIndex(i);
-      datesList.add(Dates(
-          startDateTime: convertToUtcIso8601(startDateTimes[i]),
-          endDateTime: convertToUtcIso8601(endDateTimes[i])));
-    }
-    LogPastEventRequestModel requestModel = LogPastEventRequestModel(
-        eventTitle: titleController.text,
-        eventDescription: descriptionController.text,
-        eventCategoryId: eventCategoriesList
-            .where((test) => test.eventCategoryName == _selectedGroup)
-            .first
-            .eventCategoryId, // Assuming _selectedGroup is the ID
-        eventLocationName: locationController.text,
-        createdBy: await getUserId(), // Implement getUserId() method
-        dates: datesList);
-
-    print('Dates send:: ${jsonEncode(datesList.first)}');
-    try {
-      var res = await EventsServices().logPastEventData(requestModel);
-      if (res == true) {
-        Fluttertoast.showToast(msg: "Past event created successfully");
-      } else {
-        Fluttertoast.showToast(msg: "Something went wrong! Try again later");
-      }
-
-      Navigator.pop(context);
-
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const HomePage()));
-    } catch (e) {
-      print("Error submitting data: $e");
-      Fluttertoast.showToast(msg: "Error submitting data. Please try again.");
-    }
-  }
+  // String convertToUtcIso8601(DateTime dateTime) {
+  //   return dateTime.toUtc().toIso8601String();
+  // }
+  //
+  // void submitData() async {
+  //   List<Dates> datesList = [];
+  //
+  //   for (int i = 0; i < dateControllers.length; i++) {
+  //     print('Submit date::: ${startDateTimes[i]}  :: ${endDateTimes[i]}');
+  //     _combineDateTimeForIndex(i);
+  //     datesList.add(Dates(
+  //         startDateTime: convertToUtcIso8601(startDateTimes[i]),
+  //         endDateTime: convertToUtcIso8601(endDateTimes[i])));
+  //   }
+  //   LogPastEventRequestModel requestModel = LogPastEventRequestModel(
+  //       eventTitle: titleController.text,
+  //       eventDescription: descriptionController.text,
+  //       eventCategoryId: eventCategoriesList
+  //           .where((test) => test.eventCategoryName == _selectedGroup)
+  //           .first
+  //           .eventCategoryId, // Assuming _selectedGroup is the ID
+  //       eventLocationName: locationController.text,
+  //       createdBy: await getUserId(), // Implement getUserId() method
+  //       dates: datesList);
+  //
+  //   print('Dates send:: ${jsonEncode(datesList.first)}');
+  //   try {
+  //    // var res = await EventsServices().logPastEventData(requestModel);
+  //     if (true == true) {
+  //       Fluttertoast.showToast(msg: "Past event created successfully");
+  //     } else {
+  //       Fluttertoast.showToast(msg: "Something went wrong! Try again later");
+  //     }
+  //
+  //     Navigator.pop(context);
+  //
+  //     Navigator.pushReplacement(
+  //         context, MaterialPageRoute(builder: (context) => const HomePage()));
+  //   } catch (e) {
+  //     print("Error submitting data: $e");
+  //     Fluttertoast.showToast(msg: "Error submitting data. Please try again.");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

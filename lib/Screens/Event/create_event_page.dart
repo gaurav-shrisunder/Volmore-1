@@ -655,7 +655,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'When to stop Occurrence',
+                            'Occurrence End at: ',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,

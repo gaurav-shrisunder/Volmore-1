@@ -4,11 +4,12 @@ class SignUpRequestModel {
   String? emailId;
   String? passwordHash;
   int? yearOfStudy;
-  String? userRoleId;
+  // String? userRoleId;
   Organization? organization;
   String? university;
   String? school;
   String? locationState;
+  String? sessionId;
 
   SignUpRequestModel(
       {this.userName,
@@ -16,10 +17,11 @@ class SignUpRequestModel {
       this.emailId,
       this.passwordHash,
       this.yearOfStudy,
-      this.userRoleId,
+      // this.userRoleId,
       this.school,
       this.university,
       this.locationState,
+        this.sessionId,
       this.organization});
 
   SignUpRequestModel.fromJson(Map<String, dynamic> json) {
@@ -28,10 +30,11 @@ class SignUpRequestModel {
     emailId = json['emailId'];
     passwordHash = json['passwordHash'];
     yearOfStudy = json['yearOfStudy'];
-    userRoleId = json['userRoleId'];
+    // userRoleId = json['userRoleId'];
     university = json['university'];
     school = json['school'];
     locationState = json['locationState'];
+    sessionId = json['sessionId'];
     organization = json['organization'] != null
         ? Organization.fromJson(json['organization'])
         : null;
@@ -44,9 +47,10 @@ class SignUpRequestModel {
     data['emailId'] = emailId;
     data['passwordHash'] = passwordHash;
     data['yearOfStudy'] = yearOfStudy;
-    data['userRoleId'] = userRoleId;
+    // data['userRoleId'] = userRoleId;
     data['school'] = school;
     data['university'] = university;
+    data['sessionId'] = sessionId;
     data['locationState'] = locationState;
     if (organization != null) {
       data['organization'] = organization!.toJson();

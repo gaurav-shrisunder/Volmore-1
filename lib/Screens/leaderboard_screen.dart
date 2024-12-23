@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:volunterring/Models/response_models/leaderboard_influenced_response_model.dart';
 import 'package:volunterring/Services/leaderboard_service.dart';
 import 'package:volunterring/Services/user_services.dart';
@@ -144,33 +145,41 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    apiCalling();
+    apiCalling(true);
   }
 
-  apiCalling({bool isVolunteeredTab = true}) async {
+  apiCalling(bool isVolunteeredTab) async {
     setState(() {
       isLoading = true;
     });
 
     if (isVolunteeredTab) {
       LeaderboardInfluencedResponseModel? leaderboardDatatotal =
-          await leaderboardServices.getInflucendLeaderboard(
+          await leaderboardServices.getLeaderboardData(
         "participationBoard",
         locationState: selectedStateVolunteered,
         yearOfStudy: selectedGraduatingClassVolunteered,
       );
-      setState(() {
-        userList = leaderboardDatatotal?.leaderBoardDetails ?? [];
-      });
-    } else {
-      LeaderboardInfluencedResponseModel? leaderboardData =
-          await leaderboardServices.getInflucendLeaderboard(
+      LeaderboardInfluencedResponseModel? influencedLeaderboardData =
+      await leaderboardServices.getLeaderboardData(
         "influenceBoard",
         locationState: selectedStateInfluenced,
         yearOfStudy: selectedGraduatingClassInfluenced,
       );
       setState(() {
-        influencedList = leaderboardData?.leaderBoardDetails ?? [];
+        userList = leaderboardDatatotal?.leaderBoardDetails ?? [];
+        influencedList = influencedLeaderboardData?.leaderBoardDetails ?? [];
+      });
+    } else {
+      LeaderboardInfluencedResponseModel? influencedLeaderboardData =
+          await leaderboardServices.getLeaderboardData(
+        "influenceBoard",
+        locationState: selectedStateInfluenced,
+        yearOfStudy: selectedGraduatingClassInfluenced,
+      );
+      setState(() {
+        print('Influcence data:: ${influencedLeaderboardData?.leaderBoardDetails?.first.userName}');
+        influencedList = influencedLeaderboardData?.leaderBoardDetails ?? [];
       });
     }
 
@@ -188,7 +197,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         selectedStateInfluenced = null;
         selectedGraduatingClassInfluenced = null;
       }
-      apiCalling(isVolunteeredTab: isVolunteeredTab);
+      apiCalling( isVolunteeredTab);
     });
   }
 
@@ -236,10 +245,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     required String? selectedGraduatingClass,
   }) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
             decoration: InputDecoration(
               labelText: "State",
               labelStyle: const TextStyle(fontSize: 14),
@@ -269,7 +280,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 } else {
                   selectedStateInfluenced = newValue;
                 }
-                apiCalling(isVolunteeredTab: isVolunteeredTab);
+                apiCalling( isVolunteeredTab);
               });
             },
           ),
@@ -305,17 +316,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 } else {
                   selectedGraduatingClassInfluenced = newValue;
                 }
-                apiCalling(isVolunteeredTab: isVolunteeredTab);
+                apiCalling( isVolunteeredTab);
               });
             },
           ),
         ),
         const SizedBox(width: 10),
-        IconButton(
-          icon: const Icon(Icons.refresh, color: Colors.blue),
-          onPressed: () => resetFilters(isVolunteeredTab),
-          tooltip: 'Reset Filters',
-        ),
+         GestureDetector(
+            onTap: (){
+              resetFilters(isVolunteeredTab);
+            },
+            child: Icon(Icons.refresh, color: Colors.blue))
+
       ],
     );
   }
@@ -388,6 +400,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       60; // Remainder to get minutes
 
                   String formattedTime = '${hours}h  ${minutes}m';
+                  print('Name of: ${userList[index]?.userName}');
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 5.0,
@@ -408,11 +421,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(width: 10),
-                            const CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),
+
+                             CircleAvatar(
+
+                            /*  backgroundImage: AssetImage(
+                                  'assets/images/profile_avatar.png'),*/
                               // Replace with actual image path
                               radius: 20,
+                              child: Container(
+                                decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1),shape: BoxShape.circle,color: Colors.grey.shade200),
+                                child: Center(
+                                  child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -492,6 +513,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Widget buildHoursInfluencedListView(List<LeaderboardUser?>? userList) {
+ //   print('Receved Influ:: ${userList?.first?.userName}');
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -544,6 +567,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           else
             Expanded(
               child: ListView.separated(
+                shrinkWrap: true,
+                addAutomaticKeepAlives: true,
+                addRepaintBoundaries: true,
                 itemCount: userList!.length,
                 separatorBuilder: (context, index) {
                   return const Divider();
@@ -555,7 +581,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   int minutes = (userList[index]!.hostInfluenceHours ?? 0) %
                       60; // Remainder to get minutes
 
-                  String formattedTime = '${hours}h ${minutes}m';
+                  String formattedTime = '${hours}h  ${minutes}m';
+                  print('Name of: ${userList[index]?.userName}');
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 5.0,
@@ -576,12 +603,27 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(width: 10),
-                            const CircleAvatar(
-                              backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),
+if(userList[index]?.profilePicture == null)
+                            CircleAvatar(
+
+                              /*  backgroundImage: AssetImage(
+                                  'assets/images/profile_avatar.png'),*/
                               // Replace with actual image path
-                              radius: 30,
+                              radius: 20,
+                              child: Container(
+                                decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1),shape: BoxShape.circle,color: Colors.grey.shade200),
+                                child: Center(
+                                  child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                                ),
+                              ),
                             ),
+                            if(userList[index]?.profilePicture != null)
+                              CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                  userList[index]!.profilePicture!),
+                                // Replace with actual image path
+                                radius: 20,
+                              ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
@@ -597,46 +639,55 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                   ),
                                   userList[index]!.yearOfStudy != 0
                                       ? Row(
-                                          children: [
-                                            Chip(
-                                              side: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 0),
-                                              padding: EdgeInsets.zero,
-                                              label: Text(userList[index]!
-                                                  .locationState!),
-                                              backgroundColor:
-                                                  Colors.orange.shade50,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Chip(
-                                              padding: EdgeInsets.zero,
-                                              side: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 0),
-                                              label: Text(userList[index]!
-                                                  .yearOfStudy
-                                                  .toString()),
-                                              backgroundColor:
-                                                  Colors.purple.shade50,
-                                            ),
-                                          ],
-                                        )
+                                    children: [
+                                      Chip(
+                                        side: const BorderSide(
+                                            color: Colors.transparent,
+                                            width: 0),
+                                        padding: EdgeInsets.zero,
+                                        label: Text(
+                                          userList[index]!
+                                              .yearOfStudy
+                                              .toString(),
+                                          style: const TextStyle(
+                                              fontSize: 12),
+                                        ),
+                                        backgroundColor:
+                                        Colors.orange.shade50,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Chip(
+                                        side: const BorderSide(
+                                            color: Colors.transparent,
+                                            width: 0),
+                                        padding: EdgeInsets.zero,
+                                        label: Text(
+                                          userList[index]!
+                                              .locationState
+                                              .toString(),
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight:
+                                              FontWeight.w500),
+                                        ),
+                                        backgroundColor:
+                                        Colors.pink.shade50,
+                                      ),
+                                    ],
+                                  )
                                       : const SizedBox(),
                                 ],
                               ),
                             ),
                             //  const Spacer(),
-                            Expanded(
-                                child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      formattedTime,
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ))),
+                            Align(
+                                alignment: Alignment.topRight,
+                                child: Text(
+                                  formattedTime,
+                                  style: const TextStyle(color: Colors.black),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )),
                           ],
                         ),
                       ),

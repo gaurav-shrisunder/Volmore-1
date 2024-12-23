@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:volunterring/Screens/Event/create_event_page.dart';
-import 'package:volunterring/Screens/Event/past_events_page.dart';
+import 'package:volunterring/Screens/Event/create_past_events_page.dart';
 import 'package:volunterring/Screens/VolunteeringIdeas.dart';
 import 'package:volunterring/Utils/Colors.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
@@ -49,7 +49,7 @@ class CreateLogScreen extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                Get.to(const PastEventsPage());
+                Get.to(const CreatePastEventsPage());
               },
               child: Card(
                 color: Colors.teal.shade100,
@@ -58,7 +58,7 @@ class CreateLogScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Get.to(const PastEventsPage());
+                        Get.to(const CreatePastEventsPage());
                       },
                       child: Container(
                         margin: const EdgeInsets.all(8),

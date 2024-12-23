@@ -31,7 +31,9 @@ class CreateEventRequestModel {
     data['eventDescription'] = eventDescription;
     data['eventCategoryId'] = eventCategoryId;
     data['eventLocationName'] = eventLocationName;
-    data['createdBy'] = createdBy;
+    if (recurrence != null){
+      data['createdBy'] = createdBy;
+    }
     if (recurrence != null) {
       data['recurrence'] = recurrence!.toJson();
     }

@@ -33,9 +33,9 @@ class _LoginPageState extends State<LoginPage> {
     // signup user using our authmethod
     // String res = await AuthMethod().loginUser(
     //     email: emailController.text, password: passwordController.text);
-
+var sessionId  = "app-${emailController.text.split("@").first}";
     SignUpLoginResponseModel? res = await SignupLoginServices()
-        .loginUser(emailController.text, passwordController.text);
+        .loginUser(emailController.text, passwordController.text,sessionId);
     if (res?.userDetails?.user != null) {
       setState(() {
         isLoading = false;
