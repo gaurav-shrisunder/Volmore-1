@@ -421,7 +421,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "Duration : ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[0]))} - ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[1]))}",
+                              "Duration : ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[0]).toLocal())} - ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[1]).toLocal())}",
                               maxLines: 3,
                               softWrap: true,
                               textAlign: TextAlign.left,

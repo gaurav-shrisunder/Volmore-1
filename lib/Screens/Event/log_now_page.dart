@@ -249,7 +249,7 @@ class _LogNowPageState extends State<LogNowPage> {
                       Text(
                         'Enable Location Tracking',
                         style: TextStyle(
-                          fontSize: screenWidth * 0.05,
+                          fontSize: 18,
                           //  color: Colors.black,
                         ),
                       ),

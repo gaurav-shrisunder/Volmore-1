@@ -186,6 +186,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     InputFeildWidget(
                       title: 'Name',
+                      keyboardType: TextInputType.name,
                       controller: nameController,
                       maxlines: 1,
                       hintText: "Enter Your name",

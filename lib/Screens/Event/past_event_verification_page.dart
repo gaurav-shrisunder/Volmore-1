@@ -135,7 +135,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
                 height: screenHeight * 0.01,
               ),
               Text(
-                "Location :- ${widget.event.eventParticipant?.userLocationName ?? ""} ",
+                "Location : ${widget.event.eventParticipant?.userLocationName ?? "Not available"} ",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -149,21 +149,21 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               //   height: screenHeight * 0.01,
               // ),
               Text(
-                "Duration :- ${((widget.event.eventParticipant?.userHours ?? 0) ~/ 60)} Hrs",
+                "Duration : ${((widget.event.eventParticipant?.userHours ?? 0) ~/ 60)} Hrs",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "Start Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!).toLocal())}",
+                "Start Time : ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userStartDateTime!).toLocal())}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
               ),
               Text(
-                "End Time :-  ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!).toLocal())}",
+                "End Time : ${DateFormat('hh:mm a').format(DateTime.parse(widget.event.eventParticipant!.userEndDateTime!).toLocal())}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(

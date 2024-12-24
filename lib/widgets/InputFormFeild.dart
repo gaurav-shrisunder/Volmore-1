@@ -9,6 +9,7 @@ class InputFeildWidget extends StatefulWidget {
   final Icon? prefixicon;
   final bool? isEnabled;
   final bool isPassword;
+  final TextInputType keyboardType;
   final String? Function(String?)? validator;
 
   const InputFeildWidget({
@@ -20,6 +21,7 @@ class InputFeildWidget extends StatefulWidget {
     this.isEnabled,
     this.isPassword = false,
     this.maxlines = 1,
+    this.keyboardType = TextInputType.name,
     this.validator,
   });
 
@@ -51,10 +53,11 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
+          textCapitalization: TextCapitalization.words,
           enabled: widget.isEnabled,
           controller: widget.controller,
           maxLines: widget.maxlines,
-          keyboardType: TextInputType.name,
+          keyboardType:widget.keyboardType,
           obscureText: widget.isPassword && !isObsecure,
           decoration: InputDecoration(
             filled: true,
