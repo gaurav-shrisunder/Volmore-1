@@ -612,7 +612,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                       fontWeight:
                                                           FontWeight.normal),
                                                 ),
-                                                if (tabName.contains(
+                                            /*    if (tabName.contains(
                                                     "Past"))
                                                 Text(
                                                   " End Time: ${DateFormat("hh:mm aa").format(DateTime.parse(snapshot.data!.eventDetails!.events![index].eventInstance?.eventEndDateTime ?? "2024-11-23T15:48:00.000Z").toLocal())}",
@@ -621,7 +621,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                       color: Colors.black,
                                                       fontWeight:
                                                       FontWeight.normal),
-                                                ),
+                                                ),*/
                                               ],
                                             ),
                                             const SizedBox(height: 8),

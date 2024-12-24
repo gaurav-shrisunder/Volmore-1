@@ -32,7 +32,7 @@ class SignupLoginServices {
         print('Failed to load user data');
       }
       //  response.statusMessage
-      return SignUpLoginResponseModel(message: response?.data["message"]);
+      return SignUpLoginResponseModel(message: response?.data["errors"][0]);
     }
   }
 

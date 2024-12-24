@@ -52,15 +52,16 @@ var sessionId  = "app-${emailController.text.split("@").first}";
       Fluttertoast.showToast(
           msg: "Login successfully", toastLength: Toast.LENGTH_LONG);
     } else {
+      Fluttertoast.showToast(
+          msg: res?.message ?? "Something went wrong!!",
+          toastLength: Toast.LENGTH_LONG,
+      );
       setState(() {
         isLoading = false;
         Navigator.pop(context);
       });
       // show error
-      Fluttertoast.showToast(
-          msg: res?.message ?? "Something went wrong!!",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP);
+
       // showSnackBar(context, res);
     }
   }
@@ -70,16 +71,16 @@ var sessionId  = "app-${emailController.text.split("@").first}";
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: const Color(0xFF7Fd8de),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Image.asset(
-                "assets/icons/login.png",
-                height: height * 0.3911,
-              ),
-            ],
+          child: Center(
+            child: Image.asset(
+              "assets/icons/login.png",
+              height: height * 0.3911,
+              alignment: Alignment.center,
+            ),
           ),
         ),
       ),
@@ -112,7 +113,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                 Align(
                   alignment: Alignment.center,
                   child: Text(
-                    'Welcome Back!',
+                    'Welcome!',
                     style: TextStyle(
                         fontSize: height * 0.045,
                         fontWeight: FontWeight.w500,
@@ -134,6 +135,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                 // ),
                 InputFeildWidget(
                   title: 'Email*',
+                  keyboardType: TextInputType.emailAddress,
                   controller: emailController,
                   maxlines: 1,
                   hintText: "Enter Your email",
@@ -144,6 +146,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                 InputFeildWidget(
                   title: 'Password*',
                   controller: passwordController,
+                  keyboardType: TextInputType.emailAddress,
                   maxlines: 1,
                   isPassword: true,
                   hintText: "Enter Your Password",
