@@ -36,7 +36,7 @@ class EventsServices {
       if (kDebugMode) {
         print('Failed to load user roles data');
       }
-      return EventsDataResponseModel(message: response?.data["message"]);
+      return EventsDataResponseModel(message: response?.data["errors"][0]);
     }
   }
 
@@ -51,7 +51,7 @@ class EventsServices {
       if (kDebugMode) {
         print('Failed to load eventCategory data');
       }
-      return EventCategoryResponseModel(message: response?.data["message"]);
+      return EventCategoryResponseModel(message:response?.data["errors"][0]);
     }
   }
 
@@ -66,7 +66,7 @@ class EventsServices {
       if (kDebugMode) {
         print('Failed to load eventCategory data');
       }
-      return EventCategoryResponseModel(message: response?.data["message"]);
+      return EventCategoryResponseModel(message: response?.data["errors"][0]);
     }
   }
 
@@ -84,7 +84,7 @@ class EventsServices {
         print('Failed to load create Event data');
       }
       return EventCategoryResponseModel(
-          message: response?.data["message"].toString());
+          message: response?.data["errors"][0]);
     }
   }
 

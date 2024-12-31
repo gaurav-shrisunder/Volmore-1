@@ -6,6 +6,7 @@ class InputFeildWidget extends StatefulWidget {
   final TextEditingController controller;
   final int maxlines;
   final String hintText;
+  final String? errorText;
   final Icon? prefixicon;
   final bool? isEnabled;
   final bool isPassword;
@@ -19,6 +20,7 @@ class InputFeildWidget extends StatefulWidget {
     this.hintText = '',
     this.prefixicon,
     this.isEnabled,
+    this.errorText,
     this.isPassword = false,
     this.maxlines = 1,
     this.keyboardType = TextInputType.name,
@@ -147,6 +149,31 @@ String? nameValidator(String? value) {
   }
   return null;
 }
+
+String? highSchoolYearValidator(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Year cannot be empty';
+  }
+
+  // Check if it is a 4-digit number
+  if (!RegExp(r'^\d{4}$').hasMatch(value)) {
+    return 'Enter a valid 4-digit year';
+  }
+
+  // Parse the year as an integer
+  int year = int.parse(value);
+
+  // Check year range
+  int currentYear = DateTime.now().year;
+  if (year < 1975) {
+    return 'Year cannot be earlier than 1975';
+  } else if (year > currentYear) {
+    return 'Year cannot be later than $currentYear';
+  }
+
+  return null; // No error
+}
+
 
 String? phoneValidator(String? value) {
   if (value == null || value.isEmpty) {

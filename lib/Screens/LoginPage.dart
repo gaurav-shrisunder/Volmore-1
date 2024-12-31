@@ -137,6 +137,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                   title: 'Email*',
                   keyboardType: TextInputType.emailAddress,
                   controller: emailController,
+                  validator: emailValidator,
                   maxlines: 1,
                   hintText: "Enter Your email",
                 ),

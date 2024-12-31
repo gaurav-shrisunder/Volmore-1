@@ -749,6 +749,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                           ],
                         ),
                         child: DropdownButtonFormField<String>(
+                          dropdownColor: Colors.white,
                           hint: const Text('Select a Group'),
                           value: _selectedGroup,
                           //   dropdownColor: Colors.white,

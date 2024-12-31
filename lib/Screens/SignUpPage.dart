@@ -99,6 +99,12 @@ class _SignUpPageState extends State<SignUpPage> {
       _errorMessage = error;
     });
   }
+  void _validateEmailInput() {
+    final error = emailValidator(emailController.text);
+    setState(() {
+      _errorMessage = error;
+    });
+  }
 
   void signUp(SignUpRequestModel requestBody) async {
     setState(() {
@@ -186,7 +192,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     InputFeildWidget(
                       title: 'Name',
-                      keyboardType: TextInputType.name,
+                      keyboardType: TextInputType.emailAddress,
                       controller: nameController,
                       maxlines: 1,
                       hintText: "Enter Your name",
@@ -197,12 +203,16 @@ class _SignUpPageState extends State<SignUpPage> {
                     InputFeildWidget(
                       title: 'Email*',
                       controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
                       maxlines: 1,
                       hintText: "Enter Your email",
+
+                      validator: emailValidator,
                     ),
                     SizedBox(
                       height: height * 0.009,
                     ),
+
                     Row(
                       children: [
                         // const SizedBox(width: 10),
@@ -264,6 +274,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     InputFeildWidget(
                       title: 'Password*',
+                      keyboardType: TextInputType.emailAddress,
                       isPassword: true,
                       controller: passwordController,
                       maxlines: 1,
@@ -274,6 +285,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     InputFeildWidget(
                       title: 'Re-Enter Password*',
+                      keyboardType: TextInputType.emailAddress,
                       controller: confirmPasswordController,
                       maxlines: 1,
                       isPassword: true,
@@ -286,6 +298,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
                         title: 'High School Graduation Year',
+                        keyboardType: TextInputType.number,
+                        validator: highSchoolYearValidator,
                         controller: gradYearController,
                         maxlines: 1,
                         hintText: "Enter your graduation year",
@@ -305,6 +319,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
                         title: 'High School Name',
+                        keyboardType: TextInputType.emailAddress,
                         controller: schoolNameController,
                         maxlines: 1,
                         hintText: "Enter your High School Name",
@@ -360,6 +375,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       visible: !isIndividualChecked,
                       child: InputFeildWidget(
                         title: 'College/University Name',
+                        keyboardType: TextInputType.emailAddress,
                         controller: collegeNameController,
                         maxlines: 1,
                         hintText: "Enter your College/University Name",
