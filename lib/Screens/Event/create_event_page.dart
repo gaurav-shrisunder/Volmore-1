@@ -510,6 +510,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                   child: DropdownButtonFormField<String>(
                     value: selectedOccurrence,
+                    dropdownColor: Colors.white,
                     icon: const Icon(
                       CupertinoIcons.chevron_down,
                       size: 20,
@@ -763,6 +764,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         ),
                         child: DropdownButtonFormField<String>(
                           hint: const Text('Select a Group'),
+                          dropdownColor: Colors.white,
                           value: _selectedGroup,
                           //  dropdownColor: Colors.white,
                           decoration: InputDecoration(
@@ -1050,6 +1052,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               );
                             });
                       } else {
+
                         Fluttertoast.showToast(
                             msg: "Something went wrong. Pls try again later");
                         Navigator.pop(context);

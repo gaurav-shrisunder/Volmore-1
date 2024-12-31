@@ -621,7 +621,6 @@ if(userList[index]?.profilePicture == null)
                               CircleAvatar(
                                   backgroundImage: NetworkImage(
                                   userList[index]!.profilePicture!),
-                                // Replace with actual image path
                                 radius: 20,
                               ),
                             const SizedBox(width: 16),

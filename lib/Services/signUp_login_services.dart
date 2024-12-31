@@ -86,7 +86,7 @@ class SignupLoginServices {
       if (kDebugMode) {
         print('Failed to load token data');
       }
-      return RefreshTokenResponseModel(message: response?.data["message"]);
+      return RefreshTokenResponseModel(message: response?.data["errors"][0]);
     }
   }
 

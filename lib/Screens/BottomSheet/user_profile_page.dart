@@ -140,8 +140,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 // Decode the base64 string
                                 Uint8List bytes = base64Decode(
                                     formattedString.split(",").last);
-                                return Image.memory(
-                                  bytes,
+                                return Image.network(
+                                  user!.profilePicture!,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
                                       _buildFallbackImage(),

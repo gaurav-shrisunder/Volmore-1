@@ -161,8 +161,8 @@ class _VolunteerConfirmationScreenState
 
     return Scaffold(
       backgroundColor: Colors.white,
-      extendBody: true,
-       extendBodyBehindAppBar: false,
+      extendBody: false,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
         titleSpacing: 0,
         title: const Text(
@@ -170,7 +170,8 @@ class _VolunteerConfirmationScreenState
           style: TextStyle(
               fontSize: 26, fontWeight: FontWeight.bold, color: headingBlue),
         ),
-        leading:  IconButton(onPressed: (){
+        leading:  IconButton(
+            onPressed: (){
           Navigator.pop(context);
         }, icon: const Icon(CupertinoIcons.chevron_left)),
       //  automaticallyImplyLeading: true,
@@ -274,7 +275,7 @@ class _VolunteerConfirmationScreenState
         ],
       ),
       body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Column(
@@ -524,6 +525,7 @@ class _VolunteerConfirmationScreenState
               ListView.builder(
                   shrinkWrap: true,
                   itemCount: checkboxItems.length,
+             //  physics: BouncingScrollPhysics(),
                scrollDirection: Axis.vertical,
                //   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
@@ -587,13 +589,14 @@ class _VolunteerConfirmationScreenState
                       ),
                     );
                   }),
+            //  SizedBox(height: MediaQuery.of(context).size.height/3,)
             ],
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
 
-          color: Colors.transparent,
+          color: Colors.white,
           //  height: 40,
           child: MyButtons(
               onTap: () async {
