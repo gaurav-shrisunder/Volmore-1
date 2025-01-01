@@ -340,6 +340,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                 },
                               ),
 
+                              (sharedTranscriptResponse.sharedInfo != null && sharedTranscriptResponse.sharedInfo?.length != 0) ?
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -364,7 +365,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                     }
                                   ),
                                 ],
-                              ),
+                              ): SizedBox()
                             ],
                           ),
                         ),

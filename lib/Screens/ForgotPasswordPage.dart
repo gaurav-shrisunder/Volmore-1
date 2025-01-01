@@ -74,6 +74,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   InputFeildWidget(
                     title: 'Email*',
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                     maxlines: 1,
                     hintText: "Enter Your email",
                   ),

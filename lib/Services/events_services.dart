@@ -77,8 +77,7 @@ class EventsServices {
     Response? response = await apiHandler.post(createEventApi, requestPayload);
     if (response != null && response.statusCode == 201) {
       print('Event Created:::${response.data}');
-      final CreateEventResponse eventCategory =
-      CreateEventResponse.fromJson(response.data);
+      final CreateEventResponse eventCategory = CreateEventResponse.fromJson(response.data);
       return eventCategory;
     } else {
       if (kDebugMode) {

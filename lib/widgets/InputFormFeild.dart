@@ -167,8 +167,8 @@ String? highSchoolYearValidator(String? value) {
   int currentYear = DateTime.now().year;
   if (year < 1975) {
     return 'Year cannot be earlier than 1975';
-  } else if (year > currentYear) {
-    return 'Year cannot be later than $currentYear';
+  } else if (year > 2040) {
+    return 'Year cannot be later than 2040';
   }
 
   return null; // No error
