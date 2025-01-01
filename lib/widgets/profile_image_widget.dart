@@ -208,7 +208,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
               : ClipOval(
                   child: Builder(
                     builder: (context) {
-                      if (_imageFile != null) {
+                    /*  if (_imageFile != null) {
                         return Image.file(
                           _imageFile!,
                           fit: BoxFit.cover,
@@ -227,8 +227,8 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
                           // Decode the base64 string
                           Uint8List bytes =
                               base64Decode(formattedString.split(",").last);
-                          return Image.memory(
-                            bytes,
+                          return Image.network(
+                            user!.profilePicture!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 _buildFallbackImage(),
@@ -236,8 +236,13 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
                         } catch (e) {
                           return _buildFallbackImage();
                         }
-                      }
-                      return _buildFallbackImage();
+                      }*/
+                      return Image.network(
+                        user!.profilePicture!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _buildFallbackImage(),
+                      );
                     },
                   ),
                 ),

@@ -127,7 +127,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           builder: (context) {
                             print(
                                 "user Profile Picture ${user?.profilePicture ?? ""}");
-                            if (user!.profilePicture != null &&
+                       /*     if (user!.profilePicture != null &&
                                 user!.profilePicture!.isNotEmpty) {
                               try {
                                 String formattedString = user!.profilePicture!;
@@ -150,8 +150,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 print("error in image $e");
                                 return _buildFallbackImage();
                               }
-                            }
-                            return _buildFallbackImage();
+                            }*/
+                            return  Image.network(
+                              user!.profilePicture!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                print('Inside error builder: ${ user!.profilePicture!}');
+                              return   _buildFallbackImage();
+
+                              }
+                            );
                           },
                         ),
                       ),

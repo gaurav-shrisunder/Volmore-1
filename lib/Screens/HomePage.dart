@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage>
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'VOLMORE',
+          'lenda',
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,

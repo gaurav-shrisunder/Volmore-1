@@ -24,6 +24,8 @@ import 'package:uuid/uuid.dart';
 import 'package:volunterring/widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
 
+import '../../Models/response_models/create_event_response_model.dart';
+
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
 
@@ -875,8 +877,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
                       print('Payload');
 
-                      EventCategoryResponseModel? eventCreatedResponse =
-                          await EventsServices().createEventData(requestModel);
+                      CreateEventResponse? eventCreatedResponse = await EventsServices().createEventData(requestModel);
                       //   Navigator.pop(context);
 
                       /* dynamic res = await _authMethod
@@ -967,9 +968,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                           final SharedPreferences prefs =
                                               await SharedPreferences
                                                   .getInstance();
+                                          https://volmore.page.link/e1ZW
                                           final String? uid = await getUserId();
                                           String url = await createDynamicLink(
-                                              eventId: "2");
+                                              eventId: eventCreatedResponse.eventDetails!.eventId.toString());
                                           Share.share(url);
                                           Navigator.pushAndRemoveUntil(
                                               context,

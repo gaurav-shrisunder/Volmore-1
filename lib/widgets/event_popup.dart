@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -5,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
+import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Models/response_models/get_event_response_model.dart';
 
 import 'package:volunterring/Screens/HomePage.dart';
@@ -16,25 +19,10 @@ import 'package:volunterring/Utils/shared_prefs.dart';
 
 void showEventPopup(String eventId) async {
   // Fetch event details from Firestore using eventId
-  GetEventResponseModel eventData =
-      await EventsServices().getEventDetails(eventId);
-  Future<void> acceptInvite(String eventId, BuildContext context) async {
-    LogEventRequestModel requestBody = LogEventRequestModel();
-    requestBody.eventInstanceId = eventId;
-    requestBody.userId = await getUserId();
-    requestBody.userEndDateTime = null;
-    requestBody.userStartDateTime = null;
-    requestBody.userMinutes = null;
-    dynamic res = await EventsServices().logEventData(requestBody);
-    if (res["message"].toString().contains("success")) {
-      Fluttertoast.showToast(msg: "Event Accepted Successfully");
-      Get.to(const HomePage());
-    } else {
-      Fluttertoast.showToast(msg: "Some error occured");
-      Get.back();
-    }
-  }
+  GetEventResponseModel eventData = await EventsServices().getEventDetails(eventId);
 
+
+  print('Show Dialog:: ');
   if (eventData.events.isNotEmpty) {
     //   showDialog(
     //     context: Get.context!,
@@ -55,15 +43,17 @@ void showEventPopup(String eventId) async {
     //   );
     //   return;
     // }
+
+    print('Show Dialog:: ${jsonEncode(eventData.events)}');
     showDialog(
       context: Get.context!,
       builder: (BuildContext context) {
         bool isLoading = false;
-        Event event = eventData.events[0].event;
+        EventData events = eventData.events[0];
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(event.eventTitle ?? "Event Details"),
+              title: Text(events.event.eventTitle ?? "Event Details"),
               content: SizedBox(
                 width: Get.width * 0.9,
                 child: Column(
@@ -77,10 +67,15 @@ void showEventPopup(String eventId) async {
                         const Text(
                           'Description: ',
                           style: TextStyle(fontWeight: FontWeight.bold),
+
                         ),
-                        Text(
-                          ' ${event.eventDescription ?? "No description"}',
-                          style: const TextStyle(color: greyColor),
+                        Expanded(
+                          child: Text(
+                            ' ${events.event.eventDescription ?? "No description"}',
+                            style: const TextStyle(color: greyColor),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -94,9 +89,13 @@ void showEventPopup(String eventId) async {
                         const SizedBox(
                           width: 5,
                         ),
-                        Text(
-                          'Location: ${event.eventLocationName ?? "No location"}',
-                          style: const TextStyle(color: greyColor),
+                        Expanded(
+                          child: Text(
+                            'Location: ${events.event.eventLocationName ?? "No location"}',
+                            style: const TextStyle(color: greyColor),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -110,7 +109,7 @@ void showEventPopup(String eventId) async {
                           width: 5,
                         ),
                         Text(
-                          'Date: ${DateFormat.yMMMd().format(DateTime.parse(event.recurrencePattern.eventStartDateTime))}',
+                          'Date: ${DateFormat.yMMMd().format(DateTime.parse(events.eventInstance.eventEndDateTime).toLocal())}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -125,7 +124,7 @@ void showEventPopup(String eventId) async {
                           width: 5,
                         ),
                         Text(
-                          'Time: ${DateFormat('hh:mm a').format(DateTime.parse(event.recurrencePattern.eventStartDateTime)) ?? "No time"}',
+                          'Time: ${DateFormat('hh:mm a').format(DateTime.parse(events.eventInstance.eventEndDateTime).toLocal()) ?? "No time"}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -140,7 +139,7 @@ void showEventPopup(String eventId) async {
                           width: 5,
                         ),
                         Text(
-                          'Host: ${event.hostName ?? "No host"}',
+                          'Host: ${events.event.hostName ?? "No host"}',
                           style: const TextStyle(color: greyColor),
                         ),
                       ],
@@ -242,5 +241,30 @@ void showEventPopup(String eventId) async {
         );
       },
     );
+  }
+}
+
+Future<void> acceptInvite(String eventId, BuildContext context) async {
+  LogEventRequestModel requestBody = LogEventRequestModel();
+  requestBody.eventInstanceId = eventId;
+  requestBody.userId = await getUserId();
+  requestBody.userEndDateTime = null;
+  requestBody.userStartDateTime = null;
+  requestBody.userMinutes = null;
+  EventCategoryResponseModel res = await EventsServices().logEventData(requestBody);
+  if (res.message.toString().contains("successfully")) {
+    Fluttertoast.showToast(msg: "Event Accepted Successfully");
+    Navigator.pop(context);
+   //  Navigator.pushAndRemoveUntil(
+   //    context,
+   //    MaterialPageRoute(builder: (context) => const HomePage()),
+   //        (Route<dynamic> route) =>
+   //    false, // This condition makes sure all the routes are removed.
+   //  );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+    // Get.to(() => const HomePage());
+  } else {
+    Fluttertoast.showToast(msg: "Some error occurred");
+    Get.back();
   }
 }

@@ -422,10 +422,31 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             ),
                             const SizedBox(width: 10),
 
-                             CircleAvatar(
+                            if(userList[index]?.profilePicture == null || userList[index]?.profilePicture == "")
+                              CircleAvatar(
 
-                            /*  backgroundImage: AssetImage(
+                                /*  backgroundImage: AssetImage(
                                   'assets/images/profile_avatar.png'),*/
+                                // Replace with actual image path
+                                radius: 20,
+                                child: Container(
+                                  decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1),shape: BoxShape.circle,color: Colors.grey.shade200),
+                                  child: Center(
+                                    child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                                  ),
+                                ),
+                              ),
+                            if(userList[index]?.profilePicture != null)
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    userList[index]!.profilePicture!),
+                                radius: 20,
+                              ),
+
+                           /*  CircleAvatar(
+
+                            *//*  backgroundImage: AssetImage(
+                                  'assets/images/profile_avatar.png'),*//*
                               // Replace with actual image path
                               radius: 20,
                               child: Container(
@@ -434,7 +455,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                   child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
                                 ),
                               ),
-                            ),
+                            ),*/
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
@@ -575,6 +596,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   return const Divider();
                 },
                 itemBuilder: (context, index) {
+                  print('User Image:: ${userList[index]?.profilePicture}');
                   userList[index]!.hostInfluenceHours;
                   int hours = (userList[index]!.hostInfluenceHours ?? 0) ~/ 60;
                   // Integer division to get hours
@@ -603,7 +625,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(width: 10),
-if(userList[index]?.profilePicture == null)
+if(userList[index]?.profilePicture == null || userList[index]?.profilePicture == "")
                             CircleAvatar(
 
                               /*  backgroundImage: AssetImage(

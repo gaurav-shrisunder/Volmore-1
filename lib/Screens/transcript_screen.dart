@@ -13,6 +13,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Models/request_models/share_transcript_request_model.dart';
+import 'package:volunterring/Models/response_models/shared_transcript_response.dart';
 import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
 import 'package:volunterring/Models/response_models/transcript_response.dart';
 import 'package:volunterring/Services/profile_services.dart';
@@ -41,6 +42,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
   int foodHours = 0;
   int hospServiceHours = 0;
   int otherHours = 0;
+  SharedTranscriptResponse sharedTranscriptResponse = SharedTranscriptResponse();
 
   TranscriptResponse? transcript;
   List<Event> events = [];
@@ -158,6 +160,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
 
   void fetchTranscript() async {
     TranscriptResponse? temp = await profileServices.getTranscript();
+    sharedTranscriptResponse = (await profileServices.getTranscriptSharedEmails());
 
     for (var eve in temp!.transcripts!) {
       for (var event in eve.event!) {
@@ -335,6 +338,32 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                   return buildGroupedContainer(
                                       transcript!.transcripts![index]);
                                 },
+                              ),
+
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Transcripts Shared:"),
+
+                                  ListView.builder(
+                                    itemCount: sharedTranscriptResponse.sharedInfo?.length,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                             Text("Email:${sharedTranscriptResponse.sharedInfo![index].emailId}"),
+                                             Text(" ${DateFormat.yMMMd().format(DateTime.parse(sharedTranscriptResponse.sharedInfo![index].sharedDate!).toLocal())}"),
+
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  ),
+                                ],
                               ),
                             ],
                           ),
