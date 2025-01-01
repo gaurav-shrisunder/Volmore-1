@@ -268,8 +268,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     try {
       /* QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();*/
-      EventCategoryResponseModel? eventCategoryResponseModel =
-          await EventsServices().getEventsCategoryData();
+      EventCategoryResponseModel? eventCategoryResponseModel = await EventsServices().getEventsCategoryData();
 
       List<String> groupNames = [];
       eventCategoryResponseModel?.eventCategories?.forEach((action) {
@@ -279,6 +278,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       setState(() {
         eventCategoriesList = eventCategoryResponseModel!.eventCategories!;
         _groupNames = groupNames;
+        _selectedGroup = _groupNames.lastOrNull;
         isLoading = false;
       });
     } catch (e) {
@@ -860,7 +860,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       requestModel.createdBy = await getUserId();
                       Recurrence recurrence = Recurrence();
                       recurrence.eventStartDateTime = startUtcDateTime;
-                      print(' Payload ::: $endUtcDateTime');
                       recurrence.eventEndDateTime = endUtcDateTime.isEmpty  ? null : endUtcDateTime;
                       recurrence.recurInterval = 1;
                       recurrence.weekdays = _selectedGroup == "Weekly"
@@ -875,7 +874,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
                       requestModel.recurrence = recurrence;
 
-                      print('Payload');
+                      print('Payload ${jsonEncode(requestModel)}');
 
                       CreateEventResponse? eventCreatedResponse = await EventsServices().createEventData(requestModel);
                       //   Navigator.pop(context);

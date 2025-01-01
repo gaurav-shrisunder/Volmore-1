@@ -251,6 +251,7 @@ Future<void> acceptInvite(String eventId, BuildContext context) async {
   requestBody.userEndDateTime = null;
   requestBody.userStartDateTime = null;
   requestBody.userMinutes = null;
+  print('request for accepting shared event: ${jsonEncode(requestBody)}');
   EventCategoryResponseModel res = await EventsServices().logEventData(requestBody);
   if (res.message.toString().contains("successfully")) {
     Fluttertoast.showToast(msg: "Event Accepted Successfully");

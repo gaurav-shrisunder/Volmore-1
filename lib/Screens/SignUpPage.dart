@@ -129,17 +129,29 @@ class _SignUpPageState extends State<SignUpPage> {
         (Route<dynamic> route) =>
             false, // This condition makes sure all the routes are removed.
       );
-      Fluttertoast.showToast(
-          msg: "Account created successfully.", toastLength: Toast.LENGTH_LONG);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res?.message ?? "Account created successfully."),
+          duration: Duration(seconds: 3), // Set the duration of the toast
+          behavior: SnackBarBehavior.floating, // Makes the toast float above the UI
+          backgroundColor: Colors.black, // Optional: Customize the background color
+        ),
+      );
+
     } else {
       setState(() {
         isLoading = false;
         Navigator.pop(context);
       });
       // show error
-      Fluttertoast.showToast(
-          msg: res?.message ?? "Something went wrong!!!",
-          toastLength: Toast.LENGTH_LONG);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res?.message ?? "Something went wrong!!"),
+          duration: Duration(seconds: 3), // Set the duration of the toast
+          behavior: SnackBarBehavior.floating, // Makes the toast float above the UI
+          backgroundColor: Colors.black, // Optional: Customize the background color
+        ),
+      );
       //   showSnackBar(context, res);
     }
   }

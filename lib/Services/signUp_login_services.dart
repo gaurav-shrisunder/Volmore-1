@@ -116,7 +116,7 @@ class SignupLoginServices {
       if (kDebugMode) {
         print('Failed to load user roles data');
       }
-      return UserRoleResponseModel(message: response?.data["message"]);
+      return UserRoleResponseModel(message: response?.data["errors"][0]);
     }
   }
 }

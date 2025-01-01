@@ -22,8 +22,8 @@ class CreateEventResponse {
 }
 
 class EventDetails {
-  int? eventId;
-  int? eventIntanceId;
+  dynamic eventId;
+  dynamic eventIntanceId;
 
   EventDetails({this.eventId, this.eventIntanceId});
 
