@@ -40,17 +40,18 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class _MyAppState extends State<MyApp>  {
   bool isLoggedIn = false;
   final eventController = Get.find<EventController>();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    // with WidgetsBindingObserver
+  //  WidgetsBinding.instance.addObserver(this);
 
     // Handle dynamic link when the app is launched via a deep link
-    handleDynamicLink();
+  //  handleDynamicLink();
 
     // clearPreferences();
     checkLocalStorage();
@@ -58,7 +59,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+  //  WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -97,7 +98,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final themeManager = Provider.of<ThemeManager>(context);
 
     return GetMaterialApp(
-      title: 'VOLMORE',
+      title: 'lenda - Volunteering',
       debugShowCheckedModeBanner: false,
       theme: themeManager.themeData,
       home: const SplashScreen(),

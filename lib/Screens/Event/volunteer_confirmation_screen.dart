@@ -168,7 +168,7 @@ class _VolunteerConfirmationScreenState
         title: const Text(
           "Volunteer Confirmation",
           style: TextStyle(
-              fontSize: 26, fontWeight: FontWeight.bold, color: headingBlue),
+              fontSize: 24, fontWeight: FontWeight.bold, color: headingBlue),
         ),
         leading:  IconButton(
             onPressed: (){
@@ -277,7 +277,7 @@ class _VolunteerConfirmationScreenState
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.all(18.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -523,6 +523,7 @@ class _VolunteerConfirmationScreenState
                     )
                   : const SizedBox(),
               ListView.builder(
+                padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: checkboxItems.length,
              //  physics: BouncingScrollPhysics(),
@@ -532,7 +533,7 @@ class _VolunteerConfirmationScreenState
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Row(
                             children: [
@@ -552,7 +553,7 @@ class _VolunteerConfirmationScreenState
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  Text(checkboxItems[index].time!),
+                                  Text(checkboxItems[index].time!, maxLines: 1,overflow: TextOverflow.ellipsis,),
                                 ],
                               ),
                             ],

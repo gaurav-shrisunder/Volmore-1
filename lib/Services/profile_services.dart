@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/request_models/share_transcript_request_model.dart';
+import 'package:volunterring/Models/response_models/shared_transcript_response.dart';
 import 'package:volunterring/Models/response_models/transcript_response.dart';
 import 'package:volunterring/Models/response_models/weekly_stats_response_model.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
@@ -36,6 +37,21 @@ class ProfileServices {
         print('Failed to load Transcript');
       }
       return null;
+    }
+  }
+
+  Future<SharedTranscriptResponse> getTranscriptSharedEmails() async {
+    var userId = await getUserId();
+    Response? response = await apiHandler.get(sharedTranscriptEmails + userId);
+    if (response != null && response.statusCode == 200) {
+      final SharedTranscriptResponse transcriptResponse =
+      SharedTranscriptResponse.fromJson(response.data);
+      return transcriptResponse;
+    } else {
+      if (kDebugMode) {
+        print('Failed to load Transcript');
+      }
+      return SharedTranscriptResponse();
     }
   }
 

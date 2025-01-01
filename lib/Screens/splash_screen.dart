@@ -1,9 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:volunterring/Screens/HomePage.dart';
 import 'package:volunterring/Screens/LoginPage.dart';
 import 'package:volunterring/Utils/shared_prefs.dart';
+
+import '../widgets/event_popup.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,14 +16,55 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver{
   bool isLoggedIn = false;
+  String? eventIDD;
 
   @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addObserver(this);
+    handleDynamicLink();
     _navigateToNextScreen();
+  }
+
+  Future<void> handleDynamicLink() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? uid = prefs.getString('uid');
+    // This handles the case when the app is started with a dynamic link
+    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+    if (initialLink != null) {
+      final Uri deepLink = initialLink.link;
+      final String? eventId = deepLink.queryParameters['eventId'];
+
+      if (eventId != null) {
+        // Show the event popup
+        setState(() {
+          eventIDD = eventId;
+        });
+      //  return eventId;
+      //  showEventPopup(eventId);
+      }
+    }
+
+    // This handles dynamic links when the app is already running in the background
+    FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
+      final Uri deepLink = data.link;
+      final String? eventId = deepLink.queryParameters['eventId'];
+
+      if (eventId != null) {
+        // Show the event popup
+      //  return eventId;
+        setState(() {
+          eventIDD = eventId;
+        });
+
+      //  showEventPopup(eventId);
+      }
+    }).onError((error) {
+      print('Dynamic Link Failed: $error');
+    });
+
   }
 
   Future<void> _navigateToNextScreen() async {
@@ -60,6 +105,9 @@ class _SplashScreenState extends State<SplashScreen> {
               const Duration(milliseconds: 600), // Duration of the transition
         ),
       );
+      if(eventIDD!= null) {
+        showEventPopup(eventIDD!);
+      }
     } else {
       // UID is not present in local storage
       Navigator.pushReplacement(

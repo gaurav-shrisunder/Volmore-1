@@ -82,7 +82,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
         title: const Text(
           "Volunteer Confirmation",
           style: TextStyle(
-              fontSize: 26, fontWeight: FontWeight.bold, color: headingBlue),
+              fontSize: 24, fontWeight: FontWeight.bold, color: headingBlue),
         ),
         automaticallyImplyLeading: false,
         // elevation: 4,

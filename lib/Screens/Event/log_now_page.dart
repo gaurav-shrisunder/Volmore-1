@@ -127,9 +127,10 @@ class _LogNowPageState extends State<LogNowPage> {
           child: Consumer<TimerProvider>(
             builder: (context, timerProvider, child) {
               return Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: screenHeight * 0.01),
+                //  SizedBox(height: screenHeight * 0.01),
                   /* Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

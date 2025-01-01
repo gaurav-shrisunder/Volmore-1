@@ -43,7 +43,7 @@ class LeaderboardUser {
       userId: json['userId'],
       userName: json['userName'],
         locationState: json['locationState'],
-        // profilePicture: json['profilePicture'],
+         profilePicture: json['profilePicture'],
       hostInfluenceHours: json['hostInfluenceMinutes'] ?? 0,
       yearOfStudy: json['yearOfStudy'] ?? 0,
       participantHours: json['participantMinutes'] ?? 0
@@ -57,7 +57,7 @@ class LeaderboardUser {
       'locationState': locationState,
       'hostInfluenceMinutes': hostInfluenceHours,
       'yearOfStudy': yearOfStudy,
-      // 'profilePicture': profilePicture,
+      'profilePicture': profilePicture,
       'participantMinutes': participantHours
     };
   }

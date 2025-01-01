@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:volunterring/Models/request_models/create_event_request_model.dart';
 import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
 import 'package:volunterring/Models/request_models/log_past_event_request_model.dart';
+import 'package:volunterring/Models/response_models/create_event_response_model.dart';
 import 'package:volunterring/Models/response_models/event_category_response_model.dart';
 import 'package:volunterring/Models/response_models/events_data_response_model.dart';
 import 'package:volunterring/Models/response_models/get_event_response_model.dart';
@@ -70,20 +71,20 @@ class EventsServices {
     }
   }
 
-  Future<EventCategoryResponseModel> createEventData(
+  Future<CreateEventResponse> createEventData(
       CreateEventRequestModel requestPayload) async {
     print('Payload::: ${jsonEncode(requestPayload)}');
     Response? response = await apiHandler.post(createEventApi, requestPayload);
     if (response != null && response.statusCode == 201) {
       print('Event Created:::${response.data}');
-      final EventCategoryResponseModel eventCategory =
-          EventCategoryResponseModel.fromJson(response.data);
+      final CreateEventResponse eventCategory =
+      CreateEventResponse.fromJson(response.data);
       return eventCategory;
     } else {
       if (kDebugMode) {
         print('Failed to load create Event data');
       }
-      return EventCategoryResponseModel(
+      return CreateEventResponse(
           message: response?.data["errors"][0]);
     }
   }
@@ -170,8 +171,7 @@ class EventsServices {
         await apiHandler.post(eventParticipantsApi, requestPayload);
     if (response != null && (response.statusCode == 200)) {
       print('Event Created:::${response.data}');
-      final EventCategoryResponseModel eventCategory =
-          EventCategoryResponseModel.fromJson(response.data);
+      final EventCategoryResponseModel eventCategory = EventCategoryResponseModel.fromJson(response.data);
       return eventCategory;
     } else {
       if (kDebugMode) {

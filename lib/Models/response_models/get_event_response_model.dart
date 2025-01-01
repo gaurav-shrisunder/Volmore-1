@@ -128,8 +128,8 @@ class RecurrencePattern {
   factory RecurrencePattern.fromJson(Map<String, dynamic> json) {
     return RecurrencePattern(
       recurringPatternId: json['recurringPatternId'],
-      eventStartDateTime: json['eventStartDateTime'],
-      eventEndDateTime: json['eventEndDateTime'],
+      eventStartDateTime: json['startDate'],
+      eventEndDateTime: json['endDate'],
       recurFrequency: json['recurFrequency'],
       recurInterval: json['recurInterval'],
       weekdays: json['weekdays'] ?? "",
@@ -141,8 +141,8 @@ class RecurrencePattern {
   Map<String, dynamic> toJson() {
     return {
       'recurringPatternId': recurringPatternId,
-      'eventStartDateTime': eventStartDateTime,
-      'eventEndDateTime': eventEndDateTime,
+      'startDate': eventStartDateTime,
+      'endDate': eventEndDateTime,
       'recurFrequency': recurFrequency,
       'recurInterval': recurInterval,
       'weekdays': weekdays,
