@@ -712,8 +712,8 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  style: const ButtonStyle(
-                       backgroundColor: WidgetStatePropertyAll(Colors.white),
+                  style:  ButtonStyle(
+                       backgroundColor: MaterialStateProperty.all(Colors.white),
                       ),
                   onPressed: _addDateTimeController,
                   child: const Text(
