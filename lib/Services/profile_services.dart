@@ -12,7 +12,12 @@ class ProfileServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
   Future<WeeklyStatsResponseModel?> getWeeklyStats() async {
     var userId = await getUserId();
-    Response? response = await apiHandler.get(getWeeklyStat + userId);
+    String now = DateTime.now().toUtc().toIso8601String();
+    var query = {
+      "now": now,
+    };
+    Response? response =
+        await apiHandler.getWithQuery(getWeeklyStat + userId, query);
     if (response != null && response.statusCode == 200) {
       final WeeklyStatsResponseModel weeklyStats =
           WeeklyStatsResponseModel.fromJson(response.data);
@@ -27,7 +32,15 @@ class ProfileServices {
 
   Future<TranscriptResponse?> getTranscript() async {
     var userId = await getUserId();
-    Response? response = await apiHandler.get(getTranscripts + userId);
+    // Add current time in ISO8601 format
+    String now = DateTime.now().toUtc().toIso8601String();
+    var query = {
+      "now": now,
+    };
+    Response? response = await apiHandler.getWithQuery(
+      "$getTranscripts$userId",
+      query,
+    );
     if (response != null && response.statusCode == 200) {
       final TranscriptResponse transcriptResponse =
           TranscriptResponse.fromJson(response.data);
@@ -45,7 +58,7 @@ class ProfileServices {
     Response? response = await apiHandler.get(sharedTranscriptEmails + userId);
     if (response != null && response.statusCode == 200) {
       final SharedTranscriptResponse transcriptResponse =
-      SharedTranscriptResponse.fromJson(response.data);
+          SharedTranscriptResponse.fromJson(response.data);
       return transcriptResponse;
     } else {
       if (kDebugMode) {

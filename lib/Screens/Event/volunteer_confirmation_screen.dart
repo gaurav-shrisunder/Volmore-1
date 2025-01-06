@@ -170,13 +170,14 @@ class _VolunteerConfirmationScreenState
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: headingBlue),
         ),
-        leading:  IconButton(
-            onPressed: (){
-          Navigator.pop(context);
-        }, icon: const Icon(CupertinoIcons.chevron_left)),
-      //  automaticallyImplyLeading: true,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(CupertinoIcons.chevron_left)),
+        //  automaticallyImplyLeading: true,
         // elevation: 4,
-     /*   bottom: PreferredSize(
+        /*   bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3.0),
           child: Container(
             color: Colors.grey[200],
@@ -197,6 +198,7 @@ class _VolunteerConfirmationScreenState
                     fontSize: 16.0);
               } else {
                 Uint8List? pngBytes = await _signatureController.toPngBytes();
+                var userId = await getUserId();
                 String? signBase64Value =
                     await convertSignatureToBase64(pngBytes);
                 LogEventRequestModel requestBody = LogEventRequestModel();
@@ -229,8 +231,13 @@ class _VolunteerConfirmationScreenState
                     : _notesController.text;
                 HostInformation hostInfo = HostInformation();
                 hostInfo.eventId = widget.event.eventId;
+
                 hostInfo.hostId = widget.event.hostId;
-                hostInfo.minutes = differenceInMinutes;
+                if (userId != hostInfo.hostId) {
+                  hostInfo.minutes = differenceInMinutes;
+                } else {
+                  hostInfo.minutes = 0;
+                }
                 requestBody.hostInformation = hostInfo;
 
                 checkboxItems.any((test) {
@@ -523,12 +530,12 @@ class _VolunteerConfirmationScreenState
                     )
                   : const SizedBox(),
               ListView.builder(
-                padding: EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: checkboxItems.length,
-             //  physics: BouncingScrollPhysics(),
-               scrollDirection: Axis.vertical,
-               //   physics: const BouncingScrollPhysics(),
+                  //  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  //   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -553,7 +560,11 @@ class _VolunteerConfirmationScreenState
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  Text(checkboxItems[index].time!, maxLines: 1,overflow: TextOverflow.ellipsis,),
+                                  Text(
+                                    checkboxItems[index].time!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ],
                               ),
                             ],
@@ -590,13 +601,12 @@ class _VolunteerConfirmationScreenState
                       ),
                     );
                   }),
-            //  SizedBox(height: MediaQuery.of(context).size.height/3,)
+              //  SizedBox(height: MediaQuery.of(context).size.height/3,)
             ],
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-
           color: Colors.white,
           //  height: 40,
           child: MyButtons(
@@ -647,6 +657,7 @@ class _VolunteerConfirmationScreenState
                       : _notesController.text;
                   HostInformation hostInfo = HostInformation();
                   hostInfo.eventId = widget.event.eventId;
+
                   hostInfo.hostId = widget.event.hostId;
                   hostInfo.minutes = differenceInMinutes;
                   requestBody.hostInformation = hostInfo;
