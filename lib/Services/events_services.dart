@@ -22,9 +22,11 @@ class EventsServices {
 
   Future<EventsDataResponseModel?> getEventsData(String endpoint,{required String sortBy, required String sortDirection}) async {
     var userId = await getUserId();
+    String now = DateTime.now().toUtc().toIso8601String();
    var query = {
       "sortBy": sortBy,
-     "sortDirection":sortDirection
+     "sortDirection":sortDirection,
+      "now": now,
     };
 
     Response? response =
