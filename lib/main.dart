@@ -21,10 +21,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(EventController());
-  final appLink = AppLinks();
-  final sub = appLink.uriLinkStream.listen((uri) {
-    print('App Link: $uri');
-  });
+  // final appLink = AppLinks();
+  // final sub = appLink.uriLinkStream.listen((uri) {
+  //   print('App Link: $uri');
+  // });
 
   runApp(
     MultiProvider(
@@ -49,9 +49,46 @@ class _MyAppState extends State<MyApp> {
   bool isLoggedIn = false;
   final eventController = Get.find<EventController>();
 
+  Future<void> initDynamicLinks() async {
+    // Handle link when app is not opened
+    try {
+      final PendingDynamicLinkData? initialLink =
+          await FirebaseDynamicLinks.instance.getInitialLink();
+
+      if (initialLink != null) {
+        final Uri deepLink = initialLink.link;
+        print("Got initial link: ${deepLink.toString()}");
+        handleDynamicLink(deepLink);
+      }
+    } catch (e) {
+      print('Error getting initial dynamic link: $e');
+    }
+    FirebaseDynamicLinks.instance.onLink.listen(
+      (PendingDynamicLinkData dynamicLinkData) {
+        print("Got dynamic link: ${dynamicLinkData.link.toString()}");
+        handleDynamicLink(dynamicLinkData.link);
+      },
+      onError: (error) {
+        print('Dynamic Links error: $error');
+      },
+    );
+  }
+
+  void handleDynamicLink(Uri deepLink) {
+    final String? eventId = deepLink.queryParameters['eventId'];
+    print("Handling dynamic link with eventId: $eventId");
+
+    if (eventId != null) {
+      // Ensure we show popup on the main thread
+      showEventPopup(eventId);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    initDynamicLinks();
     // with WidgetsBindingObserver
     //  WidgetsBinding.instance.addObserver(this);
 
@@ -68,35 +105,36 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Future<void> handleDynamicLink() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? uid = prefs.getString('uid');
-    // This handles the case when the app is started with a dynamic link
-    final PendingDynamicLinkData? initialLink =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    if (initialLink != null) {
-      final Uri deepLink = initialLink.link;
-      final String? eventId = deepLink.queryParameters['eventId'];
+  // Future<void> handleDynamicLink() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? uid = prefs.getString('uid');
+  //   // This handles the case when the app is started with a dynamic link
+  //   print("in handle dunmaic link $uid");
+  //   final PendingDynamicLinkData? initialLink =
+  //       await FirebaseDynamicLinks.instance.getInitialLink();
+  //   if (initialLink != null) {
+  //     final Uri deepLink = initialLink.link;
+  //     final String? eventId = deepLink.queryParameters['eventId'];
 
-      if (eventId != null) {
-        // Show the event popup
-        showEventPopup(eventId);
-      }
-    }
+  //     if (eventId != null) {
+  //       // Show the event popup
+  //       showEventPopup(eventId);
+  //     }
+  //   }
 
-    // This handles dynamic links when the app is already running in the background
-    FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
-      final Uri deepLink = data.link;
-      final String? eventId = deepLink.queryParameters['eventId'];
+  //   // This handles dynamic links when the app is already running in the background
+  //   FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
+  //     final Uri deepLink = data.link;
+  //     final String? eventId = deepLink.queryParameters['eventId'];
 
-      if (eventId != null) {
-        // Show the event popup
-        showEventPopup(eventId);
-      }
-    }).onError((error) {
-      print('Dynamic Link Failed: $error');
-    });
-  }
+  //     if (eventId != null) {
+  //       // Show the event popup
+  //       showEventPopup(eventId);
+  //     }
+  //   }).onError((error) {
+  //     print('Dynamic Link Failed: $error');
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
