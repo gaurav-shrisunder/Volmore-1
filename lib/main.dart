@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -20,6 +21,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(EventController());
+  final appLink = AppLinks();
+  final sub = appLink.uriLinkStream.listen((uri) {
+    print('App Link: $uri');
+  });
 
   runApp(
     MultiProvider(
@@ -40,7 +45,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp>  {
+class _MyAppState extends State<MyApp> {
   bool isLoggedIn = false;
   final eventController = Get.find<EventController>();
 
@@ -48,10 +53,10 @@ class _MyAppState extends State<MyApp>  {
   void initState() {
     super.initState();
     // with WidgetsBindingObserver
-  //  WidgetsBinding.instance.addObserver(this);
+    //  WidgetsBinding.instance.addObserver(this);
 
     // Handle dynamic link when the app is launched via a deep link
-  //  handleDynamicLink();
+    //  handleDynamicLink();
 
     // clearPreferences();
     checkLocalStorage();
@@ -59,7 +64,7 @@ class _MyAppState extends State<MyApp>  {
 
   @override
   void dispose() {
-  //  WidgetsBinding.instance.removeObserver(this);
+    //  WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

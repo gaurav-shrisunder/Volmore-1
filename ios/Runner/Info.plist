@@ -22,20 +22,57 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>lendavolunteering.com</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>https</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>volmore.link.page</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>https</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplication Queries Schemes</key>
+	<array>
+		<string>lendavolunteering.com</string>
+	</array>
+	<key>LSMinimumSystemVersion</key>
+	<string>12.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription </key>
+	<string>To Click user profile from camera</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need your location to track your current position for event logging.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to track your current position even when the app is in the background.</string>
-	<key>NSPhotoLibraryUsageDescription </key>
-	<string>To upload user profile</string>
-	<key>NSCameraUsageDescription </key>
-	<string>To Click user profile from camera</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to log your event accurately and provide location-based services.</string>
 	<key>NSMicrophoneUsageDescription </key>
 	<string>To Click and record user video for profile and post</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to allow you to upload photo.</string>
+	<key>NSPhotoLibraryUsageDescription </key>
+	<string>To upload user profile</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -49,13 +86,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to log your event accurately and provide location-based services.</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>12.0</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photo library to allow you to upload photo.</string>
 </dict>
 </plist>
