@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:volunterring/Models/request_models/reset_password_request_model.dart';
-import 'package:volunterring/Models/response_models/update_user_response_model.dart';
+import '../../Models/request_models/reset_password_request_model.dart';
+import '../../Models/response_models/update_user_response_model.dart';
 
 import '../Models/request_models/update_Profile_request_model.dart';
 import '../Utils/shared_prefs.dart';
@@ -60,7 +60,20 @@ class UserServices {
       if (kDebugMode) {
         print('Failed to load token data');
       }
-      return response?.data['message'];
+      return response?.data['errors'][0];
+    }
+  }
+
+  Future<dynamic> deleteUser() async {
+    var userId = await getUserId();
+    Response? response = await apiHandler.delete(deleteUserApi+userId,null);
+    if (response != null && response.statusCode == 200) {
+      return response.data['message'];
+    } else {
+      if (kDebugMode) {
+        print('Failed to load token data');
+      }
+      return response?.data['errors'][0];
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/widgets/QnA.dart';
+import '../../Utils/Colors.dart';
+import '../../widgets/QnA.dart';
 
 class FAQPage extends StatelessWidget {
   const FAQPage({super.key});
@@ -14,13 +14,13 @@ class FAQPage extends StatelessWidget {
         "question":
             "How do I log hours for a volunteering event I did in the past?",
         "answer":
-            "Press the “Log Past Hours” button to log the hours. You can verify the event with a signature, but not geolocation and real-time tracking."
+            "Press the “Log Past Hours” button to log the hours. You can verify the event with a signature, but not your current geolocation"
       },
       {
         "question":
             "What if the volunteer organization/ person I helped  couldn't sign at the event?",
         "answer":
-            "Don't worry, we have got you covered try our text feature today by adding there phone number, they will receive a text and be able to verify your work. "
+            "Don't worry, you can get the event signed and verified anytime later by going to the Past Event's tab and clicking on Verify."
       },
       {
         "question": "How do I reset my password?  ",

@@ -14,11 +14,11 @@ import 'package:geocoding/geocoding.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Models/UserModel.dart';
-import 'package:volunterring/Models/event_data_model.dart';
-import 'package:volunterring/Screens/Event/volunteer_confirmation_screen.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Utils/common_utils.dart';
+import '../../Models/UserModel.dart';
+import '../../Models/event_data_model.dart';
+import '../../Screens/Event/volunteer_confirmation_screen.dart';
+import '../../Screens/HomePage.dart';
+import '../../Utils/common_utils.dart';
 
 import '../Models/response_models/events_data_response_model.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:volunterring/Models/response_models/leaderboard_influenced_response_model.dart';
-import 'package:volunterring/Services/leaderboard_service.dart';
-import 'package:volunterring/Services/user_services.dart';
+import '../../Models/response_models/leaderboard_influenced_response_model.dart';
+import '../../Services/leaderboard_service.dart';
+import '../../Services/user_services.dart';
 
 import '../Models/UserModel.dart';
 

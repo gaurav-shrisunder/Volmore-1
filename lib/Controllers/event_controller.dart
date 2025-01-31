@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:volunterring/Models/event_data_model.dart';
-import 'package:volunterring/Services/logService.dart';
+import 'package:lendavolunterring/Models/event_data_model.dart';
+import 'package:lendavolunterring/Services/logService.dart';
 
 class EventController extends GetxController {
   var isLoading = true.obs;

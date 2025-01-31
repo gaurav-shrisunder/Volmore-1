@@ -1,10 +1,11 @@
-/// Base URL
-const String baseUrl = "https://dev.volmore.maizelab-cloud.com/";
-// const String baseUrl = "https://volmore.maizelab-cloud.com/";         ///PROD
+/// Base URL            https://development.d2l5864qp4uooq.amplifyapp.com/login
+// const String baseUrl = "https://dev.volmore.maizelab-cloud.com/";
+const String baseUrl = "https://volmore.maizelab-cloud.com/";         ///PROD
 
 /// Api endpoints
 const String signUpApi = "api/v1/users/signup";
 const String loginApi = "api/v1/users/login";
+const String deleteUserApi = "api/v1/users/";
 const String refreshTokenApi = "api/v1/auth/refreshToken";
 const String rolesApi = "api/v1/roles";
 const String organisationListApi = "api/v1/organizations";

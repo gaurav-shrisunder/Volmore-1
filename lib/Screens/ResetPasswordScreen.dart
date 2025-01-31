@@ -3,9 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:volunterring/Models/request_models/reset_password_request_model.dart';
-import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:volunterring/Services/user_services.dart';
+import '../../Models/request_models/reset_password_request_model.dart';
+import '../../Screens/LoginPage.dart';
+import '../../Services/user_services.dart';
 
 import '../Services/signUp_login_services.dart';
 import '../Utils/Colors.dart';
@@ -83,7 +83,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     req.emailId = widget.email;
                     req.password = confirmPasswordController.text;
                     await UserServices().resetPassword(req).then((onValue){
-                      if(onValue!.message!.toLowerCase().contains("successfully")){
+                      if(onValue!.contains("successfully")){
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const LoginPage()),

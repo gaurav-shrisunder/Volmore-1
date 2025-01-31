@@ -8,11 +8,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
-import 'package:volunterring/Models/response_models/update_user_response_model.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/api_constants.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
+import '../../Models/response_models/update_user_response_model.dart';
+import '../../Screens/HomePage.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../api_constants.dart';
 
 class ProfileImageWidget extends StatefulWidget {
   const ProfileImageWidget({Key? key}) : super(key: key);
@@ -94,7 +94,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
 
       // Construct and log the full URL
       final url = Uri.parse(
-          'https://dev.volmore.maizelab-cloud.com/api/v1/users/$userId/updateProfilePicture');
+          '${baseUrl}api/v1/users/$userId/updateProfilePicture');
       debugPrint('Request URL: ${url.toString()}');
 
       final request = http.MultipartRequest('PUT', url);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
-import 'package:volunterring/Utils/Colors.dart';
+import '../../Utils/Colors.dart';
 
 class TermsScreen extends StatefulWidget {
   const TermsScreen({super.key});

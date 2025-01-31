@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Models/UserModel.dart';
-import 'package:volunterring/Models/event_data_model.dart';
-import 'package:volunterring/Services/logService.dart';
+import '../../Models/UserModel.dart';
+import '../../Models/event_data_model.dart';
+import '../../Services/logService.dart';
 
 class UserProfileController extends GetxController {
   var isLoading = true.obs;

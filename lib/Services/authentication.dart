@@ -8,8 +8,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:volunterring/Models/UserModel.dart';
-import 'package:volunterring/Models/event_data_model.dart';
+import '../../Models/UserModel.dart';
+import '../../Models/event_data_model.dart';
 
 class AuthMethod {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

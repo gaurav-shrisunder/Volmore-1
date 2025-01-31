@@ -1,21 +1,17 @@
-import 'package:app_links/app_links.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Controllers/event_controller.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:volunterring/Screens/splash_screen.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/provider/theme_manager_provider.dart';
-import 'package:volunterring/provider/time_logger_provider.dart';
-import 'package:volunterring/Utils/app_themes.dart';
-
-import 'package:volunterring/widgets/event_popup.dart'; // Import the new file
+import '../../Controllers/event_controller.dart';
+import '../../Screens/splash_screen.dart';
+import '../../Utils/app_themes.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../provider/theme_manager_provider.dart';
+import '../../provider/time_logger_provider.dart';
+import '../../widgets/event_popup.dart'; // Import the new file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +41,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
   bool isLoggedIn = false;
   final eventController = Get.find<EventController>();
 
@@ -88,10 +84,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    initDynamicLinks();
-    // with WidgetsBindingObserver
-    //  WidgetsBinding.instance.addObserver(this);
 
+    // with WidgetsBindingObserver
+     WidgetsBinding.instance.addObserver(this);
+     if(Platform.isIOS){
+       initDynamicLinks();
+     }
     // Handle dynamic link when the app is launched via a deep link
     //  handleDynamicLink();
 

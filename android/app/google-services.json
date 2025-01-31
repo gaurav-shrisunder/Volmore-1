@@ -2,14 +2,14 @@
   "project_info": {
     "project_number": "815070948383",
     "project_id": "volunteering-9e75b",
-    "storage_bucket": "volunteering-9e75b.appspot.com"
+    "storage_bucket": "volunteering-9e75b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:815070948383:android:749845d1c6ed882272b92a",
         "android_client_info": {
-          "package_name": "com.maizelabs.volmore"
+          "package_name": "com.maizelabs.volunterring"
         }
       },
       "oauth_client": [],

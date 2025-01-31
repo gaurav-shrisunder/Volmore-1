@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/widgets/appbar_widget.dart';
+import '../../Utils/Colors.dart';
+import '../../widgets/appbar_widget.dart';
 
 class VolunterringIdeasScreen extends StatelessWidget {
   const VolunterringIdeasScreen({super.key});
