@@ -106,8 +106,8 @@ class Event {
 
 class RecurrencePattern {
   final String recurringPatternId;
-  final String eventStartDateTime;
-  final String eventEndDateTime;
+  final String? eventStartDateTime;
+  final String? eventEndDateTime;
   final String recurFrequency;
   final int recurInterval;
   final String weekdays;

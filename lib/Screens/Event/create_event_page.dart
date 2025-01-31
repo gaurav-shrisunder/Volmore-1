@@ -9,19 +9,19 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Models/UserModel.dart';
+import '../../Models/UserModel.dart';
 
-import 'package:volunterring/Models/request_models/create_event_request_model.dart';
-import 'package:volunterring/Models/response_models/event_category_response_model.dart';
-import 'package:volunterring/Screens/HomePage.dart';
+import '../../Models/request_models/create_event_request_model.dart';
+import '../../Models/response_models/event_category_response_model.dart';
+import '../../Screens/HomePage.dart';
 
-import 'package:volunterring/Services/deep_links.dart';
-import 'package:volunterring/Services/events_services.dart';
+import '../../Services/deep_links.dart';
+import '../../Services/events_services.dart';
 
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/widgets/InputFormFeild.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../widgets/InputFormFeild.dart';
 import 'package:uuid/uuid.dart';
-import 'package:volunterring/widgets/appbar_widget.dart';
+import '../../widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
 
 import '../../Models/response_models/create_event_response_model.dart';
@@ -209,7 +209,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   _onChanged() {
     if (_sessionToken == null) {
       setState(() {
-        _sessionToken = uuid.v4();
+        _sessionToken = uuid.v1();
       });
     }
     getSuggestion(locationController.text);
@@ -223,6 +223,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     String request =
         '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
+    print('Respinse Map: ${json.decode(response.body)}');
     if (response.statusCode == 200) {
       setState(() {
         _placeList = json.decode(response.body)['predictions'];
@@ -970,7 +971,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                           https://volmore.page.link/e1ZW
                                           final String? uid = await getUserId();
                                           String url = await createDynamicLink(
-                                              eventId: eventCreatedResponse.eventDetails!.eventId.toString());
+                                              eventId: eventCreatedResponse.eventDetails!.eventIntanceId.toString());
                                           Share.share(url);
                                           Navigator.pushAndRemoveUntil(
                                               context,

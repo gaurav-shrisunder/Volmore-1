@@ -26,5 +26,9 @@ int getDifferenceInMinutes(String startTime, String endTime) {
   return difference.inMinutes;
 }
 
+Duration calculateElapsedTime(DateTime startTime) {
+  final now = DateTime.now();
+  return now.difference(startTime);
+}
 
 

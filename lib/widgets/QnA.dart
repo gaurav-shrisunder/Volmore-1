@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:volunterring/Utils/Colors.dart';
+import '../../Utils/Colors.dart';
 
 class QnAWidget extends StatelessWidget {
   final List<Map<String, String>> qnaList;

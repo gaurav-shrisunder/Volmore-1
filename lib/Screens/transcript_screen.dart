@@ -12,12 +12,12 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Models/request_models/share_transcript_request_model.dart';
-import 'package:volunterring/Models/response_models/shared_transcript_response.dart';
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
-import 'package:volunterring/Models/response_models/transcript_response.dart';
-import 'package:volunterring/Services/profile_services.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
+import '../../Models/request_models/share_transcript_request_model.dart';
+import '../../Models/response_models/shared_transcript_response.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
+import '../../Models/response_models/transcript_response.dart';
+import '../../Services/profile_services.dart';
+import '../../Utils/shared_prefs.dart';
 
 import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';

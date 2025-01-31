@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pinput.dart';
-import 'package:volunterring/Screens/ResetPasswordScreen.dart';
-import 'package:volunterring/Services/signUp_login_services.dart';
+import '../../Screens/ResetPasswordScreen.dart';
+import '../../Services/signUp_login_services.dart';
 
 import '../Utils/Colors.dart';
 import '../widgets/button.dart';

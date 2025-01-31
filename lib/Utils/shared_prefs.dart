@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
 
 enum SortOption { def, az, za, dateAsc, dateDesc }
 
@@ -80,4 +80,27 @@ Future<User?> getUser() async {
     return User.fromJson(userMap);
   }
   return null; // Return null if no user is stored
+}
+
+
+Future<void> saveStartTime(DateTime startTime) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString('timer_start_time', startTime.toIso8601String());
+}
+
+Future<DateTime?> getStartTime() async {
+  final prefs = await SharedPreferences.getInstance();
+  final savedTime = prefs.getString('timer_start_time');
+  if (savedTime != null) {
+    return DateTime.parse(savedTime);
+  }
+  return null;
+}
+
+
+Future<void> removeTimerData() async {
+  SharedPreferences token = await SharedPreferences.getInstance();
+  token.remove('seconds_elapsed');
+  token.remove('start_time');
+  token.remove('end_time');
 }

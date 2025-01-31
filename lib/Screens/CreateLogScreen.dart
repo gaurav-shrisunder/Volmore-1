@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:volunterring/Screens/Event/create_event_page.dart';
-import 'package:volunterring/Screens/Event/create_past_events_page.dart';
-import 'package:volunterring/Screens/VolunteeringIdeas.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/widgets/appbar_widget.dart';
+import '../../Screens/Event/create_event_page.dart';
+import '../../Screens/Event/create_past_events_page.dart';
+import '../../Screens/VolunteeringIdeas.dart';
+import '../../Utils/Colors.dart';
+import '../../widgets/appbar_widget.dart';
 
 class CreateLogScreen extends StatelessWidget {
   const CreateLogScreen({super.key});

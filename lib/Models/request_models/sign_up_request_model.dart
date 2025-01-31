@@ -49,7 +49,9 @@ class SignUpRequestModel {
     data['yearOfStudy'] = yearOfStudy;
     // data['userRoleId'] = userRoleId;
     data['school'] = school;
-    data['university'] = university;
+    if (university != null) {
+      data['university'] = university;
+    }
     data['sessionId'] = sessionId;
     data['locationState'] = locationState;
     if (organization != null) {

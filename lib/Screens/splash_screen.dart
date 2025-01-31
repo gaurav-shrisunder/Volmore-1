@@ -3,9 +3,9 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
+import '../../Screens/HomePage.dart';
+import '../../Screens/LoginPage.dart';
+import '../../Utils/shared_prefs.dart';
 
 import '../widgets/event_popup.dart';
 

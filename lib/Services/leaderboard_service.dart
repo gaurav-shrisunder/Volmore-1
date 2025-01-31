@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:volunterring/Models/response_models/leaderboard_influenced_response_model.dart';
+import '../../Models/response_models/leaderboard_influenced_response_model.dart';
 
-import 'package:volunterring/api_constants.dart';
-import 'package:volunterring/api_handler.dart';
+import '../../api_constants.dart';
+import '../../api_handler.dart';
 
 class LeaderboardServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();

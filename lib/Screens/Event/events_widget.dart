@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Services/authentication.dart';
-import 'package:volunterring/Services/deep_links.dart';
+import '../../Services/authentication.dart';
+import '../../Services/deep_links.dart';
 
 import '../../Models/event_data_model.dart';
 import '../../Utils/shared_prefs.dart';

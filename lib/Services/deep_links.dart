@@ -3,15 +3,12 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 Future<String> createDynamicLink({required String eventId}) async {
   final DynamicLinkParameters parameters = DynamicLinkParameters(
     uriPrefix: 'https://volmore.page.link',
-    link:
-        Uri.parse('https://volmore.com/event?eventId=$eventId'),
+    link: Uri.parse('https://volmore.page.link/event?eventId=$eventId'),
     androidParameters: const AndroidParameters(
-      packageName: 'com.yourapp',
+      packageName: 'com.maizelabs.volunterring',
     ),
     iosParameters: const IOSParameters(
-      bundleId: 'com.volmore.app',
-      appStoreId: 'your_app_store_id',
-    ),
+        bundleId: 'com.maizelabs.volunterring', minimumVersion: '1'),
   );
 
   final ShortDynamicLink shortDynamicLink =

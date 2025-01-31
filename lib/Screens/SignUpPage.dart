@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:volunterring/Models/request_models/sign_up_request_model.dart';
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:volunterring/Screens/dashboard.dart';
-import 'package:volunterring/Services/authentication.dart';
-import 'package:volunterring/Services/signUp_login_services.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/widgets/FormFeild.dart';
-import 'package:volunterring/widgets/InputFormFeild.dart';
-import 'package:volunterring/widgets/button.dart';
-import 'package:volunterring/widgets/snackbar.dart';
+import 'package:lendavolunterring/Screens/VerifyEmailSignUpScreen.dart';
+import '../../Models/request_models/sign_up_request_model.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
+import '../../Screens/HomePage.dart';
+import '../../Screens/LoginPage.dart';
+import '../../Screens/dashboard.dart';
+import '../../Services/authentication.dart';
+import '../../Services/signUp_login_services.dart';
+import '../../Utils/Colors.dart';
+import '../../widgets/FormFeild.dart';
+import '../../widgets/InputFormFeild.dart';
+import '../../widgets/button.dart';
+import '../../widgets/snackbar.dart';
+import 'WebviewScreen.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -92,6 +94,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool isLoading = false;
   String? _errorMessage;
   bool isIndividualChecked = false;
+  bool isTermsAgreed = false;
 
   void _validateInput() {
     final error = phoneValidator(numberController.text);
@@ -99,6 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
       _errorMessage = error;
     });
   }
+
   void _validateEmailInput() {
     final error = emailValidator(emailController.text);
     setState(() {
@@ -132,12 +136,14 @@ class _SignUpPageState extends State<SignUpPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(res?.message ?? "Account created successfully."),
-          duration: Duration(seconds: 3), // Set the duration of the toast
-          behavior: SnackBarBehavior.floating, // Makes the toast float above the UI
-          backgroundColor: Colors.black, // Optional: Customize the background color
+          duration: const Duration(seconds: 3),
+          // Set the duration of the toast
+          behavior: SnackBarBehavior.floating,
+          // Makes the toast float above the UI
+          backgroundColor:
+              Colors.black, // Optional: Customize the background color
         ),
       );
-
     } else {
       setState(() {
         isLoading = false;
@@ -147,9 +153,12 @@ class _SignUpPageState extends State<SignUpPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(res?.message ?? "Something went wrong!!"),
-          duration: Duration(seconds: 3), // Set the duration of the toast
-          behavior: SnackBarBehavior.floating, // Makes the toast float above the UI
-          backgroundColor: Colors.black, // Optional: Customize the background color
+          duration: const Duration(seconds: 3),
+          // Set the duration of the toast
+          behavior: SnackBarBehavior.floating,
+          // Makes the toast float above the UI
+          backgroundColor:
+              Colors.black, // Optional: Customize the background color
         ),
       );
       //   showSnackBar(context, res);
@@ -218,13 +227,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       keyboardType: TextInputType.emailAddress,
                       maxlines: 1,
                       hintText: "Enter Your email",
-
                       validator: emailValidator,
                     ),
                     SizedBox(
                       height: height * 0.009,
                     ),
-
                     Row(
                       children: [
                         // const SizedBox(width: 10),
@@ -256,8 +263,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   color: Colors.blue[200]!,
                                 ),
                               ),
-                              errorText:
-                                  _errorMessage, // Display the error message
+                              errorText: _errorMessage,
+                              // Display the error message
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
@@ -317,7 +324,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         hintText: "Enter your graduation year",
                       ),
                     ),
-               /*     Visibility(
+                    /*     Visibility(
                       visible: !isIndividualChecked,
                       child: SizedBox(
                         height: height * 0.009,
@@ -340,7 +347,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(
                       height: height * 0.009,
                     ),
-                 /*   Visibility(
+                    /*   Visibility(
                       visible: !isIndividualChecked,
                       child: SizedBox(
                         height: height * 0.009,
@@ -377,7 +384,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(
                       height: height * 0.009,
                     ),
-                 /*   Visibility(
+                    /*   Visibility(
                       visible: !isIndividualChecked,
                       child: SizedBox(
                         height: height * 0.009,
@@ -399,65 +406,194 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: height * 0.009,
                       ),
                     ),
-              /*      Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Checkbox(
-                            value: isIndividualChecked,
+                            value: isTermsAgreed,
                             onChanged: (value) {
                               setState(() {
-                                isIndividualChecked = value!;
+                                isTermsAgreed = value!;
                               });
                             }),
-                        const Text(
-                          "Want to sign up as an Individual?",
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  "I agree to the ",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const WebViewScreen(
+                                            'https://www.lendavolunteering.com/terms-and-condition'),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    "Terms & Conditions ",
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.blueAccent),
+                                  ),
+                                ),
+                                const Text(
+                                  "&",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const WebViewScreen(
+                                            'https://www.lendavolunteering.com/privacy-policy'),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    "Privacy Policy",
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.blueAccent),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
                         )
                       ],
-                    ),*/
+                    ),
                     SizedBox(
                       height: height * 0.009,
                     ),
                     MyButtons(
-                        onTap: () {
-                          if (passwordController.text !=
-                              confirmPasswordController.text) {
-                            Fluttertoast.showToast(
-                                msg:
-                                    "Password and Confirm password doesn't match");
-                            return;
-                          }
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              });
-                          SignUpRequestModel signUpRequestBody =
-                              SignUpRequestModel();
-                          signUpRequestBody.userName = nameController.text;
-                          signUpRequestBody.emailId = emailController.text;
-                          signUpRequestBody.locationState = selectedState;
-                          signUpRequestBody.passwordHash =
-                              passwordController.text;
-                         /* signUpRequestBody.userRoleId =
-                              isIndividualChecked ? "3" : "4";*/
-                          if (!isIndividualChecked) {
-                            signUpRequestBody.yearOfStudy =
-                                int.parse(gradYearController.text);
-                            signUpRequestBody.university =
-                                collegeNameController.text;
-                            signUpRequestBody.school =
-                                schoolNameController.text;
-                          }
-                          signUpRequestBody.contactNumber =
-                              selectedCountryCode + numberController.text;
-                          signUpRequestBody.sessionId =  "app-${emailController.text.split("@").first}";
+                        onTap: () async {
+                          if (isTermsAgreed) {
+                            print('State: $selectedState');
 
-                          signUp(signUpRequestBody);
+                            if (nameController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Name cannot be empty");
+                            } else if (emailController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Email cannot be empty");
+                            } else if (passwordController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Password cannot be empty");
+                            } else if (confirmPasswordController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Confirm password cannot be empty");
+                            } else if (numberController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Contact number cannot be empty");
+                            } else if (gradYearController.text.isEmpty && !isIndividualChecked) {
+                              Fluttertoast.showToast(msg: "Graduation year cannot be empty");
+                            } else if (schoolNameController.text.isEmpty && !isIndividualChecked) {
+                              Fluttertoast.showToast(msg: "School name cannot be empty");
+                            } else if (selectedState == null) {
+                              Fluttertoast.showToast(msg: "State must be selected");
+                            } else if (passwordController.text != confirmPasswordController.text) {
+                              Fluttertoast.showToast(
+                                  msg: "Password and Confirm password don't match");
+                            } else {
+                              // All fields are valid
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) {
+                                  return const Center(child: CircularProgressIndicator());
+                                },
+                              );
+                              SignUpRequestModel signUpRequestBody = SignUpRequestModel();
+                              signUpRequestBody.userName = nameController.text;
+                              signUpRequestBody.emailId = emailController.text;
+                              signUpRequestBody.locationState = selectedState;
+                              signUpRequestBody.passwordHash = passwordController.text;
+
+                              if (!isIndividualChecked) {
+                                signUpRequestBody.yearOfStudy = int.parse(gradYearController.text);
+                                signUpRequestBody.university = collegeNameController.text.isEmpty ? null : collegeNameController.text;
+                                signUpRequestBody.school = schoolNameController.text;
+                              }
+
+                              signUpRequestBody.contactNumber =
+                                  selectedCountryCode + numberController.text;
+                              signUpRequestBody.sessionId =
+                              "app-${emailController.text.split("@").first}";
+                              signUp(signUpRequestBody);
+                            }
+                          } else {
+                            Fluttertoast.showToast(msg: "Please agree to the Terms & Conditions");
+                          }
+
+                          /*  if (isTermsAgreed) {
+                            if (nameController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Name cannot be empty");
+                            } else if (emailController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Email cannot be empty");
+                            } else if (passwordController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Password cannot be empty");
+                            } else if (confirmPasswordController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Confirm password cannot be empty");
+                            } else if (numberController.text.isEmpty) {
+                              Fluttertoast.showToast(msg: "Contact number cannot be empty");
+                            } else if (gradYearController.text.isEmpty && !isIndividualChecked) {
+                              Fluttertoast.showToast(msg: "Graduation year cannot be empty");
+                            } else if (schoolNameController.text.isEmpty && !isIndividualChecked) {
+                              Fluttertoast.showToast(msg: "School name cannot be empty");
+                            } else if (selectedState == null) {
+                              Fluttertoast.showToast(msg: "State must be selected");
+                            } else if (passwordController.text != confirmPasswordController.text) {
+                              Fluttertoast.showToast(
+                                  msg: "Password and Confirm password don't match");
+                            } else {
+                              // All fields are valid
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) {
+                                  return const Center(child: CircularProgressIndicator());
+                                },
+                              );
+                              SignUpRequestModel signUpRequestBody = SignUpRequestModel();
+                              signUpRequestBody.userName = nameController.text;
+                              signUpRequestBody.emailId = emailController.text;
+                              signUpRequestBody.locationState = selectedState;
+                              signUpRequestBody.passwordHash = passwordController.text;
+
+                              if (!isIndividualChecked) {
+                                signUpRequestBody.yearOfStudy = int.parse(gradYearController.text);
+                                signUpRequestBody.university = collegeNameController.text.isEmpty ? null : collegeNameController.text;
+                                signUpRequestBody.school = schoolNameController.text;
+                              }
+
+                              signUpRequestBody.contactNumber =
+                                  selectedCountryCode + numberController.text;
+                              signUpRequestBody.sessionId = "app-${emailController.text.split("@").first}";
+
+                            //  signUp(signUpRequestBody);
+
+                          *//*    await SignupLoginServices().sendOtp(emailController.text).then((onValue){
+                                if(onValue!.message!.toLowerCase().contains("Failed to process request")){
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(msg: onValue.message!);
+                                }else{
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => VerifyEmailSignUpScreen(signUpRequestBody)));
+                                  }
+                              });*//*
+
+                            }
+                          } else {
+                            Fluttertoast.showToast(msg: "Please agree to the Terms & Conditions");
+                          }*/
                         },
                         text: "Sign Up"),
                     SizedBox(
