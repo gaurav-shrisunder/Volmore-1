@@ -6,15 +6,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
-import 'package:volunterring/Models/response_models/event_category_response_model.dart';
-import 'package:volunterring/Models/response_models/get_event_response_model.dart';
+import '../../Models/request_models/log_current_event_request_model.dart';
+import '../../Models/response_models/event_category_response_model.dart';
+import '../../Models/response_models/get_event_response_model.dart';
 
-import 'package:volunterring/Screens/HomePage.dart';
+import '../../Screens/HomePage.dart';
 
-import 'package:volunterring/Services/events_services.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
+import '../../Services/events_services.dart';
+import '../../Utils/Colors.dart';
+import '../../Utils/shared_prefs.dart';
 // Assuming this is the file where fetchEventById is defined
 
 void showEventPopup(String eventId) async {
@@ -24,25 +24,6 @@ void showEventPopup(String eventId) async {
 
   print('Show Dialog:: ');
   if (eventData.events.isNotEmpty) {
-    //   showDialog(
-    //     context: Get.context!,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         title: const Text("Event Already Accepted"),
-    //         content: const Text("You have already accepted this invite."),
-    //         actions: [
-    //           TextButton(
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //             child: const Text('Close'),
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   );
-    //   return;
-    // }
 
     print('Show Dialog:: ${jsonEncode(eventData.events)}');
     showDialog(
@@ -194,7 +175,7 @@ void showEventPopup(String eventId) async {
                                     });
 
                                     // Optionally close the dialog after acceptance
-                                    Navigator.of(context).pop();
+                                    // Navigator.of(context).pop();
                                   },
                             child: isLoading
                                 ? const SizedBox(
@@ -256,16 +237,15 @@ Future<void> acceptInvite(String eventId, BuildContext context) async {
   if (res.message.toString().contains("successfully")) {
     Fluttertoast.showToast(msg: "Event Accepted Successfully");
     Navigator.pop(context);
-   //  Navigator.pushAndRemoveUntil(
-   //    context,
-   //    MaterialPageRoute(builder: (context) => const HomePage()),
-   //        (Route<dynamic> route) =>
-   //    false, // This condition makes sure all the routes are removed.
-   //  );
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
     // Get.to(() => const HomePage());
   } else {
     Fluttertoast.showToast(msg: "Some error occurred");
-    Get.back();
+    Navigator.pop(context);
+    // Get.back();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+
   }
 }

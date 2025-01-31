@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>lenda Volunterring</string>
+	<string>lenda Volunteering</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -41,7 +41,7 @@
 			<string>com.maizelabs.volunterring</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>applinks:volmore.page.link</string>
+				<string>applinks</string>
 			</array>
 		</dict>
 	</array>
@@ -63,20 +63,14 @@
 	<string>12.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription </key>
-	<string>To Click user profile from camera</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to track your current position for event logging.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We need your location to track your current position even when the app is in the background.</string>
+	<string>The app requests location access to capture the user&apos;s current location for event logging purposes.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to log your event accurately and provide location-based services.</string>
-	<key>NSMicrophoneUsageDescription </key>
-	<string>To Click and record user video for profile and post</string>
+    <string>The app requests location access to capture the user&apos;s current location for event logging purposes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photo library to allow you to upload photo.</string>
-	<key>NSPhotoLibraryUsageDescription </key>
-	<string>To upload user profile</string>
+	<string>The app requests access to the photo library to allow users to upload their own images as profile pictures within the application.</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

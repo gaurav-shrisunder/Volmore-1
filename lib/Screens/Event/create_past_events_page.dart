@@ -6,16 +6,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-import 'package:volunterring/Models/request_models/log_past_event_request_model.dart';
-import 'package:volunterring/Models/response_models/event_category_response_model.dart';
-import 'package:volunterring/Screens/HomePage.dart';
+import '../../Models/request_models/log_past_event_request_model.dart';
+import '../../Models/response_models/event_category_response_model.dart';
+import '../../Screens/HomePage.dart';
 
-import 'package:volunterring/Services/events_services.dart';
-import 'package:volunterring/Services/logService.dart';
+import '../../Services/events_services.dart';
+import '../../Services/logService.dart';
 
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/widgets/InputFormFeild.dart';
-import 'package:volunterring/widgets/appbar_widget.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../widgets/InputFormFeild.dart';
+import '../../widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
 
 class CreatePastEventsPage extends StatefulWidget {

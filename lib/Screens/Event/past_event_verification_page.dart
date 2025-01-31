@@ -7,17 +7,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
-import 'package:volunterring/Models/request_models/log_current_event_request_model.dart';
-import 'package:volunterring/Models/response_models/event_category_response_model.dart';
+import '../../Models/request_models/log_current_event_request_model.dart';
+import '../../Models/response_models/event_category_response_model.dart';
 
-import 'package:volunterring/Models/response_models/events_data_response_model.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Services/events_services.dart';
-import 'package:volunterring/Services/logService.dart';
+import '../../Models/response_models/events_data_response_model.dart';
+import '../../Screens/HomePage.dart';
+import '../../Services/events_services.dart';
+import '../../Services/logService.dart';
 
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/widgets/button.dart';
+import '../../Utils/Colors.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../widgets/button.dart';
 
 import '../../widgets/InputFormFeild.dart';
 

@@ -1,5 +1,5 @@
 
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
 
 class UpdateProfileResponseModel {
   String? message;

@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:volunterring/Screens/VerifyOtpScreen.dart';
-import 'package:volunterring/Services/signUp_login_services.dart';
-import 'package:volunterring/widgets/FormFeild.dart';
-import 'package:volunterring/widgets/button.dart';
+import '../../Screens/VerifyOtpScreen.dart';
+import '../../Services/signUp_login_services.dart';
+import '../../widgets/FormFeild.dart';
+import '../../widgets/button.dart';
 
 import '../Utils/Colors.dart';
 import '../widgets/InputFormFeild.dart';
@@ -88,10 +88,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         Fluttertoast.showToast(msg: onValue.message!);
                       }else{
                         Navigator.push(context, MaterialPageRoute(builder: (_) => VerifyOtpScreen(emailController.text)));
-
                       }
-
-
                     });
 
                   }, text: "Send Email"),

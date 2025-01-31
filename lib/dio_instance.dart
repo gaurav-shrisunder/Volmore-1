@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Screens/LoginPage.dart';
-import 'package:volunterring/Services/signUp_login_services.dart';
-import 'package:volunterring/api_constants.dart';
-import 'package:volunterring/main.dart';
+import '../../Screens/LoginPage.dart';
+import '../../Services/signUp_login_services.dart';
+import '../../api_constants.dart';
+import '../../main.dart';
 
 import 'Models/response_models/referesh_token_response_model.dart';
 import 'Utils/shared_prefs.dart';

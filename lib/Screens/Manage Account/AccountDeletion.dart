@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/widgets/FormFeild.dart';
-import 'package:volunterring/widgets/button.dart';
+import '../../Utils/Colors.dart';
+import '../../widgets/FormFeild.dart';
+import '../../widgets/button.dart';
 
 class AccountDeletion extends StatefulWidget {
   const AccountDeletion({super.key});

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
-import 'package:volunterring/Screens/ForgotPasswordPage.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Screens/SignUpPage.dart';
-import 'package:volunterring/Screens/dashboard.dart';
-import 'package:volunterring/Services/authentication.dart';
-import 'package:volunterring/Services/signUp_login_services.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/widgets/FormFeild.dart';
-import 'package:volunterring/widgets/InputFormFeild.dart';
-import 'package:volunterring/widgets/button.dart';
-import 'package:volunterring/widgets/snackbar.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
+import '../../Screens/ForgotPasswordPage.dart';
+import '../../Screens/HomePage.dart';
+import '../../Screens/SignUpPage.dart';
+import '../../Screens/dashboard.dart';
+import '../../Services/authentication.dart';
+import '../../Services/signUp_login_services.dart';
+import '../../Utils/Colors.dart';
+import '../../widgets/FormFeild.dart';
+import '../../widgets/InputFormFeild.dart';
+import '../../widgets/button.dart';
+import '../../widgets/snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

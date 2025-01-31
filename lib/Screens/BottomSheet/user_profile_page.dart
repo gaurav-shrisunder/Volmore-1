@@ -7,14 +7,14 @@ import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 
 import 'package:intl/intl.dart';
-import 'package:volunterring/Models/response_models/sign_up_response_model.dart';
-import 'package:volunterring/Models/response_models/weekly_stats_response_model.dart';
-import 'package:volunterring/Screens/Manage%20Account/edit_account_screen.dart';
+import '../../Models/response_models/sign_up_response_model.dart';
+import '../../Models/response_models/weekly_stats_response_model.dart';
+import '../../Screens/Manage%20Account/edit_account_screen.dart';
 
-import 'package:volunterring/Services/profile_services.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/widgets/weekly_stats_chart.dart';
+import '../../Services/profile_services.dart';
+import '../../Utils/Colors.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../widgets/weekly_stats_chart.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});

@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:volunterring/Screens/BottomSheet/user_profile_page.dart';
-import 'package:volunterring/Screens/BottomSheet/FAQPage.dart';
-import 'package:volunterring/Screens/BottomSheet/SupportPage.dart';
+import '../../Screens/BottomSheet/user_profile_page.dart';
+import '../../Screens/BottomSheet/FAQPage.dart';
+import '../../Screens/BottomSheet/SupportPage.dart';
 
-import 'package:volunterring/Screens/Event/events_page.dart';
-import 'package:volunterring/Screens/Event/events_screen.dart';
+import '../../Screens/Event/events_page.dart';
+import '../../Screens/Event/events_screen.dart';
 
-import 'package:volunterring/Screens/LoginPage.dart';
+import '../../Screens/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volunterring/Screens/TermsScreen.dart';
-import 'package:volunterring/Screens/leaderboard_screen.dart';
-import 'package:volunterring/Screens/transcript_screen.dart';
-import 'package:volunterring/Services/authentication.dart';
-import 'package:volunterring/Utils/Colors.dart';
+import '../../Screens/TermsScreen.dart';
+import '../../Screens/leaderboard_screen.dart';
+import '../../Screens/transcript_screen.dart';
+import '../../Services/authentication.dart';
+import '../../Utils/Colors.dart';
 
 import '../Utils/shared_prefs.dart';
 import '../provider/theme_manager_provider.dart';
 import 'CreateLogScreen.dart';
+import 'WebviewScreen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -141,17 +142,36 @@ class _HomePageState extends State<HomePage>
               _buildSettingsTile(
                   'Support - I need help',
                   Icons.arrow_forward_ios_outlined,
-                  () => Get.to(SupportPage())),
+                  () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WebViewScreen('https://www.lendavolunteering.com/contact-us'),
+                ),
+              )),
               _buildSettingsTile(
                   'Frequently Asked Questions',
                   Icons.arrow_forward_ios_outlined,
                   () => Get.to(const FAQPage())),
               _buildSettingsTile('Privacy Policy',
-                  Icons.arrow_forward_ios_outlined, () => Get.back()),
+                  Icons.arrow_forward_ios_outlined, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WebViewScreen('https://www.lendavolunteering.com/privacy-policy'),
+                      ),
+                    );
+                  }),
               _buildSettingsTile(
                   'Terms and Conditions',
                   Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const TermsScreen())),
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WebViewScreen('https://www.lendavolunteering.com/terms-and-condition'),
+                      ),
+                    );
+                  }),
              /* _buildSettingsTile(
                   'Manage your Account',
                   Icons.arrow_forward_ios_outlined,

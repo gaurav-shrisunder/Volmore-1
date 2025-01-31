@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:volunterring/Models/UserModel.dart';
-import 'package:volunterring/Models/event_data_model.dart';
-import 'package:volunterring/Screens/HomePage.dart';
-import 'package:volunterring/Services/authentication.dart';
+import '../../Models/UserModel.dart';
+import '../../Models/event_data_model.dart';
+import '../../Screens/HomePage.dart';
+import '../../Services/authentication.dart';
 
 class LogServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

@@ -8,10 +8,10 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:volunterring/Models/response_models/update_event_response_model.dart';
-import 'package:volunterring/Screens/Event/past_event_verification_page.dart';
-import 'package:volunterring/Screens/Event/timer_screen.dart';
-import 'package:volunterring/main.dart';
+import '../../Models/response_models/update_event_response_model.dart';
+import '../../Screens/Event/past_event_verification_page.dart';
+import '../../Screens/Event/timer_screen.dart';
+import '../../main.dart';
 
 import '../../Models/event_data_model.dart';
 import '../../Models/request_models/create_event_request_model.dart';

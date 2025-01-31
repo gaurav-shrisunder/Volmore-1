@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:volunterring/Models/request_models/share_transcript_request_model.dart';
-import 'package:volunterring/Models/response_models/shared_transcript_response.dart';
-import 'package:volunterring/Models/response_models/transcript_response.dart';
-import 'package:volunterring/Models/response_models/weekly_stats_response_model.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/api_constants.dart';
-import 'package:volunterring/api_handler.dart';
+import '../../Models/request_models/share_transcript_request_model.dart';
+import '../../Models/response_models/shared_transcript_response.dart';
+import '../../Models/response_models/transcript_response.dart';
+import '../../Models/response_models/weekly_stats_response_model.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../api_constants.dart';
+import '../../api_handler.dart';
 import 'package:dio/dio.dart';
 
 class ProfileServices {

@@ -4,19 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:volunterring/Models/request_models/update_Profile_request_model.dart';
-import 'package:volunterring/Screens/BottomSheet/user_profile_page.dart';
-import 'package:volunterring/Services/authentication.dart';
-import 'package:volunterring/Services/user_services.dart';
-import 'package:volunterring/Utils/Colors.dart';
-import 'package:volunterring/Utils/shared_prefs.dart';
-import 'package:volunterring/widgets/FormFeild.dart';
-import 'package:volunterring/widgets/appbar_widget.dart';
-import 'package:volunterring/widgets/button.dart';
-import 'package:volunterring/widgets/profile_image_widget.dart';
+import '../../Models/request_models/update_Profile_request_model.dart';
+import '../../Screens/BottomSheet/user_profile_page.dart';
+import '../../Services/authentication.dart';
+import '../../Services/user_services.dart';
+import '../../Utils/Colors.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../widgets/FormFeild.dart';
+import '../../widgets/appbar_widget.dart';
+import '../../widgets/button.dart';
+import '../../widgets/profile_image_widget.dart';
 
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../widgets/InputFormFeild.dart';
+import '../LoginPage.dart';
+import '../WebviewScreen.dart';
 
 class EditAccountScreen extends StatefulWidget {
   final User userData;
@@ -359,8 +361,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           builder: (_) {
                             return SimpleDialog(
                               title: const Text(
-                                  "Are you sure you want to delete your account?"),
+                                  "Are you sure you want to delete your account? \nDeleting your account is permanent and will result in the loss of access to your account, along with all associated data, including user details and events. This action cannot be undone.", style: TextStyle(fontSize: 14),),
                               children: [
+
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -375,11 +378,20 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                   Navigator.pop(context);
                                 }, child: Text("No")),*/
                                     ActionChip(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          Fluttertoast.showToast(
-                                              msg:
-                                                  "Oops! Something went wrong. Please try after sometime.");
+                                        onPressed: () async {
+                                         await UserServices().deleteUser().then((onValue){
+                                           if(onValue.toString().contains("permanently deleted successfully")){
+                                             Fluttertoast.showToast(msg: onValue.toString(),toastLength: Toast.LENGTH_LONG);
+                                             clearPreferences();
+                                             AuthMethod().signOut();
+                                             Navigator.pushAndRemoveUntil(
+                                               context,
+                                               MaterialPageRoute(builder: (context) => const LoginPage()),
+                                                   (Route<dynamic> route) =>
+                                               false, // This condition makes sure all the routes are removed.
+                                             );
+                                           }
+                                         });
                                         },
                                         label: const Text("Yes"))
                                   ],
