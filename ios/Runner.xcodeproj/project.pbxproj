@@ -481,7 +481,7 @@
 				DEVELOPMENT_TEAM = NGWGJUHWD4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Volmore;
+				INFOPLIST_KEY_CFBundleDisplayName = "Lenda Volunteering";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -670,7 +670,7 @@
 				DEVELOPMENT_TEAM = NGWGJUHWD4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Volmore;
+				INFOPLIST_KEY_CFBundleDisplayName = "Lenda Volunteering";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -702,7 +702,7 @@
 				DEVELOPMENT_TEAM = NGWGJUHWD4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Volmore;
+				INFOPLIST_KEY_CFBundleDisplayName = "Lenda Volunteering";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
