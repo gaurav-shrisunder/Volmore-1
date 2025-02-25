@@ -8,6 +8,7 @@ import '../../Screens/LoginPage.dart';
 import '../../Utils/shared_prefs.dart';
 
 import '../widgets/event_popup.dart';
+import 'FluidBackground.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,16 +17,37 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver{
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver, SingleTickerProviderStateMixin{
   bool isLoggedIn = false;
   String? eventIDD;
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     handleDynamicLink();
-    _navigateToNextScreen();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward();
+
+    // Start navigation process after animation completes
+    Future.delayed(const Duration(seconds: 3), () {
+      _navigateToNextScreen();
+    });
   }
 
   Future<void> handleDynamicLink() async {
@@ -69,25 +91,24 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
   Future<void> _navigateToNextScreen() async {
     await Future.delayed(const Duration(seconds: 2));
-    String? uid = await getUserId();
+    String? uid = await getUserId(); // Your function to get user ID
 
     if (uid != null && uid != "0") {
       setState(() {
         isLoggedIn = true;
       });
+
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              const HomePage(),
+          const HomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Adjust the duration of the animation
-            const duration =
-                Duration(milliseconds: 800); // Slows down the animation
             animation = CurvedAnimation(
               parent: animation,
               curve: Curves.easeInOut,
             );
+
             return SlideTransition(
               position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0), // Slide from right to left
@@ -95,30 +116,22 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
               ).animate(animation),
               child: child,
             );
-
-            // return FadeTransition(
-            //   opacity: animation,
-            //   child: child,
-            // );
           },
-          transitionDuration:
-              const Duration(milliseconds: 600), // Duration of the transition
+          transitionDuration: const Duration(milliseconds: 600),
         ),
       );
-      if(eventIDD!= null) {
-        showEventPopup(eventIDD!);
+
+      if (eventIDD != null) {
+        showEventPopup(eventIDD!); // Function to show event popup
       }
     } else {
-      // UID is not present in local storage
+      // If user is not logged in, go to LoginPage
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              const LoginPage(),
+          const LoginPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Adjust the duration of the animation
-            const duration =
-                Duration(milliseconds: 800); // Slows down the animation
             animation = CurvedAnimation(
               parent: animation,
               curve: Curves.easeInOut,
@@ -132,19 +145,39 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
               child: child,
             );
           },
-          transitionDuration:
-              const Duration(milliseconds: 600), // Duration of the transition
+          transitionDuration: const Duration(milliseconds: 600),
         ),
       );
     }
   }
 
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Image.asset("assets/images/5.jpg"),
+      body: Stack(
+        children: [
+          FluidBackground(),
+          Center(
+            child: FadeTransition(
+              opacity: _opacityAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Image.asset("assets/images/logo_full.png"),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
+
 }
