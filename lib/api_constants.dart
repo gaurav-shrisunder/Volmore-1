@@ -1,6 +1,6 @@
 /// Base URL            https://development.d2l5864qp4uooq.amplifyapp.com/login
-// const String baseUrl = "https://dev.volmore.maizelab-cloud.com/";
-const String baseUrl = "https://volmore.maizelab-cloud.com/";         ///PROD
+const String baseUrl = "https://dev.volmore.maizelab-cloud.com/";
+// const String baseUrl = "https://volmore.maizelab-cloud.com/";         ///PROD
 
 /// Api endpoints
 const String signUpApi = "api/v1/users/signup";

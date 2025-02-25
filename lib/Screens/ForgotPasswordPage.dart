@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../Screens/VerifyOtpScreen.dart';
 import '../../Services/signUp_login_services.dart';
@@ -58,6 +59,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 children: [
 
 
+                  Center(child: SvgPicture.asset("assets/images/forgot_pwd_image.svg",height: MediaQuery.of(context).size.width/2,)),
                   Text(
                     'Forgot \nPassword',
                     textAlign: TextAlign.left,

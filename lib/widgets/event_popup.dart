@@ -24,7 +24,6 @@ void showEventPopup(String eventId) async {
 
   print('Show Dialog:: ');
   if (eventData.events.isNotEmpty) {
-
     print('Show Dialog:: ${jsonEncode(eventData.events)}');
     showDialog(
       context: Get.context!,
