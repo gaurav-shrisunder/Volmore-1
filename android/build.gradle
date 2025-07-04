@@ -1,4 +1,4 @@
-buildscript {
+/*buildscript {
     ext.kotlin_version = '2.0.0'//'1.7.10'
     repositories {
         google()
@@ -11,7 +11,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.15'
     }
-}
+}*/
 
 allprojects {
     repositories {

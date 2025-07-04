@@ -1,0 +1,2 @@
+/Users/user/StudioProjects/Volmore/android/app/.cxx/Debug/5j4l606m/x86/CMakeFiles/edit_cache.dir
+/Users/user/StudioProjects/Volmore/android/app/.cxx/Debug/5j4l606m/x86/CMakeFiles/rebuild_cache.dir
