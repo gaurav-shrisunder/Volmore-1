@@ -18,16 +18,29 @@ class _FluidBackgroundState extends State<FluidBackground> {
   @override
   void initState() {
     super.initState();
+
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
     changeColor();
+    super.didChangeDependencies();
   }
 
   void changeColor() {
     Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
+      // setState(() {
         currentIndex = (currentIndex + 1) % colors.length;
-      });
+      // });
       changeColor();
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
