@@ -39,12 +39,12 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -67,7 +67,15 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // Enables code-related app optimization.
+            minifyEnabled true
+
+            // Enables resource shrinking.
+            shrinkResources true
+
+            // Default file with automatically generated optimization rules.
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+//            signingConfig signingConfigs.debug
         }
     }
 }
@@ -78,7 +86,7 @@ flutter {
 
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'    //1.2.0
+    implementation 'androidx.annotation:annotation:1.9.1'          //1.1.0
 
 }

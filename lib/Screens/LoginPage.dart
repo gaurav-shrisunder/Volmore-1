@@ -129,6 +129,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFF7Fd8de), // Soft Sage Green
       body: SafeArea(
         child: Column(
