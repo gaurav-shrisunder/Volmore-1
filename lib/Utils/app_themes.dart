@@ -59,9 +59,9 @@ class AppThemes {
       ),
 
     ),
-    dialogBackgroundColor: Color(0xFF1D2D44),
+    dialogBackgroundColor: const Color(0xFF1D2D44),
 
-    cardTheme: const CardTheme(
+    cardTheme: const CardThemeData(
       color: Color(0xFF1D2D44), // Dark card background with rounded corners
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -81,7 +81,7 @@ class AppThemes {
     ),
 
 
-textButtonTheme: TextButtonThemeData(style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color(0xFF2E4A63)))),
+textButtonTheme: const TextButtonThemeData(style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color(0xFF2E4A63)))),
     buttonTheme: const ButtonThemeData(
       buttonColor: Color(0xFF0199FF), // Button color matching the Log Now button
       shape: RoundedRectangleBorder(
@@ -104,7 +104,7 @@ textButtonTheme: TextButtonThemeData(style: ButtonStyle(backgroundColor: Materia
         fontFamily: "Plus Jakarta Sans",
       ),
     ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(unselectedIconTheme: IconThemeData(color: Colors.grey), selectedIconTheme: IconThemeData(color: Colors.blue)),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(unselectedIconTheme: IconThemeData(color: Colors.grey), selectedIconTheme: IconThemeData(color: Colors.blue)),
 
     fontFamily: "Plus Jakarta Sans",
     useMaterial3: true,

@@ -693,7 +693,7 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                         height: height * 0.01,
                       ),
                       Padding(
-                        padding: EdgeInsets.only(right: width * 0.05),
+                        padding: EdgeInsets.only(right: width * 0.05, bottom: 30, top: 10),
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Row(
