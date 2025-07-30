@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lendavolunterring/widgets/customSnackbar.dart';
 
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../Screens/ForgotPasswordPage.dart';
 import '../../Screens/HomePage.dart';
 import '../../Screens/SignUpPage.dart';
 import '../../Services/signUp_login_services.dart';
+import '../Utils/common_utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,6 +32,7 @@ class _LoginPageState extends State<LoginPage>  with SingleTickerProviderStateMi
   @override
   void initState() {
     super.initState();
+    // apiCalling();
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1000),
@@ -60,6 +63,11 @@ class _LoginPageState extends State<LoginPage>  with SingleTickerProviderStateMi
     Timer(const Duration(milliseconds: 300), () {
       _controller.forward();
     });
+  }
+
+  apiCalling ()async{
+    String tzName = await getTimezoneName();
+    print('Timezone: $tzName');
   }
 
   @override
@@ -94,16 +102,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
         (Route<dynamic> route) =>
             false, // This condition makes sure all the routes are removed.
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Login successfully"),
-          duration: Duration(seconds: 3), // Set the duration of the toast
-          behavior: SnackBarBehavior.floating, // Makes the toast float above the UI
-          backgroundColor: Colors.black, // Optional: Customize the background color
-        ),
-      );
-    /*  Fluttertoast.showToast(
-          msg: "Login successfully", toastLength: Toast.LENGTH_LONG);*/
+      CustomSnackBar.show(context: context, message: "Login successfully", type: SnackBarType.success);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -123,14 +122,23 @@ var sessionId  = "app-${emailController.text.split("@").first}";
     }
   }
 
+  bool isObsecure = false;
+  void togglePassword() {
+    setState(() {
+      isObsecure = !isObsecure;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFF7Fd8de), // Soft Sage Green
+      resizeToAvoidBottomInset: true,
+      backgroundColor: const Color(0xFF7FD8DE),
       body: SafeArea(
         child: Column(
           children: [
@@ -162,8 +170,13 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                     ),
                   ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 20,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -187,6 +200,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                         position: _emailSlideAnimation,
                         child: TextField(
                           controller: emailController,
+                          // textCapitalization: TextCapitalization.sentences,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             labelText: 'Email',
@@ -206,12 +220,20 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                       SlideTransition(
                         position: _passwordSlideAnimation,
                         child: TextField(
+                          textCapitalization: TextCapitalization.sentences,
                           controller: passwordController,
-                          obscureText: true,
+                          obscureText: isObsecure,
+                          keyboardType: TextInputType.name,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             hintText: "Enter Your Password",
                             filled: true,
+                            suffixIcon: IconButton(
+                              icon: isObsecure
+                                  ? const Icon(Icons.visibility)
+                                  : const Icon(Icons.visibility_off),
+                              onPressed: togglePassword,
+                            ),
                             fillColor: Colors.grey[200],
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -222,25 +244,27 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                       ),
                       SizedBox(height: height * 0.02),
 
+                      // Forgot Password
                       GestureDetector(
                         onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ForgotPassword())),
+                          context,
+                          MaterialPageRoute(builder: (context) => const ForgotPassword()),
+                        ),
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.lightBlue[500],
-                                fontWeight: FontWeight.w500),
+                              fontSize: 16,
+                              color: Colors.lightBlue[500],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
                       SizedBox(height: height * 0.03),
 
-                      // Login Button with Press Effect
+                      // Login Button
                       SlideTransition(
                         position: _buttonSlideAnimation,
                         child: GestureDetector(
@@ -248,12 +272,12 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                           onTapUp: (_) => _controller.forward(),
                           onTap: () {
                             showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (_) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
-                                });
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
                             loginUser();
                           },
                           child: ScaleTransition(
@@ -262,7 +286,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                               height: height * 0.07,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF7FD8DE), // Soft Blue
+                                color: const Color(0xFF7FD8DE),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(
@@ -279,26 +303,25 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                           ),
                         ),
                       ),
-
                       SizedBox(height: height * 0.02),
 
                       // New User? Sign Up
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("New User? ",
-                              style: TextStyle(fontSize: height * 0.02)),
+                          Text("New User? ", style: TextStyle(fontSize: height * 0.02)),
                           GestureDetector(
                             onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SignUpPage())),
+                              context,
+                              MaterialPageRoute(builder: (context) => const SignUpPage()),
+                            ),
                             child: Text(
                               'Create Account',
                               style: TextStyle(
-                                  fontSize: height * 0.02,
-                                  color: Colors.lightBlue[500],
-                                  fontWeight: FontWeight.w500),
+                                fontSize: height * 0.02,
+                                color: Colors.lightBlue[500],
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],

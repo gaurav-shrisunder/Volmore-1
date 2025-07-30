@@ -126,7 +126,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         child: Builder(
                           builder: (context) {
                             print(
-                                "user Profile Picture ${user?.profilePicture ?? ""}");
+                                "user Profile Picture ${user?.profilePicture}");
                        /*     if (user!.profilePicture != null &&
                                 user!.profilePicture!.isNotEmpty) {
                               try {
@@ -150,16 +150,28 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 print("error in image $e");
                                 return _buildFallbackImage();
                               }
-                            }*/
-                            return  Image.network(
-                              user!.profilePicture!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                print('Inside error builder: ${ user!.profilePicture!}');
-                              return   _buildFallbackImage();
+                            }*/ if(user?.profilePicture == null){
+                              return  Image.network(
+                                  'https://ui-avatars.com/api/?name=${user?.userName ?? "User"}',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    print('Inside error builder: ${ user!.profilePicture!}');
+                                    return   _buildFallbackImage();
 
-                              }
-                            );
+                                  }
+                              );
+                            }else{
+                              return  Image.network(
+                                  user!.profilePicture!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    print('Inside error builder: ${ user!.profilePicture!}');
+                                    return   _buildFallbackImage();
+
+                                  }
+                              );
+                            }
+
                           },
                         ),
                       ),

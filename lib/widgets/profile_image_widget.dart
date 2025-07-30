@@ -237,12 +237,29 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
                           return _buildFallbackImage();
                         }
                       }*/
-                      return Image.network(
-                        user!.profilePicture!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildFallbackImage(),
-                      );
+
+
+                      if(user?.profilePicture == null){
+                        return  Image.network(
+                            'https://ui-avatars.com/api/?name=${user?.userName ?? "User"}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              print('Inside error builder: ${ user!.profilePicture!}');
+                              return   _buildFallbackImage();
+
+                            }
+                        );
+                      }else{
+                        return  Image.network(
+                            user!.profilePicture!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              print('Inside error builder: ${ user!.profilePicture!}');
+                              return   _buildFallbackImage();
+
+                            }
+                        );
+                      }
                     },
                   ),
                 ),

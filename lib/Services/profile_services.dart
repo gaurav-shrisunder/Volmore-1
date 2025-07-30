@@ -8,13 +8,21 @@ import '../../api_constants.dart';
 import '../../api_handler.dart';
 import 'package:dio/dio.dart';
 
+import '../Utils/common_utils.dart';
+
 class ProfileServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
   Future<WeeklyStatsResponseModel?> getWeeklyStats() async {
     var userId = await getUserId();
-    String now = DateTime.now().toUtc().toIso8601String();
+    // String now = DateTime.now().toLocal().toIso8601String();
+    DateTime now = DateTime.now();
+    DateTime todayAtMidnightOne = DateTime(now.year, now.month, now.day, 0, 1);
+    String isoString = todayAtMidnightOne.toLocal().toIso8601String();
+    String tzName = await getTimezoneName();
+    print('Timezone: $tzName'); //
     var query = {
-      "now": now,
+      "now": isoString,
+      "timezone": tzName
     };
     Response? response =
         await apiHandler.getWithQuery(getWeeklyStat + userId, query);
@@ -33,9 +41,13 @@ class ProfileServices {
   Future<TranscriptResponse?> getTranscript() async {
     var userId = await getUserId();
     // Add current time in ISO8601 format
-    String now = DateTime.now().toUtc().toIso8601String();
+    DateTime now = DateTime.now();
+    DateTime todayAtMidnightOne = DateTime(now.year, now.month, now.day, 0, 1);
+    String isoString = todayAtMidnightOne.toLocal().toIso8601String();
+    String tzName = await getTimezoneName();
     var query = {
-      "now": now,
+      "now": isoString,
+      "timezone": tzName
     };
     Response? response = await apiHandler.getWithQuery(
       "$getTranscripts$userId",

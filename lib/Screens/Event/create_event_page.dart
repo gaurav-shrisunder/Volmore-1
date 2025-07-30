@@ -25,6 +25,7 @@ import '../../widgets/appbar_widget.dart';
 import 'package:http/http.dart' as http;
 
 import '../../Models/response_models/create_event_response_model.dart';
+import '../../widgets/customSnackbar.dart';
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -343,6 +344,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: const Text('Add New Group'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -356,6 +358,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 DropdownButton<String>(
                   value: selectedColor,
+                  dropdownColor: Colors.white,
                   hint: const Text('Select Color'),
                   isExpanded: true,
                   onChanged: (String? newValue) {
@@ -379,6 +382,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
+                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
+
                 onPressed: () async {
                   if (newGroupName.isNotEmpty && selectedColor != null) {
                     String colorCode = colorCodes[selectedColor]!;
@@ -390,7 +395,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     Fluttertoast.showToast(msg: "Please fill all fields");
                   }
                 },
-                child: const Text('Add Group'),
+                child: const Text('Add Group', style: TextStyle(color: Colors.white),),
               ),
             ],
           );
@@ -449,6 +454,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 const SizedBox(height: 20),
                 InputFeildWidget(
                   title: 'Job Title*',
+                  keyboardType: TextInputType.name,
                   controller: titleController,
                   hintText: 'Trash Clean Up',
                   validator: nameValidator,
@@ -456,6 +462,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 const SizedBox(height: 20),
                 InputFeildWidget(
                   title: 'Job Description',
+                  keyboardType: TextInputType.name,
                   controller: descriptionController,
                   maxlines: 5,
                   hintText: 'Job Description',
@@ -926,12 +933,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         //     MaterialPageRoute(
                         //         builder: (context) => const HomePage()),
                         //     (route) => false);
-                        Fluttertoast.showToast(
-                            msg: eventCreatedResponse.message!);
+                        CustomSnackBar.show(context: context, message: eventCreatedResponse.message!, type: SnackBarType.success);
+
                         showDialog(
+                          barrierDismissible: false,
                             context: context,
                             builder: (_) {
                               return SimpleDialog(
+                                backgroundColor: Colors.white,
                                 title: Column(
                                   children: [
                                     const Center(
@@ -1055,8 +1064,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             });
                       } else {
 
-                        Fluttertoast.showToast(
-                            msg: "Something went wrong. Pls try again later");
+                        CustomSnackBar.show(context: context, message: eventCreatedResponse.message!, type: SnackBarType.error);
                         Navigator.pop(context);
                         /* ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

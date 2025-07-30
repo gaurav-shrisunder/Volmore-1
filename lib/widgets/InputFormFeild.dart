@@ -55,7 +55,7 @@ class _InputFeildWidgetState extends State<InputFeildWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
-          textCapitalization: TextCapitalization.words,
+          textCapitalization: TextCapitalization.sentences,
           enabled: widget.isEnabled,
           controller: widget.controller,
           maxLines: widget.maxlines,

@@ -11,7 +11,8 @@ import '../../Utils/app_themes.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../provider/theme_manager_provider.dart';
 import '../../provider/time_logger_provider.dart';
-import '../../widgets/event_popup.dart'; // Import the new file
+import '../../widgets/event_popup.dart';
+import 'Utils/common_utils.dart'; // Import the new file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,8 @@ void main() async {
   // final sub = appLink.uriLinkStream.listen((uri) {
   //   print('App Link: $uri');
   // });
+
+
 
   runApp(
     MultiProvider(

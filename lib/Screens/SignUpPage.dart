@@ -301,67 +301,6 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                             hintText: "Enter Your email",
                             validator: phoneValidator,
                           )),
-                 /* SlideTransition(
-                    position: _emailSlideAnimation,
-                    child:   Row(
-                        children: [
-                          // const SizedBox(width: 10),
-                          Expanded(
-                            child: TextFormField(
-                              controller: numberController,
-                              keyboardType: TextInputType.phone,
-                              maxLength: 10,
-
-                              decoration: InputDecoration(
-                                fillColor: Colors.white,
-                                  focusColor: Colors.white,
-
-                                counter: const SizedBox(),
-                                labelText: 'Mobile Number',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(9.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(9.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(9.0),
-                                  borderSide: BorderSide(
-                                    color: Colors.blue[200]!,
-                                  ),
-                                ),
-                                errorText: _errorMessage,
-                                // Display the error message
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.red[400]!,
-                                    width: 2.0,
-                                  ),
-                                ),
-                              ),
-                              onChanged: (value) {
-                                _validateInput();
-                              },
-
-                              // validator: phoneValidator,
-                            ),
-                          ),
-                        ],
-                      )),*/
-                      /* InputFeildWidget(
-                        title: 'Phone number*',
-                        controller: numberController,
-                        maxlines: 1,
-                        hintText: "Enter Your phone number",
-                      ),*/
                       SizedBox(
                         height: height * 0.009,
                       ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lendavolunterring/widgets/customSnackbar.dart';
 import 'package:uuid/uuid.dart';
 import '../../Models/request_models/log_past_event_request_model.dart';
 import '../../Models/response_models/event_category_response_model.dart';
@@ -137,6 +138,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
       setState(() {
         eventCategoriesList = eventCategoryResponseModel!.eventCategories!;
         _groupNames = groupNames;
+        _selectedGroup = _groupNames.lastOrNull;
         isLoading = false;
       });
     } catch (e) {
@@ -195,6 +197,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: const Text('Add New Group'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -207,6 +210,8 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                   height: 10,
                 ),
                 DropdownButton<String>(
+                  dropdownColor: Colors.white,
+
                   value: selectedColor,
                   hint: const Text('Select Color'),
                   isExpanded: true,
@@ -231,6 +236,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
+                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
                 onPressed: () async {
                   if (newGroupName.isNotEmpty && selectedColor != null) {
                     String colorCode = colorCodes[selectedColor]!;
@@ -242,7 +248,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                     Fluttertoast.showToast(msg: "Please fill all fields");
                   }
                 },
-                child: const Text('Add Group'),
+                child: const Text('Add Group', style: TextStyle(color: Colors.white),),
               ),
             ],
           );
@@ -340,17 +346,21 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
       // Send API request
       var res = await EventsServices().logPastEventData(requestModel);
       if (res) {
-        Fluttertoast.showToast(msg: "Past event created successfully");
+        CustomSnackBar.show(context: context, message: "Past event created successfully", type: SnackBarType.success);
+
         Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomePage()),
         );
       } else {
-        Fluttertoast.showToast(msg: "Something went wrong! Try again later");
+        Navigator.pop(context);
+        CustomSnackBar.show(context: context, message: "Something went wrong! Try again later", type: SnackBarType.error);
+        // Fluttertoast.showToast(msg: "Something went wrong! Try again later");
       }
     } catch (e) {
       print("Error submitting data: $e");
+      Navigator.pop(context);
       Fluttertoast.showToast(msg: "Error submitting data. Please try again.");
     }
   }
@@ -455,6 +465,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                 const SizedBox(height: 20),
                 InputFeildWidget(
                   title: 'Title',
+                  keyboardType: TextInputType.name,
                   controller: titleController,
                   maxlines: 1,
                   hintText: "Trash Clean Up",
@@ -462,6 +473,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                 const SizedBox(height: 20),
                 InputFeildWidget(
                   title: 'Job Description',
+                  keyboardType: TextInputType.name,
                   controller: descriptionController,
                   maxlines: 5,
                   hintText: 'Job Description',

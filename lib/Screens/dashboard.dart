@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -93,6 +94,7 @@ class _DashboardState extends State<Dashboard>
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+
         backgroundColor: Colors.white,
         elevation: 5,
         items: const <BottomNavigationBarItem>[
@@ -188,9 +190,12 @@ class _DashboardState extends State<Dashboard>
           (Route<dynamic> route) => false,  // This condition makes sure all the routes are removed.
     );
 
-  /*  Navigator.push(
+  */
+/*  Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const LoginPage()),
-    );*/
+    );*//*
+
   }
 }
+*/
