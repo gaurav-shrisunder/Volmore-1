@@ -253,6 +253,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               TextFormField(
                 controller: _notesController,
                 keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.sentences,
                 maxLines: 3,
                 maxLength: 100,
                 decoration: InputDecoration(

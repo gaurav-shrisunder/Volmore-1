@@ -29,6 +29,7 @@ import '../../Models/response_models/events_data_response_model.dart';
 import '../../Models/response_models/nonverified_events_response.dart';
 import '../../Services/logService.dart';
 import '../../Utils/common_utils.dart';
+import '../../widgets/customSnackbar.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
   // final EventDataModel event;
@@ -256,7 +257,9 @@ class _VolunteerConfirmationScreenState
                     .then((onValue) {
                   if (onValue.message!.contains(
                       "Event participant information updated successfully")) {
-                    Fluttertoast.showToast(msg: onValue.message!);
+                    CustomSnackBar.show(context: context, message: onValue.message!, type: SnackBarType.success);
+
+                    // Fluttertoast.showToast(msg: onValue.message!);
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const HomePage()),
@@ -441,6 +444,7 @@ class _VolunteerConfirmationScreenState
               ),
               TextFormField(
                 controller: _notesController,
+                textCapitalization: TextCapitalization.sentences,
                 keyboardType: TextInputType.text,
                 maxLines: 3,
                 maxLength: 100,
@@ -689,13 +693,12 @@ class _VolunteerConfirmationScreenState
                         (Route<dynamic> route) =>
                             false, // This condition makes sure all the routes are removed.
                       );
-                      Fluttertoast.showToast(
-                          msg: onValue.message!,
-                          toastLength: Toast.LENGTH_LONG);
+                      CustomSnackBar.show(context: context, message: onValue.message!, type: SnackBarType.success);
+
                     } else {
-                      Fluttertoast.showToast(
-                          msg: onValue.message ?? "Something went wrong.",
-                          toastLength: Toast.LENGTH_LONG);
+                      CustomSnackBar.show(context: context, message:onValue.message ?? "Something went wrong.", type: SnackBarType.error);
+
+
                     }
                   });
                   // submitEvent(context, _phoneNumberController.text);

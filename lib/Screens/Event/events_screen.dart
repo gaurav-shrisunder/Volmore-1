@@ -99,6 +99,7 @@ class _EventsScreenState extends State<EventsScreen>
     'Brown': '#A52A2A'
   };
   String? selectedColor;
+
   Future<String> _addGroup(String name, String colorCode) async {
     var userId = await getUserId();
 
@@ -293,7 +294,7 @@ class _EventsScreenState extends State<EventsScreen>
                                     return StatefulBuilder(
                                         builder: (context, state) {
                                       return SimpleDialog(
-                                        //  backgroundColor: Colors.white,
+                                        backgroundColor: Colors.white,
                                         title: const Text("Sort by"),
                                         children: [
                                           Column(
@@ -671,70 +672,102 @@ class _EventsScreenState extends State<EventsScreen>
                                                         showDialog(
                                                             context: context,
                                                             builder: (_) {
-                                                              return AlertDialog(
-                                                                title: const Text(
+                                                              return SimpleDialog(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                                title: Text(
                                                                     "Delete"),
-                                                                actions: [
-                                                                  ElevatedButton(
-                                                                      style: ButtonStyle(
-                                                                          backgroundColor: MaterialStateProperty.all(Colors
-                                                                              .blue)),
-                                                                      onPressed:
-                                                                          () {
-                                                                        _eventsServices
-                                                                            .deleteEvent(snapshot.data!.eventDetails!.events![index].event!.eventId!)
-                                                                            .then((onValue) {
-                                                                          if (onValue
-                                                                              .message!
-                                                                              .contains("successfully")) {
-                                                                            Fluttertoast.showToast(msg: onValue.message!);
-                                                                            Navigator.pushAndRemoveUntil(
-                                                                              context,
-                                                                              MaterialPageRoute(builder: (context) => const HomePage()),
-                                                                              (Route<dynamic> route) => false, // This condition makes sure all the routes are removed.
-                                                                            );
-                                                                          } else {
-                                                                            Fluttertoast.showToast(msg: "Something went wrong. Please try again later.");
-                                                                          }
-                                                                        });
-                                                                      },
-                                                                      child:
-                                                                          const Text(
-                                                                        "Delete Event",
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      )),
-                                                                  ElevatedButton(
-                                                                      style: ButtonStyle(
-                                                                          backgroundColor: MaterialStateProperty.all(Colors
-                                                                              .blue)),
-                                                                      onPressed:
-                                                                          () {
-                                                                        _eventsServices
-                                                                            .deleteEventInstance(snapshot.data!.eventDetails!.events![index].eventInstance!.eventInstanceId!)
-                                                                            .then((onValue) {
-                                                                          if (onValue
-                                                                              .message!
-                                                                              .contains("successfully")) {
-                                                                            Fluttertoast.showToast(msg: onValue.message!);
-                                                                            Navigator.pushAndRemoveUntil(
-                                                                              context,
-                                                                              MaterialPageRoute(builder: (context) => const HomePage()),
-                                                                              (Route<dynamic> route) => false, // This condition makes sure all the routes are removed.
-                                                                            );
-                                                                          } else {
-                                                                            Fluttertoast.showToast(msg: "Something went wrong. Please try again later.");
-                                                                          }
-                                                                        });
-                                                                      },
-                                                                      child:
-                                                                          const Text(
-                                                                        "Delete Single Event Instance",
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      )),
+                                                                contentPadding:
+                                                                    const EdgeInsets
+                                                                        .symmetric(
+                                                                        horizontal:
+                                                                            20),
+                                                                children: [
+                                                                  ActionChip(
+                                                                    backgroundColor:
+                                                                        Color(
+                                                                            0xFF7FD8DE),
+                                                                    label:
+                                                                        const Text(
+                                                                      "Delete",
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.white),
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      _eventsServices
+                                                                          .deleteEvent(snapshot
+                                                                              .data!
+                                                                              .eventDetails!
+                                                                              .events![index]
+                                                                              .event!
+                                                                              .eventId!)
+                                                                          .then((onValue) {
+                                                                        if (onValue
+                                                                            .message!
+                                                                            .contains("successfully")) {
+                                                                          Fluttertoast.showToast(
+                                                                              msg: onValue.message!);
+                                                                          Navigator
+                                                                              .pushAndRemoveUntil(
+                                                                            context,
+                                                                            MaterialPageRoute(builder: (context) => const HomePage()),
+                                                                            (Route<dynamic> route) =>
+                                                                                false, // This condition makes sure all the routes are removed.
+                                                                          );
+                                                                        } else {
+                                                                          Fluttertoast.showToast(
+                                                                              msg: "Something went wrong. Please try again later.");
+                                                                        }
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height: 6,
+                                                                  ),
+                                                                  ActionChip(
+                                                                    backgroundColor:
+                                                                        Color(
+                                                                            0xFF7FD8DE),
+                                                                    label:
+                                                                        const Text(
+                                                                      "Delete Single Event Instance",
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.white),
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      _eventsServices
+                                                                          .deleteEventInstance(snapshot
+                                                                              .data!
+                                                                              .eventDetails!
+                                                                              .events![index]
+                                                                              .eventInstance!
+                                                                              .eventInstanceId!)
+                                                                          .then((onValue) {
+                                                                        if (onValue
+                                                                            .message!
+                                                                            .contains("successfully")) {
+                                                                          Fluttertoast.showToast(
+                                                                              msg: onValue.message!);
+                                                                          Navigator
+                                                                              .pushAndRemoveUntil(
+                                                                            context,
+                                                                            MaterialPageRoute(builder: (context) => const HomePage()),
+                                                                            (Route<dynamic> route) =>
+                                                                                false, // This condition makes sure all the routes are removed.
+                                                                          );
+                                                                        } else {
+                                                                          Fluttertoast.showToast(
+                                                                              msg: "Something went wrong. Please try again later.");
+                                                                        }
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                  SizedBox(height: 10,)
                                                                 ],
                                                               );
                                                             });
@@ -786,12 +819,22 @@ class _EventsScreenState extends State<EventsScreen>
                                                                           index]
                                                                       .event!
                                                                       .eventLocationName!;
+                                                              _selectedGroup = snapshot
+                                                                  .data!
+                                                                  .eventDetails!
+                                                                  .events![
+                                                                      index]
+                                                                  .event!
+                                                                  .eventCategoryName!;
                                                               showDialog(
                                                                   context:
                                                                       context,
                                                                   builder:
                                                                       (context) {
                                                                     return SimpleDialog(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .white,
                                                                       title:
                                                                           const Text(
                                                                         "Edit Event",
@@ -865,7 +908,8 @@ class _EventsScreenState extends State<EventsScreen>
                                                                                 const Text('Select a Group'),
                                                                             value:
                                                                                 _selectedGroup,
-                                                                            //  dropdownColor: Colors.white,
+                                                                            dropdownColor:
+                                                                                Colors.white,
                                                                             decoration:
                                                                                 InputDecoration(
                                                                               filled: true,
@@ -939,26 +983,6 @@ class _EventsScreenState extends State<EventsScreen>
                                                                               requestModel.eventDescription = eventDescription.text;
                                                                               requestModel.eventLocationName = eventLocation.text;
                                                                               requestModel.eventCategoryId = eventCategoriesList.where((test) => test.eventCategoryName == _selectedGroup).first.eventCategoryId;
-                                                                              /*   requestModel.createdBy = await getUserId();
-                                                                            Recurrence recurrence = Recurrence();
-                                                                            recurrence.eventStartDateTime = startUtcDateTime;
-                                                                            print(' Payload ::: $endUtcDateTime');
-                                                                            recurrence.eventEndDateTime = endUtcDateTime.isEmpty  ? null : endUtcDateTime;
-                                                                            recurrence.recurInterval = 1;
-                                                                            recurrence.weekdays = _selectedGroup == "Weekly"
-                                                                                ? DateFormat('EEEE').format(
-                                                                                DateTime.parse(startUtcDateTime).toLocal())
-                                                                                : null;
-
-                                                                            recurrence.recurFrequency =
-                                                                            selectedOccurrence == "No occurrence"
-                                                                                ? "none"
-                                                                                : selectedOccurrence.toLowerCase();
-
-                                                                            requestModel.recurrence = recurrence;*/
-
-                                                                              print('Payload');
-
                                                                               UpdateEventResponseModel? eventCreatedResponse = await EventsServices().updateEventData(requestModel, snapshot.data!.eventDetails!.events![index].event!.eventId!);
 
                                                                               if (eventCreatedResponse.message!.contains("successfully")) {

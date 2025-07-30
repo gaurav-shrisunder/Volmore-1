@@ -120,7 +120,7 @@ class EventWidget extends StatelessWidget {
                                 size: 16, color: Colors.blue),
                             const SizedBox(width: 4),
                             Text(
-                              'Host by: ${event.host?.split(" ")[0] ?? "You"}',
+                              'Hosted by: ${event.host?.split(" ")[0] ?? "You"}',
                               softWrap: true,
                               style: const TextStyle(
                                   fontSize: 12,

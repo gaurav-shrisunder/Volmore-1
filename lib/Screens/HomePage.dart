@@ -95,8 +95,10 @@ class _HomePageState extends State<HomePage>
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
+        // fixedColor: Colors.white,
+
         backgroundColor: Colors.white,
-        type: BottomNavigationBarType.shifting,
+        type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
         elevation: 5,
         items: <BottomNavigationBarItem>[
@@ -178,6 +180,7 @@ class _HomePageState extends State<HomePage>
                   () => Get.to(const UserProfilePage())),*/
               _buildSettingsTile(
                   'Log Out', Icons.arrow_forward_ios_outlined, logout),
+              SizedBox(height: 30,)
             ],
           ),
         ),

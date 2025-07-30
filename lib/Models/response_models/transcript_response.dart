@@ -59,6 +59,7 @@ class Transcript {
 class Event {
   String? eventTitle;
   String? eventDateTime;
+  String? eventLocation;
   int? hour;
   String? hostName;
   String? userDateTime;
@@ -71,6 +72,7 @@ class Event {
   Event({
     this.eventTitle,
     this.eventDateTime,
+    this.eventLocation,
     this.hour,
     this.hostName,
     this.userDateTime,
@@ -85,6 +87,7 @@ class Event {
     return Event(
       eventTitle: json['eventTitle'],
       eventDateTime: json['eventDateTime'],
+      eventLocation: json['eventLocation'],
       hour: json['minutes'],
       hostName: json['hostName'],
       userDateTime: json['userDateTime'],
@@ -100,6 +103,7 @@ class Event {
     return {
       'eventTitle': eventTitle,
       'eventDateTime': eventDateTime,
+      'eventLocation': eventLocation,
       'minutes': hour,
       'hostName': hostName,
       'userDateTime': userDateTime,

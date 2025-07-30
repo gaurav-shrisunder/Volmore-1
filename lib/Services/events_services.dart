@@ -15,18 +15,24 @@ import '../../Models/response_models/update_event_response_model.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../api_constants.dart';
 
+import '../Utils/common_utils.dart';
 import '../api_handler.dart';
 
 class EventsServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
-
+  // String now = DateTime.now().toLocal().toIso8601String();
   Future<EventsDataResponseModel?> getEventsData(String endpoint,{required String sortBy, required String sortDirection}) async {
     var userId = await getUserId();
-    String now = DateTime.now().toUtc().toIso8601String();
+    DateTime now = DateTime.now();
+    DateTime todayAtMidnightOne = DateTime(now.year, now.month, now.day, 0, 1);
+    String isoString = todayAtMidnightOne.toLocal().toIso8601String();
+    String tzName = await getTimezoneName();
    var query = {
       "sortBy": sortBy,
      "sortDirection":sortDirection,
-      "now": now,
+      "now": isoString,
+     "timezone": tzName
+
     };
 
     Response? response =

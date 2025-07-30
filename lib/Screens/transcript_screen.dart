@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -42,22 +43,25 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
   int foodHours = 0;
   int hospServiceHours = 0;
   int otherHours = 0;
-  SharedTranscriptResponse sharedTranscriptResponse = SharedTranscriptResponse();
+  SharedTranscriptResponse sharedTranscriptResponse =
+      SharedTranscriptResponse();
 
   TranscriptResponse? transcript;
   List<Event> events = [];
 
   String lifetimeMinutes = "";
 
-  Future<void> createAndSharePdf() async {
+  Future<void> createAndSharePdf(String lifetimeHours) async {
     User? user = await getUser();
     // List<EventDataModel> data = await _logMethod.fetchAllEventsWithLogs();
 
-    pw.Document pdf = await generatePdf(events, user!);
-    await saveAndSharePdf(pdf);
+    pw.Document pdf = await generatePdf(events, user!, lifetimeHours);
+
+     String filename = "${user.userName}-${getFormatedDate()}";
+    await saveAndSharePdf(pdf, filename);
   }
 
-  void _showShareOptions(BuildContext context) {
+  void _showShareOptions(BuildContext context, String lifetimeHours) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -72,7 +76,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
               leading: const Icon(Icons.picture_as_pdf),
               title: const Text('Export as PDF'),
               onTap: () {
-                createAndSharePdf();
+                createAndSharePdf(lifetimeHours);
               },
             ),
             ListTile(
@@ -83,6 +87,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 _showShareWithTeacherModal(context);
               },
             ),
+            SizedBox(height: 40,)
           ],
         );
       },
@@ -96,12 +101,14 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text('Share with Teacher'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   labelText: 'Teacher\'s Email',
                   border: OutlineInputBorder(),
@@ -160,7 +167,8 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
 
   void fetchTranscript() async {
     TranscriptResponse? temp = await profileServices.getTranscript();
-    sharedTranscriptResponse = (await profileServices.getTranscriptSharedEmails());
+    sharedTranscriptResponse =
+        (await profileServices.getTranscriptSharedEmails());
 
     for (var eve in temp!.transcripts!) {
       for (var event in eve.event!) {
@@ -188,70 +196,170 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     fetchTranscript();
   }
 
-  Future<pw.Document> generatePdf(List<Event> data, User user) async {
+  Future<pw.Document> generatePdf(
+      List<Event> data, User user, String lifetimeHours) async {
     final pdf = pw.Document();
-    const pageFormat = PdfPageFormat.a4;
+    const pageFormat = PdfPageFormat.letter;
     const margin = 20.0;
+    const maxRowsPerPage = 30;
+    final logoBytes = await loadAssetImage('assets/icons/lenda_logo.png');
+    final logoImage = pw.MemoryImage(logoBytes);
 
-    // Define the maximum rows per page for better pagination
-    const maxRowsPerPage = 30; // Adjust this number as needed for spacing
     final chunkedData = List.generate(
       (data.length / maxRowsPerPage).ceil(),
-          (index) => data.skip(index * maxRowsPerPage).take(maxRowsPerPage).toList(),
+      (index) =>
+          data.skip(index * maxRowsPerPage).take(maxRowsPerPage).toList(),
     );
 
+    final totalHours = lifetimeHours;
+
     try {
-      for (var chunk in chunkedData) {
+      for (var i = 0; i < chunkedData.length; i++) {
+        final chunk = chunkedData[i];
         pdf.addPage(
           pw.MultiPage(
             pageFormat: pageFormat,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             margin: const pw.EdgeInsets.all(margin),
+            footer: (pw.Context context) {
+              if (context.pageNumber == context.pagesCount) {
+                final timeStamp = formatDateTime(DateTime.now().toLocal().toIso8601String());
+                return pw.Center(
+                    child: pw.Padding(
+                  padding: const pw.EdgeInsets.only(top: 40),
+                  child: pw.Text(
+                    'Lenda is a product of the Maize Lab.\nFor any questions, please email collaborate@maize-lab.com \n Generated on $timeStamp',
+                    style: const pw.TextStyle(fontSize: 9),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ));
+              } else {
+                return pw.SizedBox(); // Empty footer for all other pages
+              }
+            },
             build: (pw.Context context) {
               return [
-                // Header Section
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      'Volmore',
-                      style: pw.TextStyle(
-                        fontSize: 24,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
+                // Header Section (only on first page)
+                if (i == 0)
+                  pw.Container(
+                    padding: const pw.EdgeInsets.only(bottom: 30),
+                    child: pw.Row(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Left Section: User Info
+                        pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('Official Volunteering Transcript',
+                                style: pw.TextStyle(fontSize: 12)),
+                            pw.SizedBox(height: 8),
+                            pw.Text(user.userName ?? '',
+                                style: pw.TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: pw.FontWeight.bold)),
+                            pw.Text('Email: ${user.emailId}',
+                                style: pw.TextStyle(fontSize: 12)),
+                            pw.Text('Class of ${user.yearOfStudy ?? '____'}',
+                                style: pw.TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                        // Right Section: Total Hours
+                        pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            // pw.Text('Recorded by', style: const pw.TextStyle(fontSize: 10)),
+                            pw.Row(children: [
+                              pw.Text('lenda',
+                                  style: pw.TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: pw.FontWeight.bold,
+                                      color: PdfColors.green800)),
+                              pw.SizedBox(width: 4),
+                              // Spacing between text and image
+                              pw.Image(logoImage, width: 24, height: 24),
+                            ]),
+                            pw.Text('Your social volunteering app.',
+                                style: const pw.TextStyle(fontSize: 8)),
+                            pw.SizedBox(height: 6),
+                            // Spacing between text and image
+
+                            if (i == 0)
+                              pw.Container(
+                                decoration: pw.BoxDecoration(
+                                    border: pw.Border.all(
+                                      color: PdfColors.green,
+                                    ),
+                                    borderRadius: pw.BorderRadius.all(
+                                        pw.Radius.circular(8))),
+                                alignment: pw.Alignment.centerRight,
+                                padding: const pw.EdgeInsets.all(8),
+                                child: pw.Row(
+                                  crossAxisAlignment:
+                                      pw.CrossAxisAlignment.center,
+                                  children: [
+                                    pw.Text('Total Hours: ',
+                                        style: pw.TextStyle(
+                                            fontSize: 14,
+                                            color: PdfColors.green)),
+                                    pw.Text("${totalHours}",
+                                        style: pw.TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: pw.FontWeight.bold,
+                                            color: PdfColors.green)),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
-                    pw.SizedBox(height: 20),
-                    pw.Text('Name: ${user.userName}'),
-                    pw.Text('Email: ${user.emailId}'),
-                    pw.Text('Year of Study: ${user.yearOfStudy}'),
-                    pw.Text('University: ${user.university}'),
-                    pw.SizedBox(height: 20),
-                  ],
-                ),
-                // Table Section
+                  ),
+
+                // Branding Header Row
+
+                // Table
                 pw.TableHelper.fromTextArray(
-                  border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
-                  cellStyle: const pw.TextStyle(fontSize: 10),
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+                  border:
+                      pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+                  cellStyle: const pw.TextStyle(fontSize: 9),
+                  headerStyle: pw.TextStyle(
+                      fontSize: 10, fontWeight: pw.FontWeight.bold),
+                  headerDecoration:
+                      const pw.BoxDecoration(color: PdfColors.grey300),
+                  columnWidths: {
+                    0: const pw.FlexColumnWidth(2), // Title
+                    1: const pw.FlexColumnWidth(2), // Host
+                    2: const pw.FlexColumnWidth(2), // Address
+                    3: const pw.FlexColumnWidth(3), // Time Elapsed
+                    4: const pw.FlexColumnWidth(1), // Sign
+                    5: const pw.FlexColumnWidth(2), // User Location
+                  },
                   headers: [
                     'Title',
                     'Host',
-                    'Address',
+                    'Event Address',
                     'Time Elapsed',
                     'Sign',
-                    'User Location',
+                    'User Location'
                   ],
                   data: chunk.map((record) {
-
-                    var startDate =  DateFormat('MM/dd/yyyy  hh:mm a').format(DateTime.parse(record.userDateTime!.split("|").first).toLocal());
-                    var endDate = DateFormat('MM/dd/yyyy  hh:mm a').format(DateTime.parse(record.userDateTime!.split("|").last).toLocal());
+                    final userTimeParts = record.userDateTime!.split('|');
+                    final startDate = DateFormat('MM/dd/yyyy  hh:mm a')
+                        .format(DateTime.parse(userTimeParts.first).toLocal());
+                    final endDate = DateFormat('MM/dd/yyyy  hh:mm a')
+                        .format(DateTime.parse(userTimeParts.last).toLocal());
                     return [
-                      record.eventTitle,
-                      record.hostName,
-                      record.userLocation,
-                      "$startDate to $endDate",
-                      record.verifierSignatureHash!.isNotEmpty ? "Yes" : "No",
-                     record.isLoggedAsPast! ? "NA" : record.userLocation,
+                      record.eventTitle ?? '',
+                      record.hostName ?? '',
+                      record.eventLocation ?? '',
+                      '$startDate to $endDate',
+                      (record.verifierSignatureHash?.isNotEmpty ?? false)
+                          ? 'Yes'
+                          : 'No',
+                      record.isLoggedAsPast == true
+                          ? 'NA'
+                          : (record.userLocation ?? '---'),
                     ];
                   }).toList(),
                 ),
@@ -262,17 +370,20 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
       }
     } catch (e) {
       print("Error generating PDF: $e");
-      // Optionally, notify the user or take corrective action
     }
 
     return pdf;
   }
 
+  Future<Uint8List> loadAssetImage(String path) async {
+    final data = await rootBundle.load(path);
+    return data.buffer.asUint8List();
+  }
 
-  Future<void> saveAndSharePdf(pw.Document pdf) async {
+  Future<void> saveAndSharePdf(pw.Document pdf, String fileName) async {
     await Printing.sharePdf(
       bytes: await pdf.save(),
-      filename: 'my_transcript.pdf',
+      filename: 'lenda Transcript-$fileName.pdf',
     );
   }
 
@@ -311,7 +422,9 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                     fontSize: 18, color: Colors.white),
                               ),
                               onPressed: () {
-                                _showShareOptions(context);
+                                /*${(transcript?.lifeTimeHour ?? 0) % 60}Mins*/
+                                _showShareOptions(context,
+                                    "${(transcript?.lifeTimeHour ?? 0) ~/ 60}.${(transcript?.lifeTimeHour ?? 0) % 60}");
                               },
                               child: const Text(
                                 'Share',
@@ -328,44 +441,52 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                           child: Column(
                             children: [
                               ListView.builder(
-                                shrinkWrap:
-                                    true, // Ensures the ListView doesn't take infinite height
-                                physics:
-                                    const NeverScrollableScrollPhysics(), // Disables internal scrolling since SingleChildScrollView handles scrolling
-                                itemCount: transcript?.transcripts?.length ??
-                                    0, // Set item count based on the length of transcripts
+                                shrinkWrap: true,
+                                // Ensures the ListView doesn't take infinite height
+                                physics: const NeverScrollableScrollPhysics(),
+                                // Disables internal scrolling since SingleChildScrollView handles scrolling
+                                itemCount: transcript?.transcripts?.length ?? 0,
+                                // Set item count based on the length of transcripts
                                 itemBuilder: (context, index) {
                                   return buildGroupedContainer(
                                       transcript!.transcripts![index]);
                                 },
                               ),
-
-                              (sharedTranscriptResponse.sharedInfo != null && sharedTranscriptResponse.sharedInfo?.length != 0) ?
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text("Transcripts Shared:"),
-
-                                  ListView.builder(
-                                    itemCount: sharedTranscriptResponse.sharedInfo?.length,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                             Text("Email:${sharedTranscriptResponse.sharedInfo![index].emailId}"),
-                                             Text(" ${DateFormat.yMMMd().format(DateTime.parse(sharedTranscriptResponse.sharedInfo![index].sharedDate!).toLocal())}"),
-
-                                          ],
-                                        ),
-                                      );
-                                    }
-                                  ),
-                                ],
-                              ): SizedBox()
+                              (sharedTranscriptResponse.sharedInfo != null &&
+                                      sharedTranscriptResponse
+                                              .sharedInfo?.length !=
+                                          0)
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text("Transcripts Shared:"),
+                                        ListView.builder(
+                                            itemCount: sharedTranscriptResponse
+                                                .sharedInfo?.length,
+                                            shrinkWrap: true,
+                                            itemBuilder: (context, index) {
+                                              return Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 8, horizontal: 5),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                        "Email:${sharedTranscriptResponse.sharedInfo![index].emailId}"),
+                                                    Text(
+                                                        " ${DateFormat.yMMMd().format(DateTime.parse(sharedTranscriptResponse.sharedInfo![index].sharedDate!).toLocal())}"),
+                                                  ],
+                                                ),
+                                              );
+                                            }),
+                                      ],
+                                    )
+                                  : SizedBox()
                             ],
                           ),
                         ),
@@ -449,7 +570,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                               style: const TextStyle(
                                   color: Colors.black, fontSize: 14),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 5),
                             Text(
                               "Duration : ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[0]).toLocal())} - ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[1]).toLocal())}",
                               maxLines: 3,
@@ -458,45 +579,49 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                               style: const TextStyle(
                                   color: Colors.black, fontSize: 14),
                             ),
+                            const SizedBox(height: 5),
+
+                            Text(
+                              "Location : ${event.eventLocation ?? "---"}",
+                              maxLines: 4,
+                              softWrap: true,
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 14),
+                            ),
+                            const SizedBox(height: 5),
+
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    "Location : ${event.userLocation}",
-                                    maxLines: 3,
-                                    softWrap: true,
-                                    textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 14),
-                                  ),
-                                ),
+                                Expanded(child: SizedBox()),
                                 Row(
                                   children: [
                                     Icon(
                                       Icons.location_on_outlined,
-                                      color: event.isLoggedAsPast! ?  Colors.grey.shade400 : event.userLocation!.isNotEmpty
-                                          ? HexColor(
-                                              transcripts.eventColorCode!)
-                                          : Colors.grey.shade400,
+                                      color: event.isLoggedAsPast!
+                                          ? Colors.grey.shade400
+                                          : event.userLocation!.isNotEmpty
+                                              ? HexColor(
+                                                  transcripts.eventColorCode!)
+                                              : Colors.grey.shade400,
                                       size: 30,
                                     ),
                                     const SizedBox(width: 5),
                                     SvgPicture.asset(
                                       "assets/icons/signature_icon.svg",
-                                      color: event
-                                              .verifierSignatureHash!.isNotEmpty
-                                          ? HexColor(
-                                              transcripts.eventColorCode!)
+                                      color: event.verifierSignatureHash!.isNotEmpty
+                                          ? HexColor(transcripts.eventColorCode!)
                                           : Colors.grey.shade400,
                                     ),
                                     const SizedBox(width: 5),
                                     Icon(
                                       Icons.timer,
-                                      color:event.isLoggedAsPast! ?  Colors.grey.shade400 : event.userLocation!.isNotEmpty
-                                          ? HexColor(
-                                          transcripts.eventColorCode!)
-                                          : Colors.grey.shade400,
+                                      color: event.isLoggedAsPast!
+                                          ? Colors.grey.shade400
+                                          : event.userLocation!.isNotEmpty
+                                              ? HexColor(
+                                                  transcripts.eventColorCode!)
+                                              : Colors.grey.shade400,
                                       size: 30,
                                     ),
                                   ],
