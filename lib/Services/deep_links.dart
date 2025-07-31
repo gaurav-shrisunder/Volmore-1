@@ -17,3 +17,10 @@ Future<String> createDynamicLink({required String eventId}) async {
 
   return shortUrl.toString();
 }
+
+Future<String> createAppLink({required String eventId}) async {
+  final String baseUrl = 'https://www.lendavolunteering.com';
+  final String fullUrl = '$baseUrl/event/$eventId';
+  return fullUrl;
+}
+
