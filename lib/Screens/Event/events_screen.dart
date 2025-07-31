@@ -116,7 +116,9 @@ class _EventsScreenState extends State<EventsScreen>
       _fetchGroupNames();
       return responseModel.message ?? "Group added successfully";
     } catch (e) {
-      print("Error adding group: $e");
+      if(kDebugMode) {
+        print("Error adding group: $e");
+      }
       return "Something went wrong! Please try again later";
     }
   }
@@ -139,7 +141,9 @@ class _EventsScreenState extends State<EventsScreen>
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching group names: $e");
+      if(kDebugMode) {
+        print("Error fetching group names: $e");
+      }
       setState(() {
         isLoading = false;
       });
@@ -159,6 +163,7 @@ class _EventsScreenState extends State<EventsScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  textCapitalization: TextCapitalization.sentences,
                   onChanged: (value) => newGroupName = value,
                   decoration: const InputDecoration(labelText: 'Group Name'),
                 ),
@@ -535,7 +540,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                 .eventDetails!
                                                                 .events![index]
                                                                 .eventInstance!
-                                                                .eventStartDateTime!)),
+                                                                .eventStartDateTime!).toLocal()),
                                                         style: const TextStyle(
                                                             fontSize: 12,
                                                             color: Colors.black,

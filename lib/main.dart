@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -56,18 +57,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
       if (initialLink != null) {
         final Uri deepLink = initialLink.link;
-        print("Got initial link: ${deepLink.toString()}");
+        if(kDebugMode) {
+          print("Got initial link: ${deepLink.toString()}");
+        }
         handleDynamicLink(deepLink);
       }
     } catch (e) {
-      print('Error getting initial dynamic link: $e');
+      if(kDebugMode) {
+        print('Error getting initial dynamic link: $e');
+      }
     }
     FirebaseDynamicLinks.instance.onLink.listen(
       (PendingDynamicLinkData dynamicLinkData) {
-        print("Got dynamic link: ${dynamicLinkData.link.toString()}");
+        if(kDebugMode) {
+          print("Got dynamic link: ${dynamicLinkData.link.toString()}");
+        }
         handleDynamicLink(dynamicLinkData.link);
       },
       onError: (error) {
+        if(kDebugMode)
         print('Dynamic Links error: $error');
       },
     );
@@ -75,6 +83,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   void handleDynamicLink(Uri deepLink) {
     final String? eventId = deepLink.queryParameters['eventId'];
+    if(kDebugMode)
     print("Handling dynamic link with eventId: $eventId");
 
     if (eventId != null) {

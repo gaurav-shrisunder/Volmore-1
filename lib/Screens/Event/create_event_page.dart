@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -188,7 +189,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
       // Convert to UTC and ISO 8601 format
       setState(() {
-        print(' before setting:: ${combinedDateTime.toUtc()}');
+        if(kDebugMode) {
+          print(' before setting:: ${combinedDateTime.toUtc()}');
+        }
         endUtcDateTime = combinedDateTime.toUtc().toIso8601String();
       });
     }
@@ -224,7 +227,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     String request =
         '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
     var response = await http.get(Uri.parse(request));
-    print('Respinse Map: ${json.decode(response.body)}');
+    if(kDebugMode) {
+      print('Respinse Map: ${json.decode(response.body)}');
+    }
     if (response.statusCode == 200) {
       setState(() {
         _placeList = json.decode(response.body)['predictions'];
@@ -284,7 +289,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching group names: $e");
+      if(kDebugMode) {
+        print("Error fetching group names: $e");
+      }
       setState(() {
         isLoading = false;
       });
@@ -331,6 +338,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       _fetchGroupNames();
       return responseModel.message ?? "Group added successfully";
     } catch (e) {
+      if(kDebugMode)
       print("Error adding group: $e");
       return "Something went wrong! Please try again later";
     }
@@ -350,6 +358,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  textCapitalization: TextCapitalization.sentences,
                   onChanged: (value) => newGroupName = value,
                   decoration: const InputDecoration(labelText: 'Group Name'),
                 ),
@@ -840,8 +849,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               child: CircularProgressIndicator());
                         });
                     titleController.text = titleController.text;
-
-                    print('Selected Group::: ${_selectedGroup}');
+                    if(kDebugMode) {
+                      print('Selected Group::: ${_selectedGroup}');
+                    }
 
                     if (titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
@@ -881,8 +891,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               : selectedOccurrence.toLowerCase();
 
                       requestModel.recurrence = recurrence;
-
-                      print('Payload ${jsonEncode(requestModel)}');
+                      if(kDebugMode) {
+                        print('Payload ${jsonEncode(requestModel)}');
+                      }
 
                       CreateEventResponse? eventCreatedResponse = await EventsServices().createEventData(requestModel);
                       //   Navigator.pop(context);

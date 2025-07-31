@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage>
   void _showSettingsBottomSheet() {
     Get.bottomSheet(
       Container(
+
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(30)),
         ),
@@ -180,7 +181,7 @@ class _HomePageState extends State<HomePage>
                   () => Get.to(const UserProfilePage())),*/
               _buildSettingsTile(
                   'Log Out', Icons.arrow_forward_ios_outlined, logout),
-              SizedBox(height: 30,)
+              SizedBox(height: 50,)
             ],
           ),
         ),
@@ -192,7 +193,7 @@ class _HomePageState extends State<HomePage>
 
   Widget _buildSettingsTile(String title, IconData icon, VoidCallback onTap) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(10.0),
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding:

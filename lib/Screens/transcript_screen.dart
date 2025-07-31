@@ -87,7 +87,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 _showShareWithTeacherModal(context);
               },
             ),
-            SizedBox(height: 40,)
+            SizedBox(height: 70,)
           ],
         );
       },
@@ -107,6 +107,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(

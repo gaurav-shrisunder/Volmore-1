@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -78,7 +79,9 @@ class AuthMethod {
         res = "Please fill in all fields";
       }
     } catch (err) {
-      print("Error in signup ${err.toString()}");
+      if(kDebugMode) {
+        print("Error in signup ${err.toString()}");
+      }
       res = err.toString();
     }
 
@@ -241,8 +244,9 @@ class AuthMethod {
       UserModel? user = await fetchUserData();
 
       // Generate UUID for the event
-
-      print("user: ${user.toString()}");
+      if(kDebugMode) {
+        print("user: ${user.toString()}");
+      }
 
       // Add event to Firestore
       await _firestore
@@ -297,7 +301,9 @@ class AuthMethod {
 
       // Generate UUID for the event
 
-      print("user: ${user.toString()}");
+      if(kDebugMode) {
+        print("user: ${user.toString()}");
+      }
 
       // Add event to Firestore
       await _firestore
@@ -321,7 +327,9 @@ class AuthMethod {
       });
 
       if (uid != hostId) {
-        print("In if condition");
+        if(kDebugMode) {
+          print("In if condition");
+        }
         await _firestore
             .collection("users")
             .doc(hostId)
@@ -377,6 +385,7 @@ class AuthMethod {
     try {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();
+
       print("querySnapshot.docs: ${querySnapshot.docs}");
 
       groups = querySnapshot.docs.map((doc) {

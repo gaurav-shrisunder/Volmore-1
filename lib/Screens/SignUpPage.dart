@@ -514,7 +514,6 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                       MyButtons(
                           onTap: () async {
                             if (isTermsAgreed) {
-                              print('State: $selectedState');
 
                               if (nameController.text.isEmpty) {
                                 Fluttertoast.showToast(msg: "Name cannot be empty");
