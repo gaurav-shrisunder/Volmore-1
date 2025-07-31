@@ -275,7 +275,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     try {
       /* QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('groups').get();*/
-      EventCategoryResponseModel? eventCategoryResponseModel = await EventsServices().getEventsCategoryData();
+      EventCategoryResponseModel? eventCategoryResponseModel =
+          await EventsServices().getEventsCategoryData();
 
       List<String> groupNames = [];
       eventCategoryResponseModel?.eventCategories?.forEach((action) {
@@ -391,8 +392,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
-
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(Colors.blue)),
                 onPressed: () async {
                   if (newGroupName.isNotEmpty && selectedColor != null) {
                     String colorCode = colorCodes[selectedColor]!;
@@ -404,7 +405,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     Fluttertoast.showToast(msg: "Please fill all fields");
                   }
                 },
-                child: const Text('Add Group', style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  'Add Group',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -601,13 +605,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                     ElevatedButton(
                       style: const ButtonStyle(
-                          padding: MaterialStatePropertyAll(
+                          padding: WidgetStatePropertyAll(
                               EdgeInsets.symmetric(horizontal: 12)),
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.white),
-                          elevation: MaterialStatePropertyAll(0),
-                          shadowColor: MaterialStatePropertyAll(Colors.white),
-                          side: MaterialStatePropertyAll(BorderSide(width: 1))),
+                          backgroundColor: WidgetStatePropertyAll(Colors.white),
+                          elevation: WidgetStatePropertyAll(0),
+                          shadowColor: WidgetStatePropertyAll(Colors.white),
+                          side: WidgetStatePropertyAll(BorderSide(width: 1))),
                       onPressed: () => _selectStartDate(context),
                       child: startUtcDateTime.isNotEmpty
                           ? Text(
@@ -684,14 +687,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           ),
                           ElevatedButton(
                             style: const ButtonStyle(
-                                padding: MaterialStatePropertyAll(
+                                padding: WidgetStatePropertyAll(
                                     EdgeInsets.symmetric(horizontal: 12)),
                                 backgroundColor:
-                                    MaterialStatePropertyAll(Colors.white),
-                                elevation: MaterialStatePropertyAll(0),
+                                    WidgetStatePropertyAll(Colors.white),
+                                elevation: WidgetStatePropertyAll(0),
                                 shadowColor:
-                                    MaterialStatePropertyAll(Colors.white),
-                                side: MaterialStatePropertyAll(
+                                    WidgetStatePropertyAll(Colors.white),
+                                side: WidgetStatePropertyAll(
                                     BorderSide(width: 1))),
                             onPressed: () => _selectEndDate(context),
                             child: endUtcDateTime.isNotEmpty
@@ -856,7 +859,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     if (titleController.text.isNotEmpty &&
                         descriptionController.text.isNotEmpty &&
                         locationController.text.isNotEmpty &&
-                        selectedOccurrence.isNotEmpty && _selectedGroup != null) {
+                        selectedOccurrence.isNotEmpty &&
+                        _selectedGroup != null) {
                       /*  DateTime endDate = selectedOccurrence == 'No occurrence'
                           ? selectedDate
                           : DateFormat('dd/MM/yyyy')
@@ -878,7 +882,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       requestModel.createdBy = await getUserId();
                       Recurrence recurrence = Recurrence();
                       recurrence.eventStartDateTime = startUtcDateTime;
-                      recurrence.eventEndDateTime = endUtcDateTime.isEmpty  ? null : endUtcDateTime;
+                      recurrence.eventEndDateTime =
+                          endUtcDateTime.isEmpty ? null : endUtcDateTime;
                       recurrence.recurInterval = 1;
                       recurrence.weekdays = _selectedGroup == "Weekly"
                           ? DateFormat('EEEE').format(
@@ -895,7 +900,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         print('Payload ${jsonEncode(requestModel)}');
                       }
 
-                      CreateEventResponse? eventCreatedResponse = await EventsServices().createEventData(requestModel);
+                      CreateEventResponse? eventCreatedResponse =
+                          await EventsServices().createEventData(requestModel);
                       //   Navigator.pop(context);
 
                       /* dynamic res = await _authMethod
@@ -944,10 +950,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         //     MaterialPageRoute(
                         //         builder: (context) => const HomePage()),
                         //     (route) => false);
-                        CustomSnackBar.show(context: context, message: eventCreatedResponse.message!, type: SnackBarType.success);
+                        CustomSnackBar.show(
+                            context: context,
+                            message: eventCreatedResponse.message!,
+                            type: SnackBarType.success);
 
                         showDialog(
-                          barrierDismissible: false,
+                            barrierDismissible: false,
                             context: context,
                             builder: (_) {
                               return SimpleDialog(
@@ -988,10 +997,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                           final SharedPreferences prefs =
                                               await SharedPreferences
                                                   .getInstance();
-                                          https://volmore.page.link/e1ZW
+                                          https: //volmore.page.link/e1ZW
                                           final String? uid = await getUserId();
-                                          String url = await createDynamicLink(
-                                              eventId: eventCreatedResponse.eventDetails!.eventIntanceId.toString());
+                                          String url = await createAppLink(
+                                              eventId: eventCreatedResponse
+                                                  .eventDetails!.eventIntanceId
+                                                  .toString());
                                           Share.share(url);
                                           Navigator.pushAndRemoveUntil(
                                               context,
@@ -1074,8 +1085,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               );
                             });
                       } else {
-
-                        CustomSnackBar.show(context: context, message: eventCreatedResponse.message!, type: SnackBarType.error);
+                        CustomSnackBar.show(
+                            context: context,
+                            message: eventCreatedResponse.message!,
+                            type: SnackBarType.error);
                         Navigator.pop(context);
                         /* ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

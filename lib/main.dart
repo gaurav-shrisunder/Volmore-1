@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+
 import '../../Controllers/event_controller.dart';
 import '../../Screens/splash_screen.dart';
 import '../../Utils/app_themes.dart';
@@ -23,8 +26,6 @@ void main() async {
   // final sub = appLink.uriLinkStream.listen((uri) {
   //   print('App Link: $uri');
   // });
-
-
 
   runApp(
     MultiProvider(
@@ -45,9 +46,46 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool isLoggedIn = false;
   final eventController = Get.find<EventController>();
+  late final AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  Future<void> initAppLinks() async {
+    _appLinks = AppLinks();
+
+    try {
+      // ✅ Correct method name here
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        _handleIncomingLink(initialUri);
+      }
+
+      _linkSubscription = _appLinks.uriLinkStream.listen(
+        (Uri uri) {
+          _handleIncomingLink(uri);
+        },
+        onError: (err) {
+          print("App Link Error: $err");
+        },
+      );
+    } catch (e) {
+      print("Failed to init app links: $e");
+    }
+  }
+
+  void _handleIncomingLink(Uri uri) {
+    print("Received App Link: $uri");
+
+    if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'event') {
+      final eventId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+
+      if (eventId != null && eventId.isNotEmpty) {
+        showEventPopup(eventId);
+      }
+    }
+  }
 
   Future<void> initDynamicLinks() async {
     // Handle link when app is not opened
@@ -96,12 +134,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
   void initState() {
     super.initState();
 
-
     // with WidgetsBindingObserver
-     WidgetsBinding.instance.addObserver(this);
-     if(Platform.isIOS){
-       initDynamicLinks();
-     }
+    WidgetsBinding.instance.addObserver(this);
+    if (Platform.isIOS) {
+      initDynamicLinks();
+    }
+    initAppLinks();
     // Handle dynamic link when the app is launched via a deep link
     //  handleDynamicLink();
 

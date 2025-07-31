@@ -10,10 +10,6 @@ import '../../Models/event_data_model.dart';
 import '../../Utils/shared_prefs.dart';
 import '../CreateLogScreen.dart';
 
-
-
-
-
 class EventWidget extends StatelessWidget {
   final EventDataModel event;
   final Color color;
@@ -31,7 +27,7 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Event Date::: ${date}");
+    print("Event Date::: $date");
     return Center(
       child: Stack(
         children: [
@@ -89,7 +85,7 @@ class EventWidget extends StatelessWidget {
                             Text(
                               DateFormat.yMMMd().format(date),
                               style: const TextStyle(
-                                fontSize: 12,
+                                  fontSize: 12,
                                   color: Colors.black,
                                   fontWeight: FontWeight.normal),
                             ),
@@ -137,7 +133,8 @@ class EventWidget extends StatelessWidget {
                     "Event Description: ${event.description ?? "Description"}",
                     style: const TextStyle(
                         fontSize: 14,
-                        color: Colors.black, fontWeight: FontWeight.normal),
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -152,7 +149,7 @@ class EventWidget extends StatelessWidget {
                                   await SharedPreferences.getInstance();
                               final String? uid = prefs.getString('uid');
                               String url =
-                                  await createDynamicLink(eventId: event.id!);
+                                  await createAppLink(eventId: event.id!);
                               print("URL: $url");
                               Share.share(url);
                             },
@@ -213,5 +210,3 @@ class EventWidget extends StatelessWidget {
     );
   }
 }
-
-

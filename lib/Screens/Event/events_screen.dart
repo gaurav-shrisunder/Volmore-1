@@ -655,7 +655,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                       onPressed: () async {
                                                         final String? uid =
                                                             await getUserId();
-                                                        String url = await createDynamicLink(
+                                                        String url = await createAppLink(
                                                             eventId: snapshot
                                                                 .data!
                                                                 .eventDetails!
@@ -772,7 +772,9 @@ class _EventsScreenState extends State<EventsScreen>
                                                                       });
                                                                     },
                                                                   ),
-                                                                  SizedBox(height: 10,)
+                                                                  SizedBox(
+                                                                    height: 10,
+                                                                  )
                                                                 ],
                                                               );
                                                             });
