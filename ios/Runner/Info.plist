@@ -52,7 +52,7 @@
 		<string>https://volmore.page.link</string>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
+	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplication Queries Schemes</key>

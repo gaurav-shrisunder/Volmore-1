@@ -6,10 +6,6 @@
 	<array>
 		<string>applinks:volmore.page.link</string>
 		<string>applinks:lendavolunteering.com</string>
-		<string>webcredentials:lendavolunteering.com</string>
-		<string>webcredentials:example.com</string>
-		<string>webcredentials:example.com</string>
-		<string>webcredentials:example.com</string>
 	</array>
 </dict>
 </plist>
