@@ -130,7 +130,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     "2027",
     "2028",
     "2029",
-    "2030"
+    "2030",
+    "2031",
+    "2032",
+    "2033",
+    "2034",
+    "2035",
+    "2036",
+    "2037",
+    "2038",
+    "2039",
+    "2040",
   ];
 
   String? selectedStateVolunteered;
@@ -161,7 +171,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         yearOfStudy: selectedGraduatingClassVolunteered,
       );
       LeaderboardInfluencedResponseModel? influencedLeaderboardData =
-      await leaderboardServices.getLeaderboardData(
+          await leaderboardServices.getLeaderboardData(
         "influenceBoard",
         locationState: selectedStateInfluenced,
         yearOfStudy: selectedGraduatingClassInfluenced,
@@ -178,7 +188,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         yearOfStudy: selectedGraduatingClassInfluenced,
       );
       setState(() {
-        print('Influcence data:: ${influencedLeaderboardData?.leaderBoardDetails?.first.userName}');
+        print(
+            'Influcence data:: ${influencedLeaderboardData?.leaderBoardDetails?.first.userName}');
         influencedList = influencedLeaderboardData?.leaderBoardDetails ?? [];
       });
     }
@@ -197,7 +208,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         selectedStateInfluenced = null;
         selectedGraduatingClassInfluenced = null;
       }
-      apiCalling( isVolunteeredTab);
+      apiCalling(isVolunteeredTab);
     });
   }
 
@@ -271,7 +282,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   value: state,
                   child: Text(state),
                 );
-              }).toList(),
+              }),
             ],
             onChanged: (String? newValue) {
               setState(() {
@@ -280,7 +291,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 } else {
                   selectedStateInfluenced = newValue;
                 }
-                apiCalling( isVolunteeredTab);
+                apiCalling(isVolunteeredTab);
               });
             },
           ),
@@ -307,7 +318,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   value: gradClass,
                   child: Text(gradClass),
                 );
-              }).toList(),
+              }),
             ],
             onChanged: (String? newValue) {
               setState(() {
@@ -316,18 +327,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 } else {
                   selectedGraduatingClassInfluenced = newValue;
                 }
-                apiCalling( isVolunteeredTab);
+                apiCalling(isVolunteeredTab);
               });
             },
           ),
         ),
         const SizedBox(width: 10),
-         GestureDetector(
-            onTap: (){
+        GestureDetector(
+            onTap: () {
               resetFilters(isVolunteeredTab);
             },
             child: Icon(Icons.refresh, color: Colors.blue))
-
       ],
     );
   }
@@ -422,31 +432,41 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             ),
                             const SizedBox(width: 10),
 
-                            if(userList[index]?.profilePicture == null || userList[index]?.profilePicture == "")
+                            if (userList[index]?.profilePicture == null ||
+                                userList[index]?.profilePicture == "")
                               CircleAvatar(
-
                                 /*  backgroundImage: AssetImage(
                                   'assets/images/profile_avatar.png'),*/
                                 // Replace with actual image path
                                 radius: 20,
                                 child: Container(
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1),shape: BoxShape.circle,color: Colors.grey.shade200),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.black, width: 1),
+                                      shape: BoxShape.circle,
+                                      color: Colors.grey.shade200),
                                   child: Center(
-                                    child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                                    child: Text(
+                                      "${userList[index]!.userName?[0].capitalize}",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
+                                    ),
                                   ),
                                 ),
                               ),
-                            if(userList[index]?.profilePicture != null)
+                            if (userList[index]?.profilePicture != null)
                               CircleAvatar(
                                 backgroundImage: NetworkImage(
                                     userList[index]!.profilePicture!),
                                 radius: 20,
                               ),
 
-                           /*  CircleAvatar(
+                            /*  CircleAvatar(
 
-                            *//*  backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),*//*
+                            */ /*  backgroundImage: AssetImage(
+                                  'assets/images/profile_avatar.png'),*/ /*
                               // Replace with actual image path
                               radius: 20,
                               child: Container(
@@ -534,7 +554,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Widget buildHoursInfluencedListView(List<LeaderboardUser?>? userList) {
- //   print('Receved Influ:: ${userList?.first?.userName}');
+    //   print('Receved Influ:: ${userList?.first?.userName}');
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -625,24 +645,34 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(width: 10),
-if(userList[index]?.profilePicture == null || userList[index]?.profilePicture == "")
-                            CircleAvatar(
-
-                              /*  backgroundImage: AssetImage(
+                            if (userList[index]?.profilePicture == null ||
+                                userList[index]?.profilePicture == "")
+                              CircleAvatar(
+                                /*  backgroundImage: AssetImage(
                                   'assets/images/profile_avatar.png'),*/
-                              // Replace with actual image path
-                              radius: 20,
-                              child: Container(
-                                decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1),shape: BoxShape.circle,color: Colors.grey.shade200),
-                                child: Center(
-                                  child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                                // Replace with actual image path
+                                radius: 20,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.black, width: 1),
+                                      shape: BoxShape.circle,
+                                      color: Colors.grey.shade200),
+                                  child: Center(
+                                    child: Text(
+                                      "${userList[index]!.userName?[0].capitalize}",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            if(userList[index]?.profilePicture != null)
+                            if (userList[index]?.profilePicture != null)
                               CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                  userList[index]!.profilePicture!),
+                                backgroundImage: NetworkImage(
+                                    userList[index]!.profilePicture!),
                                 radius: 20,
                               ),
                             const SizedBox(width: 16),
@@ -660,42 +690,42 @@ if(userList[index]?.profilePicture == null || userList[index]?.profilePicture ==
                                   ),
                                   userList[index]!.yearOfStudy != 0
                                       ? Row(
-                                    children: [
-                                      Chip(
-                                        side: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0),
-                                        padding: EdgeInsets.zero,
-                                        label: Text(
-                                          userList[index]!
-                                              .yearOfStudy
-                                              .toString(),
-                                          style: const TextStyle(
-                                              fontSize: 12),
-                                        ),
-                                        backgroundColor:
-                                        Colors.orange.shade50,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Chip(
-                                        side: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0),
-                                        padding: EdgeInsets.zero,
-                                        label: Text(
-                                          userList[index]!
-                                              .locationState
-                                              .toString(),
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight:
-                                              FontWeight.w500),
-                                        ),
-                                        backgroundColor:
-                                        Colors.pink.shade50,
-                                      ),
-                                    ],
-                                  )
+                                          children: [
+                                            Chip(
+                                              side: const BorderSide(
+                                                  color: Colors.transparent,
+                                                  width: 0),
+                                              padding: EdgeInsets.zero,
+                                              label: Text(
+                                                userList[index]!
+                                                    .yearOfStudy
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                              backgroundColor:
+                                                  Colors.orange.shade50,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Chip(
+                                              side: const BorderSide(
+                                                  color: Colors.transparent,
+                                                  width: 0),
+                                              padding: EdgeInsets.zero,
+                                              label: Text(
+                                                userList[index]!
+                                                    .locationState
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                              backgroundColor:
+                                                  Colors.pink.shade50,
+                                            ),
+                                          ],
+                                        )
                                       : const SizedBox(),
                                 ],
                               ),

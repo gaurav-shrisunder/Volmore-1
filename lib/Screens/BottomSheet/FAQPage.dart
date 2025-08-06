@@ -5,47 +5,86 @@ import '../../widgets/QnA.dart';
 class FAQPage extends StatelessWidget {
   const FAQPage({super.key});
 
+  static const List<Map<String, String>> qnaList = [
+    {
+      "question":
+          "How do I log hours for a volunteering event I did in the past?",
+      "answer":
+          "Tap the “Log Past Hours” button. You can verify the event with a signature, but not your current geolocation.",
+    },
+    {
+      "question":
+          "What if the volunteer organization or person I helped couldn't sign at the event?",
+      "answer":
+          "No problem! Go to the Past Events tab and tap on Verify to get it signed later.",
+    },
+    {
+      "question": "How do I reset my password?",
+      "answer":
+          "Go to Settings > Manage My Account to reset your password, update your profile, or delete your account.",
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-    const qnaList = [
-      {
-        "question":
-            "How do I log hours for a volunteering event I did in the past?",
-        "answer":
-            "Press the “Log Past Hours” button to log the hours. You can verify the event with a signature, but not your current geolocation"
-      },
-      {
-        "question":
-            "What if the volunteer organization/ person I helped  couldn't sign at the event?",
-        "answer":
-            "Don't worry, you can get the event signed and verified anytime later by going to the Past Event's tab and clicking on Verify."
-      },
-      {
-        "question": "How do I reset my password?  ",
-        "answer":
-            "Click on the settings button, from there you can go into manage my account and reset your password, change aspects of your profile, and even delete your account.  "
-      },
-    ];
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('')),
-      body: SafeArea(
-        child: Center(
-            child: Column(
+      backgroundColor: isDark ? Colors.black : Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        elevation: 1,
+        centerTitle: true,
+        title: const Text(
+          'FAQs',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: qnaList.length,
+        itemBuilder: (context, index) {
+          final qna = qnaList[index];
+          return _buildQnACard(
+            question: qna["question"]!,
+            answer: qna["answer"]!,
+            context: context,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildQnACard({
+    required String question,
+    required String answer,
+    required BuildContext context,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          title: Text(
+            question,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           children: [
             Text(
-              'FAQ',
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                fontSize: height * 0.035,
-                color: headingBlue,
-                fontWeight: FontWeight.bold,
-              ),
+              answer,
+              style: const TextStyle(fontSize: 14, height: 1.4),
             ),
-            QnAWidget(qnaList: qnaList)
           ],
-        )),
+        ),
       ),
     );
   }
