@@ -47,10 +47,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>FirebaseDynamicLinksCustomDomains</key>
-	<array>
-		<string>https://volmore.page.link</string>
-	</array>
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>

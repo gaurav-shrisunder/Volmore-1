@@ -36,6 +36,7 @@ void showEventPopup(String eventId) async {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(events.event.eventTitle ?? "Event Details"),
               content: SizedBox(
                 width: Get.width * 0.9,

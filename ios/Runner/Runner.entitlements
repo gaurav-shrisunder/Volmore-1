@@ -4,7 +4,6 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:volmore.page.link</string>
 		<string>applinks:lendavolunteering.com</string>
 		<string>webcredentials:lendavolunteering.com</string>
 	</array>
