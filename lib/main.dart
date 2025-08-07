@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -16,16 +13,12 @@ import '../../Utils/shared_prefs.dart';
 import '../../provider/theme_manager_provider.dart';
 import '../../provider/time_logger_provider.dart';
 import '../../widgets/event_popup.dart';
-import 'Utils/common_utils.dart'; // Import the new file
+import 'Utils/common_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   Get.put(EventController());
-  // final appLink = AppLinks();
-  // final sub = appLink.uriLinkStream.listen((uri) {
-  //   print('App Link: $uri');
-  // });
 
   runApp(
     MultiProvider(
@@ -52,137 +45,102 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
 
-  Future<void> initAppLinks() async {
-    _appLinks = AppLinks();
-
-    try {
-      // ✅ Correct method name here
-      final initialUri = await _appLinks.getInitialLink();
-      if (initialUri != null) {
-        _handleIncomingLink(initialUri);
-      }
-
-      _linkSubscription = _appLinks.uriLinkStream.listen(
-        (Uri uri) {
-          _handleIncomingLink(uri);
-        },
-        onError: (err) {
-          print("App Link Error: $err");
-        },
-      );
-    } catch (e) {
-      print("Failed to init app links: $e");
-    }
-  }
-
-  void _handleIncomingLink(Uri uri) {
-    print("Received App Link: $uri");
-
-    if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'event') {
-      final eventId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
-
-      if (eventId != null && eventId.isNotEmpty) {
-        showEventPopup(eventId);
-      }
-    }
-  }
-
-  Future<void> initDynamicLinks() async {
-    // Handle link when app is not opened
-    try {
-      final PendingDynamicLinkData? initialLink =
-          await FirebaseDynamicLinks.instance.getInitialLink();
-
-      if (initialLink != null) {
-        final Uri deepLink = initialLink.link;
-        if(kDebugMode) {
-          print("Got initial link: ${deepLink.toString()}");
-        }
-        handleDynamicLink(deepLink);
-      }
-    } catch (e) {
-      if(kDebugMode) {
-        print('Error getting initial dynamic link: $e');
-      }
-    }
-    FirebaseDynamicLinks.instance.onLink.listen(
-      (PendingDynamicLinkData dynamicLinkData) {
-        if(kDebugMode) {
-          print("Got dynamic link: ${dynamicLinkData.link.toString()}");
-        }
-        handleDynamicLink(dynamicLinkData.link);
-      },
-      onError: (error) {
-        if(kDebugMode)
-        print('Dynamic Links error: $error');
-      },
-    );
-  }
-
-  void handleDynamicLink(Uri deepLink) {
-    final String? eventId = deepLink.queryParameters['eventId'];
-    if(kDebugMode)
-    print("Handling dynamic link with eventId: $eventId");
-
-    if (eventId != null) {
-      // Ensure we show popup on the main thread
-      showEventPopup(eventId);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-
-    // with WidgetsBindingObserver
     WidgetsBinding.instance.addObserver(this);
-    if (Platform.isIOS) {
-      initDynamicLinks();
-    }
-    initAppLinks();
-    // Handle dynamic link when the app is launched via a deep link
-    //  handleDynamicLink();
-
-    // clearPreferences();
+    initDeepLinks();
     checkLocalStorage();
   }
 
   @override
   void dispose() {
-    //  WidgetsBinding.instance.removeObserver(this);
+    _linkSubscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
-  // Future<void> handleDynamicLink() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? uid = prefs.getString('uid');
-  //   // This handles the case when the app is started with a dynamic link
-  //   print("in handle dunmaic link $uid");
-  //   final PendingDynamicLinkData? initialLink =
-  //       await FirebaseDynamicLinks.instance.getInitialLink();
-  //   if (initialLink != null) {
-  //     final Uri deepLink = initialLink.link;
-  //     final String? eventId = deepLink.queryParameters['eventId'];
+Future<void> initDeepLinks() async {
+    _appLinks = AppLinks();
 
-  //     if (eventId != null) {
-  //       // Show the event popup
-  //       showEventPopup(eventId);
-  //     }
-  //   }
+    try {
+      print("Initializing AppLinks...");
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        print("Initial Universal Link: $initialUri");
+        print(
+            "Scheme: ${initialUri.scheme}, Host: ${initialUri.host}, Path: ${initialUri.path}, Query: ${initialUri.queryParameters}");
+        _handleDeepLink(initialUri);
+      } else {
+        print("No initial Universal Link received");
+      }
 
-  //   // This handles dynamic links when the app is already running in the background
-  //   FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData data) {
-  //     final Uri deepLink = data.link;
-  //     final String? eventId = deepLink.queryParameters['eventId'];
+      _linkSubscription = _appLinks.uriLinkStream.listen(
+        (Uri uri) {
+          print("Received Universal Link stream: $uri");
+          print(
+              "Scheme: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}, Query: ${uri.queryParameters}");
+          _handleDeepLink(uri);
+        },
+        onError: (err) {
+          print("AppLinks Error: $err");
+        },
+        cancelOnError: false,
+      );
+    } catch (e) {
+      print("Failed to initialize AppLinks: $e");
+    }
+  }
+  void _handleDeepLink(Uri uri) {
+    print("Processing deep link: $uri");
 
-  //     if (eventId != null) {
-  //       // Show the event popup
-  //       showEventPopup(eventId);
-  //     }
-  //   }).onError((error) {
-  //     print('Dynamic Link Failed: $error');
-  //   });
-  // }
+    String? eventId;
+
+    // Handle Universal Links (e.g., https://lendavolunteering.com/event/123)
+    if (uri.host == 'lendavolunteering.com' &&
+        uri.pathSegments.isNotEmpty &&
+        uri.pathSegments[0] == 'event') {
+      eventId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+      print(
+          "Parsed eventId from Universal Link (lendavolunteering.com): $eventId");
+    }
+
+    // Handle Firebase Dynamic Links (e.g., https://volmore.page.link?eventId=123)
+    if (uri.host == 'volmore.page.link') {
+      eventId = uri.queryParameters['eventId'];
+      print(
+          "Parsed eventId from Firebase Dynamic Link (volmore.page.link): $eventId");
+    }
+
+    // Handle custom scheme (e.g., applinks://event/123)
+    if (uri.scheme == 'applinks' &&
+        uri.pathSegments.isNotEmpty &&
+        uri.pathSegments[0] == 'event') {
+      eventId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+      print("Parsed eventId from custom scheme (applinks): $eventId");
+    }
+
+    if (eventId != null && eventId.isNotEmpty) {
+      print("Valid eventId found: $eventId");
+      // Ensure popup is shown after the UI is ready
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showEventPopup(eventId!);
+      });
+    } else {
+      print("No valid eventId found in deep link: $uri");
+    }
+  }
+
+  Future<void> checkLocalStorage() async {
+    String? uid = await getUserId();
+    if (uid != null && uid != "0") {
+      setState(() {
+        isLoggedIn = true;
+      });
+    } else {
+      print("No user ID found in local storage");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,19 +151,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       debugShowCheckedModeBanner: false,
       theme: themeManager.themeData,
       home: const SplashScreen(),
-
-      // home: isLoggedIn ? const HomePage() : const LoginPage(),
     );
-  }
-
-  Future<void> checkLocalStorage() async {
-    String? uid = await getUserId();
-    if (uid != null && uid != "0") {
-      setState(() {
-        isLoggedIn = true;
-      });
-    } else {
-      // UID is not present in local storage
-    }
   }
 }

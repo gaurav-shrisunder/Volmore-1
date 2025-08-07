@@ -28,16 +28,6 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>lendavolunteering.com</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>https</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
 			<string>com.maizelabs.volunterring</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
@@ -48,12 +38,13 @@
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
+	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-	<key>LSApplication Queries Schemes</key>
+	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>lendavolunteering.com</string>
+		<string>https</string>
+		<string>http</string>
 	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>12.0</string>
@@ -83,6 +74,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:volmore.page.link</string>
+		<string>applinks:lendavolunteering.com</string>
 	</array>
 </dict>
 </plist>

@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage>
             onPressed: _showSettingsBottomSheet,
           ),
           const SizedBox(width: 10),
-         /* IconButton(
+          /* IconButton(
             icon: Icon(
               themeManager.themeData.brightness == Brightness.dark
                   ? Icons.light_mode
@@ -95,36 +95,63 @@ class _HomePageState extends State<HomePage>
       ),
       body: Center(child: _pages[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
-        // fixedColor: Colors.white,
-
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
+        elevation: 8,
+        currentIndex: _selectedIndex,
         showUnselectedLabels: true,
-        elevation: 5,
-        items: <BottomNavigationBarItem>[
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey.shade500,
+        selectedLabelStyle:
+            const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+        unselectedLabelStyle:
+            const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+        onTap: _onItemTapped,
+        items: [
           BottomNavigationBarItem(
-            backgroundColor: Colors.white,
-            icon: SvgPicture.asset("assets/icons/bottom_events_icon_light.svg"),
+            icon: _buildNavIcon(
+              "assets/icons/bottom_events_icon_light.svg",
+              isSelected: _selectedIndex == 0,
+            ),
             label: 'Events',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-                "assets/icons/bottom_leadership_icon_light.svg"),
+            icon: _buildNavIcon(
+              "assets/icons/bottom_leadership_icon_light.svg",
+              isSelected: _selectedIndex == 1,
+            ),
             label: 'Leaderboard',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset("assets/icons/bottom_transcript_light.svg"),
+            icon: _buildNavIcon(
+              "assets/icons/bottom_transcript_light.svg",
+              isSelected: _selectedIndex == 2,
+            ),
             label: 'Transcript',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset("assets/icons/bottom_profile_light.svg"),
+            icon: _buildNavIcon(
+              "assets/icons/bottom_profile_light.svg",
+              isSelected: _selectedIndex == 3,
+            ),
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  Widget _buildNavIcon(String assetPath, {required bool isSelected}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: SvgPicture.asset(
+        assetPath,
+        width: 24,
+        height: 24,
+        colorFilter: ColorFilter.mode(
+          isSelected ? Colors.blueAccent : Colors.grey.shade500,
+          BlendMode.srcIn,
+        ),
       ),
     );
   }
@@ -132,81 +159,123 @@ class _HomePageState extends State<HomePage>
   void _showSettingsBottomSheet() {
     Get.bottomSheet(
       Container(
-
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(30)),
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, -2),
+            ),
+          ],
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-             /* _buildSettingsTile("Create Log", Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const CreateLogScreen())),*/
-              _buildSettingsTile(
-                  'Support - I need help',
-                  Icons.arrow_forward_ios_outlined,
-                  () => Navigator.push(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag Handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 8, bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            _buildSettingsTile(
+              title: 'Support - I need help',
+              icon: Icons.support_agent_outlined,
+              onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const WebViewScreen('https://www.lendavolunteering.com/contact-us'),
+                  builder: (_) => const WebViewScreen(
+                    'https://www.lendavolunteering.com/contact-us',
+                  ),
                 ),
-              )),
-              _buildSettingsTile(
-                  'Frequently Asked Questions',
-                  Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const FAQPage())),
-              _buildSettingsTile('Privacy Policy',
-                  Icons.arrow_forward_ios_outlined, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const WebViewScreen('https://www.lendavolunteering.com/privacy-policy'),
-                      ),
-                    );
-                  }),
-              _buildSettingsTile(
-                  'Terms and Conditions',
-                  Icons.arrow_forward_ios_outlined,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const WebViewScreen('https://www.lendavolunteering.com/terms-and-condition'),
-                      ),
-                    );
-                  }),
-             /* _buildSettingsTile(
-                  'Manage your Account',
-                  Icons.arrow_forward_ios_outlined,
-                  () => Get.to(const UserProfilePage())),*/
-              _buildSettingsTile(
-                  'Log Out', Icons.arrow_forward_ios_outlined, logout),
-              SizedBox(height: 50,)
-            ],
-          ),
+              ),
+            ),
+
+            _buildSettingsTile(
+              title: 'Frequently Asked Questions',
+              icon: Icons.help_outline,
+              onTap: () => Get.to(const FAQPage()),
+            ),
+
+            const Divider(height: 20),
+
+            _buildSettingsTile(
+              title: 'Privacy Policy',
+              icon: Icons.privacy_tip_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WebViewScreen(
+                    'https://www.lendavolunteering.com/privacy-policy',
+                  ),
+                ),
+              ),
+            ),
+
+            _buildSettingsTile(
+              title: 'Terms and Conditions',
+              icon: Icons.article_outlined,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WebViewScreen(
+                    'https://www.lendavolunteering.com/terms-and-condition',
+                  ),
+                ),
+              ),
+            ),
+
+            const Divider(height: 20),
+
+            _buildSettingsTile(
+              title: 'Log Out',
+              icon: Icons.logout,
+              onTap: logout,
+              iconColor: Colors.redAccent,
+              textColor: Colors.redAccent,
+            ),
+
+            const SizedBox(height: 20),
+          ],
         ),
       ),
-      backgroundColor: Colors.white,
-      elevation: 1,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
     );
   }
 
-  Widget _buildSettingsTile(String title, IconData icon, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        tileColor: const Color(0xFFECECEC),
-        title: Text(
-          title,
-          style: const TextStyle(
-              color: headingBlue, fontSize: 20, fontWeight: FontWeight.bold),
+  Widget _buildSettingsTile({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color iconColor = Colors.black87,
+    Color textColor = Colors.black87,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+      onTap: onTap,
+      leading: Icon(icon, color: iconColor),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          color: textColor,
+          fontWeight: FontWeight.w500,
         ),
-        trailing: Icon(icon, color: headingBlue),
-        onTap: onTap,
       ),
+      trailing:
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      visualDensity: const VisualDensity(vertical: -2),
     );
   }
 
