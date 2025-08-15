@@ -348,34 +348,48 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 "Top 100 Volunteers by Total Hours",
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.black87,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (selectedStateVolunteered != null ||
                   selectedGraduatingClassVolunteered != null)
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.blue.shade100),
                   ),
-                  child: Text(
-                    'Filtered Results',
-                    style: TextStyle(
-                      color: Colors.blue.shade900,
-                      fontSize: 12,
-                    ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.filter_list,
+                          size: 14, color: Colors.blue.shade800),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Filtered',
+                        style: TextStyle(
+                          color: Colors.blue.shade900,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],
           ),
+
+          // Filters Row
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: buildFiltersRow(
@@ -384,164 +398,151 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               selectedGraduatingClass: selectedGraduatingClassVolunteered,
             ),
           ),
+
+          // Loading / Empty State / List
           if (isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            )
+            const Center(child: CircularProgressIndicator())
           else if (userList?.isEmpty ?? true)
             const Center(
-              child: Text('No results found for the selected filters'),
+              child: Text(
+                'No results found for the selected filters',
+                style: TextStyle(color: Colors.grey),
+              ),
             )
           else
             Expanded(
               child: ListView.separated(
-                shrinkWrap: true,
-                addAutomaticKeepAlives: true,
-                addRepaintBoundaries: true,
+                physics: const BouncingScrollPhysics(),
                 itemCount: userList!.length,
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  userList[index]!.participantHours;
-                  int hours = (userList[index]!.participantHours ?? 0) ~/ 60;
-                  // Integer division to get hours
-                  int minutes = (userList[index]!.participantHours ?? 0) %
-                      60; // Remainder to get minutes
+                  int totalMinutes = userList[index]!.participantHours ?? 0;
+                  int hours = totalMinutes ~/ 60;
+                  int minutes = totalMinutes % 60;
+                  String formattedTime = '${hours}h ${minutes}m';
 
-                  String formattedTime = '${hours}h  ${minutes}m';
-                  print('Name of: ${userList[index]?.userName}');
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5.0,
+                  return Card(
+                    color: Colors.white, // clean background
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey.shade200, width: 1),
                     ),
-                    child: Container(
-                      color: Colors.white30,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "#${index + 1}.",
+                    elevation: 1.5, // subtle shadow
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          // Rank number
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100, // softer than before
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "#${index + 1}",
                               style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(width: 10),
-
-                            if (userList[index]?.profilePicture == null ||
-                                userList[index]?.profilePicture == "")
-                              CircleAvatar(
-                                /*  backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),*/
-                                // Replace with actual image path
-                                radius: 20,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.black, width: 1),
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey.shade200),
-                                  child: Center(
-                                    child: Text(
-                                      "${userList[index]!.userName?[0].capitalize}",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (userList[index]?.profilePicture != null)
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    userList[index]!.profilePicture!),
-                                radius: 20,
-                              ),
-
-                            /*  CircleAvatar(
-
-                            */ /*  backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),*/ /*
-                              // Replace with actual image path
-                              radius: 20,
-                              child: Container(
-                                decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1),shape: BoxShape.circle,color: Colors.grey.shade200),
-                                child: Center(
-                                  child: Text("${userList[index]!.userName?[0].capitalize}", style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
-                                ),
-                              ),
-                            ),*/
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${userList[index]!.userName}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                  ),
-                                  userList[index]!.yearOfStudy != 0
-                                      ? Row(
-                                          children: [
-                                            Chip(
-                                              side: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 0),
-                                              padding: EdgeInsets.zero,
-                                              label: Text(
-                                                userList[index]!
-                                                    .yearOfStudy
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 12),
-                                              ),
-                                              backgroundColor:
-                                                  Colors.orange.shade50,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Chip(
-                                              side: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 0),
-                                              padding: EdgeInsets.zero,
-                                              label: Text(
-                                                userList[index]!
-                                                    .locationState
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                              backgroundColor:
-                                                  Colors.pink.shade50,
-                                            ),
-                                          ],
-                                        )
-                                      : const SizedBox(),
-                                ],
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
                               ),
                             ),
-                            //  const Spacer(),
-                            Align(
-                                alignment: Alignment.topRight,
-                                child: Text(
-                                  formattedTime,
-                                  style: const TextStyle(color: Colors.black),
+                          ),
+                          const SizedBox(width: 12),
+
+                          // Avatar
+                          if (userList[index]?.profilePicture?.isEmpty ?? true)
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.grey.shade200,
+                              child: Text(
+                                userList[index]!.userName?[0].toUpperCase() ??
+                                    '?',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            )
+                          else
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundImage: NetworkImage(
+                                  userList[index]!.profilePicture!),
+                            ),
+                          const SizedBox(width: 12),
+
+                          // Name + chips
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  userList[index]!.userName ?? '',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                )),
-                          ],
-                        ),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    if (userList[index]!.yearOfStudy != 0)
+                                      Chip(
+                                        label: Text(
+                                          userList[index]!
+                                              .yearOfStudy
+                                              .toString(),
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        backgroundColor: Colors.orange.shade50,
+                                        side: BorderSide.none,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    if ((userList[index]!.locationState ?? '')
+                                        .isNotEmpty) ...[
+                                      const SizedBox(width: 6),
+                                      Chip(
+                                        label: Text(
+                                          userList[index]!.locationState ?? '',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        backgroundColor: Colors.pink.shade50,
+                                        side: BorderSide.none,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Hours
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Icon(Icons.access_time,
+                                  size: 14, color: Colors.grey),
+                              Text(
+                                formattedTime,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -554,41 +555,44 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Widget buildHoursInfluencedListView(List<LeaderboardUser?>? userList) {
-    //   print('Receved Influ:: ${userList?.first?.userName}');
-
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 "Top 100 Volunteers by Hours Influenced",
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.black87,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (selectedStateInfluenced != null ||
                   selectedGraduatingClassInfluenced != null)
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Filtered Results',
-                    style: TextStyle(
-                      color: Colors.blue.shade900,
-                      fontSize: 12,
+                Row(
+                  children: [
+                    Icon(Icons.filter_list,
+                        size: 16, color: Colors.blue.shade800),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Filtered',
+                      style: TextStyle(
+                        color: Colors.blue.shade800,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
             ],
           ),
+
+          // Filters
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: buildFiltersRow(
@@ -597,150 +601,151 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               selectedGraduatingClass: selectedGraduatingClassInfluenced,
             ),
           ),
+
+          // Loader / Empty / List
           if (isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            )
+            const Center(child: CircularProgressIndicator())
           else if (userList?.isEmpty ?? true)
             const Center(
-              child: Text('No results found for the selected filters'),
+              child: Text(
+                'No results found for the selected filters',
+                style: TextStyle(color: Colors.grey),
+              ),
             )
           else
             Expanded(
               child: ListView.separated(
-                shrinkWrap: true,
-                addAutomaticKeepAlives: true,
-                addRepaintBoundaries: true,
+                physics: const BouncingScrollPhysics(),
                 itemCount: userList!.length,
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
-                  print('User Image:: ${userList[index]?.profilePicture}');
-                  userList[index]!.hostInfluenceHours;
-                  int hours = (userList[index]!.hostInfluenceHours ?? 0) ~/ 60;
-                  // Integer division to get hours
-                  int minutes = (userList[index]!.hostInfluenceHours ?? 0) %
-                      60; // Remainder to get minutes
+                  int totalMinutes = userList[index]!.hostInfluenceHours ?? 0;
+                  int hours = totalMinutes ~/ 60;
+                  int minutes = totalMinutes % 60;
+                  String formattedTime = '${hours}h ${minutes}m';
 
-                  String formattedTime = '${hours}h  ${minutes}m';
-                  print('Name of: ${userList[index]?.userName}');
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5.0,
+                  return Card(
+                    color: Colors.white, // clean background
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey.shade200, width: 1),
                     ),
-                    child: Container(
-                      color: Colors.white30,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "#${index + 1}.",
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                    elevation: 1.5, // subtle shadow
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          // Rank number
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              shape: BoxShape.circle,
                             ),
-                            const SizedBox(width: 10),
-                            if (userList[index]?.profilePicture == null ||
-                                userList[index]?.profilePicture == "")
-                              CircleAvatar(
-                                /*  backgroundImage: AssetImage(
-                                  'assets/images/profile_avatar.png'),*/
-                                // Replace with actual image path
-                                radius: 20,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.black, width: 1),
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey.shade200),
-                                  child: Center(
-                                    child: Text(
-                                      "${userList[index]!.userName?[0].capitalize}",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black),
-                                    ),
-                                  ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "#${index + 1}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+
+                          // Avatar
+                          if (userList[index]?.profilePicture?.isEmpty ?? true)
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.grey.shade200,
+                              child: Text(
+                                userList[index]!.userName?[0].toUpperCase() ??
+                                    '?',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
                               ),
-                            if (userList[index]?.profilePicture != null)
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    userList[index]!.profilePicture!),
-                                radius: 20,
-                              ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${userList[index]!.userName}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                  ),
-                                  userList[index]!.yearOfStudy != 0
-                                      ? Row(
-                                          children: [
-                                            Chip(
-                                              side: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 0),
-                                              padding: EdgeInsets.zero,
-                                              label: Text(
-                                                userList[index]!
-                                                    .yearOfStudy
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 12),
-                                              ),
-                                              backgroundColor:
-                                                  Colors.orange.shade50,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Chip(
-                                              side: const BorderSide(
-                                                  color: Colors.transparent,
-                                                  width: 0),
-                                              padding: EdgeInsets.zero,
-                                              label: Text(
-                                                userList[index]!
-                                                    .locationState
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                              backgroundColor:
-                                                  Colors.pink.shade50,
-                                            ),
-                                          ],
-                                        )
-                                      : const SizedBox(),
-                                ],
-                              ),
+                            )
+                          else
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundImage: NetworkImage(
+                                  userList[index]!.profilePicture!),
                             ),
-                            //  const Spacer(),
-                            Align(
-                                alignment: Alignment.topRight,
-                                child: Text(
-                                  formattedTime,
-                                  style: const TextStyle(color: Colors.black),
+                          const SizedBox(width: 12),
+
+                          // Name + chips
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  userList[index]!.userName ?? '',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                )),
-                          ],
-                        ),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    if (userList[index]!.yearOfStudy != 0)
+                                      Chip(
+                                        label: Text(
+                                          userList[index]!
+                                              .yearOfStudy
+                                              .toString(),
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        backgroundColor: Colors.orange.shade50,
+                                        side: BorderSide.none,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    if ((userList[index]!.locationState ?? '')
+                                        .isNotEmpty) ...[
+                                      const SizedBox(width: 6),
+                                      Chip(
+                                        label: Text(
+                                          userList[index]!.locationState ?? '',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        backgroundColor: Colors.pink.shade50,
+                                        side: BorderSide.none,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Hours
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const Icon(Icons.access_time,
+                                  size: 14, color: Colors.grey),
+                              Text(
+                                formattedTime,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   );

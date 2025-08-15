@@ -1,3 +1,4 @@
+// File: lib/.../LogNowPage.dart
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,10 @@ import '../../widgets/appbar_widget.dart';
 
 import '../../Models/response_models/events_data_response_model.dart';
 import '../../provider/time_logger_provider.dart';
+import '../../Services/background_timer_service.dart';
+import '../../Services/notification_service.dart';
+// NOTE: BackgroundTaskHandler removed from usage to avoid two timers fighting.
+// If you still want the file present, keep it but DO NOT call its start/pause/resume/stop.
 
 class LogNowPage extends StatefulWidget {
   // final EventDataModel eventModel;
@@ -36,12 +41,34 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
 
   DateTime? _startTime;
   DateTime? _endTime;
+  DateTime? _pauseTime; // Track when timer was paused
+  int _totalPausedDuration = 0; // Track total paused time in seconds
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadTimerState();
+
+    // Only use BackgroundTimerService callbacks (single source of truth)
+    BackgroundTimerService.onTimerUpdate = (int seconds) {
+      if (mounted && _isRunning) {
+        setState(() {
+          _secondsElapsed = _computeElapsedSeconds();
+        });
+        NotificationService.updateTimerNotification(_secondsElapsed, true);
+      }
+    };
+
+    BackgroundTimerService.onTimerStopped = () {
+      if (mounted) {
+        setState(() {
+          _isRunning = false;
+          _endTime = DateTime.now();
+        });
+        NotificationService.hideTimerNotification();
+      }
+    };
   }
 
   @override
@@ -54,27 +81,56 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
+      // Save current state when app goes to background
       _saveTimerState();
+
+      // If timer is running, ensure background timer service is started
+      if (_isRunning) {
+        BackgroundTimerService.startBackgroundTimer();
+        // NOTE: Do NOT start BackgroundTaskHandler — it was causing conflicts
+      }
     } else if (state == AppLifecycleState.resumed) {
+      // Re-load state when app returns
       _loadTimerState();
+
+      // If it was running, resume background service as well
+      if (_isRunning) {
+        BackgroundTimerService.resumeBackgroundTimer();
+      }
     }
   }
 
   void _toggleStartPause() async {
     if (_isRunning) {
+      // Pausing the timer
       setState(() {
         _isRunning = false;
-        _endTime = DateTime.now();
+        _pauseTime = DateTime.now();
+        _secondsElapsed = _computeElapsedSeconds();
       });
-      _timer?.cancel();
+      _timer?.cancel(); // Stop periodic UI updates
+      await BackgroundTimerService
+          .pauseBackgroundTimer(); // Pause background timer
+      await NotificationService.updateTimerNotification(
+          _secondsElapsed, false); // Show paused notification
     } else {
+      // Starting or resuming the timer
       setState(() {
         if (_startTime == null) {
           _startTime = DateTime.now();
+        } else if (_pauseTime != null) {
+          _totalPausedDuration +=
+              DateTime.now().difference(_pauseTime!).inSeconds;
+          _pauseTime = null;
         }
         _isRunning = true;
+        _secondsElapsed = _computeElapsedSeconds();
       });
-      _startTimer();
+      await BackgroundTimerService
+          .startBackgroundTimer(); // Start background timer
+      _startTicker(); // Restart periodic UI updates
+      await NotificationService.showTimerNotification(
+          _formatTime(_secondsElapsed)); // Show running notification
     }
     await _saveTimerState();
   }
@@ -83,8 +139,14 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     setState(() {
       _isRunning = false;
       _endTime = DateTime.now();
+      if (_pauseTime != null) {
+        // If we were paused, don't add more pause time
+        _pauseTime = null;
+      }
     });
     _timer?.cancel();
+    await BackgroundTimerService.stopBackgroundTimer();
+    await NotificationService.hideTimerNotification();
     await _saveTimerState();
   }
 
@@ -94,54 +156,121 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
       _isRunning = false;
       _startTime = null;
       _endTime = null;
+      _pauseTime = null;
+      _totalPausedDuration = 0;
     });
     _timer?.cancel();
+    await BackgroundTimerService.resetBackgroundTimer();
+    await NotificationService.hideTimerNotification();
     await _clearTimerState();
   }
 
-  void _startTimer() {
+  void _startTicker() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        if (_startTime != null) {
-          _secondsElapsed = DateTime.now().difference(_startTime!).inSeconds;
-        }
+        _secondsElapsed = _computeElapsedSeconds();
       });
+      // Keep notification in sync
+      if (_isRunning) {
+        NotificationService.updateTimerNotification(_secondsElapsed, true);
+      }
     });
   }
 
   Future<void> _saveTimerState() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('is_running', _isRunning);
+
+    // Save running flag
+    await prefs.setBool('is_running', _isRunning);
+
+    // Save total paused duration
+    await prefs.setInt('total_paused_duration', _totalPausedDuration);
+
+    // Save start_time only if it's set (we keep it for UI/submission)
     if (_startTime != null) {
-      prefs.setString('start_time', _startTime!.toIso8601String());
+      await prefs.setString('start_time', _startTime!.toIso8601String());
+    } else {
+      await prefs.remove('start_time');
     }
+
+    // Save end_time if present
     if (_endTime != null) {
-      prefs.setString('end_time', _endTime!.toIso8601String());
+      await prefs.setString('end_time', _endTime!.toIso8601String());
+    } else {
+      await prefs.remove('end_time');
     }
+
+    // Save pause_time if present
+    if (_pauseTime != null) {
+      await prefs.setString('pause_time', _pauseTime!.toIso8601String());
+    } else {
+      await prefs.remove('pause_time');
+    }
+
+    // Save current elapsed seconds for accurate restoration
+    await prefs.setInt('seconds_elapsed', _secondsElapsed);
   }
 
   Future<void> _loadTimerState() async {
+    // Use SharedPreferences as the single source of truth for persistence
     final prefs = await SharedPreferences.getInstance();
     final isRunning = prefs.getBool('is_running') ?? false;
     final startTimeStr = prefs.getString('start_time');
     final endTimeStr = prefs.getString('end_time');
+    final pauseTimeStr = prefs.getString('pause_time');
+    final totalPausedDuration = prefs.getInt('total_paused_duration') ?? 0;
+    final savedSecondsElapsed = prefs.getInt('seconds_elapsed') ?? 0;
 
     final start = startTimeStr != null ? DateTime.tryParse(startTimeStr) : null;
     final end = endTimeStr != null ? DateTime.tryParse(endTimeStr) : null;
+    final pause = pauseTimeStr != null ? DateTime.tryParse(pauseTimeStr) : null;
 
     setState(() {
       _startTime = start;
       _endTime = end;
+      _pauseTime = pause;
+      _totalPausedDuration = totalPausedDuration;
       _isRunning = isRunning;
+      _secondsElapsed = _computeElapsedSeconds();
 
       if (_startTime != null) {
-        _secondsElapsed = DateTime.now().difference(_startTime!).inSeconds;
+        if (_isRunning) {
+          // Timer is currently running - calculate from now minus paused time
+          final totalElapsed = DateTime.now().difference(_startTime!).inSeconds;
+          _secondsElapsed = totalElapsed - _totalPausedDuration;
+        } else {
+          // Timer is stopped/paused
+          if (_endTime != null) {
+            // Timer was stopped - show final duration
+            final totalElapsed = _endTime!.difference(_startTime!).inSeconds;
+            _secondsElapsed = totalElapsed - _totalPausedDuration;
+          } else if (_pauseTime != null) {
+            // Timer is paused - show duration up to pause time
+            final totalElapsed = _pauseTime!.difference(_startTime!).inSeconds;
+            _secondsElapsed = totalElapsed - _totalPausedDuration;
+          } else {
+            // Use saved elapsed time
+            _secondsElapsed = savedSecondsElapsed;
+          }
+        }
+      } else {
+        _secondsElapsed = 0;
       }
     });
 
     if (_isRunning) {
-      _startTimer();
+      _startTicker();
+      // Resume notification if timer was running
+      await NotificationService.showTimerNotification(
+          _formatTime(_secondsElapsed));
+    }
+  }
+
+  // Helper method to update notification during timer ticks
+  void _updateNotificationTimer() {
+    if (_isRunning) {
+      NotificationService.updateTimerNotification(_secondsElapsed, true);
     }
   }
 
@@ -150,6 +279,9 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     prefs.remove('is_running');
     prefs.remove('start_time');
     prefs.remove('end_time');
+    prefs.remove('pause_time');
+    prefs.remove('total_paused_duration');
+    prefs.remove('seconds_elapsed');
   }
 
   String _formatTime(int seconds) {
@@ -163,10 +295,25 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     return dateTime != null ? DateFormat('HH:mm').format(dateTime) : '--:--';
   }
 
+  int _computeElapsedSeconds() {
+    if (_startTime == null) return 0;
+    if (_isRunning) {
+      return DateTime.now().difference(_startTime!).inSeconds -
+          _totalPausedDuration;
+    } else if (_pauseTime != null) {
+      return _pauseTime!.difference(_startTime!).inSeconds -
+          _totalPausedDuration;
+    } else if (_endTime != null) {
+      return _endTime!.difference(_startTime!).inSeconds - _totalPausedDuration;
+    }
+    return 0;
+  }
+
   bool _isSubmitEnabled() {
     if (_startTime != null && _endTime != null) {
-      final duration = _endTime!.difference(_startTime!).inMinutes;
-      return duration >= 1;
+      final totalElapsed = _endTime!.difference(_startTime!).inSeconds;
+      final actualDuration = totalElapsed - _totalPausedDuration;
+      return actualDuration >= 60; // At least 1 minute of actual time
     }
     return false;
   }
@@ -177,12 +324,11 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
       final endUTC = _endTime?.toUtc();
       print('Start Time (UTC): $startUTC');
       print('End Time (UTC): $endUTC');
+      print('Total Paused Duration: $_totalPausedDuration seconds');
+      print('Actual Duration: $_secondsElapsed seconds');
       // Add your API call logic here
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -192,10 +338,13 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        leading: IconButton(onPressed: () async {
-          await _clearTimerState();
-          Navigator.pop(context);
-        }, icon: const Icon(CupertinoIcons.chevron_left)),
+        leading: IconButton(
+            onPressed: () async {
+              await _clearTimerState();
+              await NotificationService.hideTimerNotification();
+              Navigator.pop(context);
+            },
+            icon: const Icon(CupertinoIcons.chevron_left)),
         //  backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -227,43 +376,40 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
                           height: 30,
                         ),
                         Text(
-                         /* _formatDuration(_elapsedTime)*/
                           _formatTime(_secondsElapsed),
                           style: TextStyle(
                               fontSize: 48, fontWeight: FontWeight.bold),
                         ),
-        
-                          Visibility(
+                        Visibility(
                             visible: (timerProvider.locationTracking &&
                                 timerProvider.locationData != null),
-                              maintainSize: true,
-                              maintainAnimation: true,
-                              maintainState: true,
-                              child: const Icon(Icons.location_on)),
-        
-                          Visibility(
-                            maintainState: true,
                             maintainSize: true,
                             maintainAnimation: true,
-                visible: (timerProvider.locationTracking &&
-                timerProvider.locationData != null),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                              child: Text(
-                                timerProvider.address,
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: screenWidth * 0.03),
-                              ),
+                            maintainState: true,
+                            child: const Icon(Icons.location_on)),
+                        Visibility(
+                          maintainState: true,
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          visible: (timerProvider.locationTracking &&
+                              timerProvider.locationData != null),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 28.0),
+                            child: Text(
+                              timerProvider.address,
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: screenWidth * 0.03),
                             ),
                           ),
+                        ),
                       ],
                     ),
                     const SizedBox(
                       height: 30,
                     ),
-        
                     SizedBox(height: screenWidth * 0.05),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -332,7 +478,7 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
                                         "assets/images/loader_lottie.json");
                                   });
                             }
-        
+
                             timerProvider.toggleLocationTracking(context);
                           },
                         ),
@@ -430,30 +576,30 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
                     SizedBox(height: screenHeight * 0.03),
                     GestureDetector(
                         onTap: () {
-                         if( _isRunning){
-                           Fluttertoast.showToast(msg: "Please end the event first");
-                         }else {
-                           final startUTC = _startTime?.toUtc();
-                           final endUTC = _endTime?.toUtc();
-                           final startUTCiSO = _startTime?.toUtc()
-                               .toIso8601String();
-                           final endUTCiSO = _endTime?.toUtc().toIso8601String();
-                           if (startUTCiSO != null && endUTCiSO != null) {
-                             int difference = getDifferenceInMinutes(
-                                 startUTCiSO, endUTCiSO);
-                             if (difference < 1) {
-                               Fluttertoast.showToast(
-                                   msg: "Duration cannot be less than 1 minute");
-                             } else {
-                               widget.eventModel.eventParticipatedDuration =
-                               "$startUTC::$endUTC";
-                               timerProvider.submitLogging(
-                                   context, widget.eventModel,
-                                   widget.eventInstance);
-                             }
-                           }
-                         }
-        
+                          if (_isRunning) {
+                            Fluttertoast.showToast(
+                                msg: "Please end the event first");
+                          } else {
+                            final startUTC = _startTime?.toUtc();
+                            final endUTC = _endTime?.toUtc();
+                            final startUTCiSO =
+                                _startTime?.toUtc().toIso8601String();
+                            final endUTCiSO =
+                                _endTime?.toUtc().toIso8601String();
+                            if (startUTCiSO != null && endUTCiSO != null) {
+                              // Use actual elapsed seconds instead of total duration
+                              if (_secondsElapsed < 60) {
+                                Fluttertoast.showToast(
+                                    msg:
+                                        "Duration cannot be less than 1 minute");
+                              } else {
+                                widget.eventModel.eventParticipatedDuration =
+                                    "$startUTC::$endUTC";
+                                timerProvider.submitLogging(context,
+                                    widget.eventModel, widget.eventInstance);
+                              }
+                            }
+                          }
                         },
                         child: Column(
                           children: [

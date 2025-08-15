@@ -4,6 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lendavolunterring/Services/background_task_handler.dart';
+import 'package:lendavolunterring/Services/background_timer_service.dart';
+import 'package:lendavolunterring/Services/notification_Service.dart';
+import 'package:lendavolunterring/provider/timer_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../Controllers/event_controller.dart';
@@ -18,7 +22,12 @@ import 'Utils/common_utils.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // Initialize background timer service
+  await BackgroundTimerService.initialize();
+  await NotificationService.initialize();
+  await BackgroundTaskHandler.initialize();
   Get.put(EventController());
+  Get.put(TimerController());
 
   runApp(
     MultiProvider(
@@ -60,7 +69,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-Future<void> initDeepLinks() async {
+  Future<void> initDeepLinks() async {
     _appLinks = AppLinks();
 
     try {
@@ -91,6 +100,7 @@ Future<void> initDeepLinks() async {
       print("Failed to initialize AppLinks: $e");
     }
   }
+
   void _handleDeepLink(Uri uri) {
     print("Processing deep link: $uri");
 
