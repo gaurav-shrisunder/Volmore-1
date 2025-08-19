@@ -394,12 +394,12 @@ class _EventsScreenState extends State<EventsScreen>
                         child: Center(
                           child: InkWell(
                             onTap: () {
-                              Navigator.push(
+                         /*     Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => TimerScreen(),
                                 ),
-                              );
+                              );*/
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(

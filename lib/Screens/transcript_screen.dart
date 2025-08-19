@@ -645,14 +645,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                           : Colors.grey.shade400),
                                   size: 24,
                                 ),
-                                const SizedBox(width: 8),
-                                SvgPicture.asset(
-                                  "assets/icons/signature_icon.svg",
-                                  color: event.verifierSignatureHash!.isNotEmpty
-                                      ? titleColor
-                                      : Colors.grey.shade400,
-                                  width: 24,
-                                ),
+
                                 const SizedBox(width: 8),
                                 Icon(
                                   Icons.timer,
@@ -662,6 +655,14 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                           ? titleColor
                                           : Colors.grey.shade400),
                                   size: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                SvgPicture.asset(
+                                  "assets/icons/signature_icon.svg",
+                                  color: event.verifierSignatureHash!.isNotEmpty
+                                      ? titleColor
+                                      : Colors.grey.shade400,
+                                  width: 24,
                                 ),
                               ],
                             ),

@@ -245,7 +245,7 @@ class _HomePageState extends State<HomePage>
               textColor: Colors.redAccent,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
           ],
         ),
       ),
