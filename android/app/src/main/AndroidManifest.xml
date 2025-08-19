@@ -5,6 +5,9 @@
      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Required for apps targeting Android 10 (API level 29) and higher -->
     <!--<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
@@ -36,7 +39,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
                 <data android:scheme="https"
-                    android:host="www.lendavolunteering.com"
+                    android:host="lendavolunteering.com"
                     android:pathPrefix="/event" />
                 <!-- note that the leading "/" is required for pathPrefix-->
             </intent-filter>

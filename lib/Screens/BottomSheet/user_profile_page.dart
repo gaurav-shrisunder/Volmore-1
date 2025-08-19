@@ -67,7 +67,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     if (logRows.isEmpty) {
       logRows.add(
         const DataRow(cells: [
-          DataCell(Text("No data this week",
+          DataCell(Text("No data this week ",
               style: TextStyle(fontStyle: FontStyle.italic))),
           DataCell(Text("")),
           DataCell(Text("")),
@@ -127,7 +127,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           builder: (context) {
                             print(
                                 "user Profile Picture ${user?.profilePicture}");
-                       /*     if (user!.profilePicture != null &&
+                            /*     if (user!.profilePicture != null &&
                                 user!.profilePicture!.isNotEmpty) {
                               try {
                                 String formattedString = user!.profilePicture!;
@@ -150,28 +150,25 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 print("error in image $e");
                                 return _buildFallbackImage();
                               }
-                            }*/ if(user?.profilePicture == null){
-                              return  Image.network(
+                            }*/
+                            if (user?.profilePicture == null) {
+                              return Image.network(
                                   'https://ui-avatars.com/api/?name=${user?.userName ?? "User"}',
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
-                                    print('Inside error builder: ${ user!.profilePicture!}');
-                                    return   _buildFallbackImage();
-
-                                  }
-                              );
-                            }else{
-                              return  Image.network(
-                                  user!.profilePicture!,
+                                print(
+                                    'Inside error builder: ${user!.profilePicture!}');
+                                return _buildFallbackImage();
+                              });
+                            } else {
+                              return Image.network(user!.profilePicture!,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
-                                    print('Inside error builder: ${ user!.profilePicture!}');
-                                    return   _buildFallbackImage();
-
-                                  }
-                              );
+                                print(
+                                    'Inside error builder: ${user!.profilePicture!}');
+                                return _buildFallbackImage();
+                              });
                             }
-
                           },
                         ),
                       ),
@@ -192,30 +189,32 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Card(
-                    color: Colors.white,
-                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    elevation: 4,
+                    color: headingBlue
+                        .withOpacity(0.08), // subtle accent background
+                    shadowColor: headingBlue.withOpacity(0.3),
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: SizedBox(
                         width: width * 0.34,
-                        height: width * 0.11,
+                        height: width * 0.13,
                         child: Row(
                           children: [
-                            const SizedBox(
-                              width: 5,
-                            ),
+                            const SizedBox(width: 5),
                             SizedBox(
-                              width: 30,
-                              height: 30,
+                              width: 35,
+                              height: 35,
                               child: Image.asset(
                                 "assets/images/timer.png",
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            const SizedBox(width: 12),
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   "${weeklyStats!.lifeTimeHours! ~/ 60} Hour",
@@ -224,10 +223,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       fontWeight: FontWeight.bold,
                                       color: headingBlue),
                                 ),
-                                const Text("Lifetime Hours",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                    )),
+                                const Text(
+                                  "Lifetime Hours",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500),
+                                ),
                               ],
                             )
                           ],
@@ -236,42 +238,46 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                   ),
                   Card(
-                    elevation: 10,
-                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    elevation: 4,
+                    color: Colors.orangeAccent.withOpacity(0.08),
+                    shadowColor: Colors.orangeAccent.withOpacity(0.3),
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: SizedBox(
                         width: width * 0.34,
-                        height: width * 0.11,
+                        height: width * 0.13,
                         child: Row(
                           children: [
-                            const SizedBox(
-                              width: 8,
-                            ),
+                            const SizedBox(width: 5),
                             SizedBox(
-                              width: 30,
-                              height: 30,
+                              width: 35,
+                              height: 35,
                               child: Image.asset(
                                 "assets/images/timer.png",
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
-                            ),
+                            const SizedBox(width: 12),
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   "${(weeklyStats?.weekTotalHour ?? 0) ~/ 60} Hrs",
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: headingBlue),
+                                      color: Colors.orangeAccent),
                                 ),
-                                const Text("This week",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                    )),
+                                const Text(
+                                  "This Week",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500),
+                                ),
                               ],
                             )
                           ],
@@ -379,7 +385,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     )
                   : SingleChildScrollView(
-                       scrollDirection: Axis.horizontal,
+                      scrollDirection: Axis.horizontal,
                       child: DataTable(
                         columnSpacing: width * 0.16,
                         columns: const [
