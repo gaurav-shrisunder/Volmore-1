@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/response_models/update_event_response_model.dart';
 import '../../Screens/Event/past_event_verification_page.dart';
 import '../../Screens/Event/timer_screen.dart';
@@ -28,6 +29,24 @@ import 'events_widget.dart';
 import 'log_now_page.dart';
 
 //enum SortOption { def, az, za, dateAsc, dateDesc }
+const String activeTimerKey = 'active_timer_event_instance_id';
+
+/// Checks if an event has been started (i.e., has a start time) but not yet cleared.
+/// This correctly identifies events that are running OR paused.
+Future<bool> isEventInProgress(String eventInstanceId) async {
+  final prefs = await SharedPreferences.getInstance();
+  // The most reliable way to see if a timer is active (running or paused)
+  // is to check if its start_time exists.
+  final key = 'timer_start_time_$eventInstanceId';
+  return prefs.containsKey(key);
+}
+
+/// Gets the ID of the event that has a currently active timer.
+/// Returns null if no timer is active.
+Future<String?> getActiveTimerEventId() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString(activeTimerKey);
+}
 
 class EventsScreen extends StatefulWidget {
   final SortOption initialSortOption;
@@ -57,6 +76,7 @@ class _EventsScreenState extends State<EventsScreen>
   String sortDirectionValue = "desc";
   List<EventCategories> eventCategoriesList = [];
   bool isLoading = true;
+   bool isTimerRunning = false;
 
   @override
   void initState() {
@@ -67,6 +87,9 @@ class _EventsScreenState extends State<EventsScreen>
   }
 
   apiCalling(String sortByValue, String sortDirectionValue) async {
+   /* isTimerRunning = await getIsTimerRunning();
+    setState(()  {
+    });*/
     pastEventFuture = _eventsServices.getEventsData("past",
         sortBy: sortByValue, sortDirection: sortDirectionValue);
     upcomingEventFuture = _eventsServices.getEventsData("upcoming",
@@ -250,6 +273,8 @@ class _EventsScreenState extends State<EventsScreen>
         future: eventFuture,
         builder: (context, snapshot) {
           if (ConnectionState.done == snapshot.connectionState) {
+
+
             return Column(
               children: [
                 //   const SizedBox(height: 15),
@@ -392,46 +417,36 @@ class _EventsScreenState extends State<EventsScreen>
                 snapshot.data?.eventDetails?.events?.length == 0
                     ? Expanded(
                         child: Center(
-                          child: InkWell(
-                            onTap: () {
-                         /*     Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TimerScreen(),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.volunteer_activism_rounded,
+                                    size: 40, color: Colors.blueAccent),
+                                const SizedBox(height: 12),
+                                const Text(
+                                  "Welcome to Lenda!",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                              );*/
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0, vertical: 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.volunteer_activism_rounded,
-                                      size: 40, color: Colors.blueAccent),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    "Welcome to Lenda!",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
+                                const SizedBox(height: 10),
+                                const Text(
+                                  "Your one-stop shop for building your volunteering resume.\n\nTake a look around — when you're ready to add to your transcript, just tap on “Create Event”.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    height: 1.6, // Line height
+                                    color: Colors.black87,
                                   ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    "Your one-stop shop for building your volunteering resume.\n\nTake a look around — when you're ready to add to your transcript, just tap on “Create Event”.",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      height: 1.6, // Line height
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -478,6 +493,8 @@ class _EventsScreenState extends State<EventsScreen>
                                 buttonText = "Verify";
                               }
                             }
+                            String currentEventInstanceId = snapshot
+                                .data!.eventDetails!.events![index].eventInstance!.eventInstanceId!;
 
                             if (snapshot.data != null) {
                               return Center(
@@ -1155,9 +1172,106 @@ class _EventsScreenState extends State<EventsScreen>
                                             ),
 
                                             /// Log Button
-                                            ActionChip(
+                                            FutureBuilder<List<Object?>>(
+                                              // Fetch both pieces of information at once
+                                              future: Future.wait([
+                                                // [0]: Is this event in progress (running OR paused)?
+                                                isEventInProgress(currentEventInstanceId),
+                                                // [1]: Is ANY timer currently ticking? (for the restriction)
+                                                getActiveTimerEventId(),
+                                              ]),
+                                              builder: (context, asyncSnapshot) {
+                                                // Default UI while loading data from SharedPreferences
+                                                if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+                                                  return ActionChip(
+                                                    label: Text(
+                                                      buttonText,
+                                                      style: TextStyle(color: Colors.black54),
+                                                    ),
+                                                    backgroundColor: Colors.grey.shade300,
+                                                    onPressed: null,
+                                                  );
+                                                }
+
+                                                // Extract data after futures complete
+                                                final bool isThisEventInProgress = asyncSnapshot.data?[0] as bool? ?? false;
+                                                final String? activeTickingEventId = asyncSnapshot.data?[1] as String?;
+
+                                                // --- LOGIC FOR BUTTON TEXT AND COLOR ---
+                                                String dynamicButtonText = buttonText;
+                                                Color chipColor = isEnabled ? Colors.blue : Colors.grey.shade300;
+
+                                                if (tabName.contains("Today") && isThisEventInProgress) {
+                                                  // *** CHANGE 1: Set text to "Continue" if in progress (running or paused) ***
+                                                  dynamicButtonText = "Continue";
+                                                  // *** CHANGE 2: Set color to green for "Continue" button ***
+                                                  chipColor = Colors.green;
+                                                }
+
+                                                // Now, build the final ActionChip
+                                                return ActionChip(
+                                                  label: Text(
+                                                    dynamicButtonText,
+                                                    style: TextStyle(
+                                                      color: isEnabled ? Colors.white : Colors.black54,
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  // Use the dynamic color, but fall back to grey if disabled
+                                                  backgroundColor: isEnabled ? chipColor : Colors.grey.shade300,
+                                                  onPressed: isEnabled
+                                                      ? () {
+                                                    // --- RESTRICTION LOGIC ---
+                                                    // Check if a timer is actively ticking for a DIFFERENT event.
+                                                    if (tabName.contains("Today") &&
+                                                        activeTickingEventId != null &&
+                                                        activeTickingEventId != currentEventInstanceId) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                              "Ongoing event still active, complete the event before logging to this event"),
+                                                          backgroundColor: Colors.red,
+                                                        ),
+                                                      );
+                                                      return; // Block navigation
+                                                    }
+
+                                                    // --- NAVIGATION LOGIC (if not blocked) ---
+                                                    if (tabName.contains("Today")) {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) => LogNowPage(
+                                                            snapshot.data!.eventDetails!.events![index].event!,
+                                                            snapshot.data!.eventDetails!.events![index].eventInstance!,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    } else if (tabName.contains("Past")) {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) => PastEventVerification(
+                                                            date: snapshot.data!.eventDetails!.events![index].event!
+                                                                .reccurencePattern!.eventStartDateTime!,
+                                                            event: snapshot.data!.eventDetails!.events![index],
+                                                            eventInstanceId: snapshot
+                                                                .data!.eventDetails!.events![index].eventInstance!.eventInstanceId!,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  }
+                                                      : null,
+                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                                );
+                                              },
+                                            )
+                                          /*  ActionChip(
                                               label: Text(
                                                 buttonText,
+                                              // (getTimerEventId() != "0" && isTimerRunning) ? "Continue" : buttonText ,
                                                 style: TextStyle(
                                                   color: isEnabled
                                                       ? Colors.white
@@ -1230,7 +1344,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 16,
                                                       vertical: 8),
-                                            ),
+                                            ),*/
                                           ],
                                         ),
                                       ],

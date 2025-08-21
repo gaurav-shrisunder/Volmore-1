@@ -69,6 +69,34 @@ getUserId() async {
   return userId;
 }
 
+Future<void> setTimerEventId(String? timerEventId) async {
+  SharedPreferences token = await SharedPreferences.getInstance();
+  token.setString('timerEventId', timerEventId ?? "0");
+  if (kDebugMode) {
+    log('timerEventId setting to ${await getTimerEventId()}');
+  }
+}
+
+getTimerEventId() async {
+  SharedPreferences token = await SharedPreferences.getInstance();
+  String timerEventId = token.getString('timerEventId') ?? "0";
+  // String oldRefreshToken = await getRefreshToken();
+  if(kDebugMode) {
+    print('timerEventId get to $timerEventId');
+  }
+  return timerEventId;
+}
+
+getIsTimerRunning() async {
+  SharedPreferences token = await SharedPreferences.getInstance();
+  bool isTimerRunning = token.getBool('is_running') ?? false;
+  // String oldRefreshToken = await getRefreshToken();
+  if(kDebugMode) {
+    print('isTimerRunning get to $isTimerRunning');
+  }
+  return isTimerRunning;
+}
+
 Future<void> setUser(User user) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String userJson = jsonEncode(user.toJson());

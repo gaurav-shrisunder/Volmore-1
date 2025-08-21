@@ -5,6 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+String formatDuration(int totalMinutes) {
+  int hours = totalMinutes ~/ 60;
+  int minutes = totalMinutes % 60;
+  return "$hours Hrs $minutes Mins";
+}
+
+
 String formatDateTime(String isoDate) {
   DateTime dateTime = DateTime.parse(isoDate);
   // Use DateFormat to format the date in a readable format.

@@ -20,8 +20,12 @@ import '../../Models/response_models/events_data_response_model.dart';
 import '../../provider/time_logger_provider.dart';
 import '../../Services/background_timer_service.dart';
 import '../../Services/notification_service.dart';
+
 // NOTE: BackgroundTaskHandler removed from usage to avoid two timers fighting.
 // If you still want the file present, keep it but DO NOT call its start/pause/resume/stop.
+
+// At the top of the file
+const String activeTimerKey = 'active_timer_event_instance_id';
 
 class LogNowPage extends StatefulWidget {
   // final EventDataModel eventModel;
@@ -43,6 +47,11 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
   DateTime? _endTime;
   DateTime? _pauseTime; // Track when timer was paused
   int _totalPausedDuration = 0; // Track total paused time in seconds
+
+  // Helper to generate a unique key for each event instance
+  String _getPrefKey(String baseKey) {
+    return 'timer_${baseKey}_${widget.eventInstance.eventInstanceId}';
+  }
 
   @override
   void initState() {
@@ -101,6 +110,7 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
   }
 
   void _toggleStartPause() async {
+    final prefs = await SharedPreferences.getInstance();
     if (_isRunning) {
       // Pausing the timer
       setState(() {
@@ -114,6 +124,8 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
       await NotificationService.updateTimerNotification(
           _secondsElapsed, false); // Show paused notification
     } else {
+      await prefs.setString(
+          activeTimerKey, widget.eventInstance.eventInstanceId!);
       // Starting or resuming the timer
       setState(() {
         if (_startTime == null) {
@@ -126,6 +138,9 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
         _isRunning = true;
         _secondsElapsed = _computeElapsedSeconds();
       });
+
+      await setTimerEventId(widget.eventInstance.eventInstanceId);
+
       await BackgroundTimerService
           .startBackgroundTimer(); // Start background timer
       _startTicker(); // Restart periodic UI updates
@@ -147,6 +162,8 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     _timer?.cancel();
     await BackgroundTimerService.stopBackgroundTimer();
     await NotificationService.hideTimerNotification();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(activeTimerKey); // Clear the globally active timer
     await _saveTimerState();
   }
 
@@ -162,6 +179,8 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     _timer?.cancel();
     await BackgroundTimerService.resetBackgroundTimer();
     await NotificationService.hideTimerNotification();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(activeTimerKey); // Clear the globally active timer
     await _clearTimerState();
   }
 
@@ -181,46 +200,44 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
   Future<void> _saveTimerState() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Save running flag
-    await prefs.setBool('is_running', _isRunning);
+    await prefs.setBool(_getPrefKey('is_running'), _isRunning);
+    await prefs.setInt(
+        _getPrefKey('total_paused_duration'), _totalPausedDuration);
 
-    // Save total paused duration
-    await prefs.setInt('total_paused_duration', _totalPausedDuration);
-
-    // Save start_time only if it's set (we keep it for UI/submission)
     if (_startTime != null) {
-      await prefs.setString('start_time', _startTime!.toIso8601String());
+      await prefs.setString(
+          _getPrefKey('start_time'), _startTime!.toIso8601String());
     } else {
-      await prefs.remove('start_time');
+      await prefs.remove(_getPrefKey('start_time'));
     }
 
-    // Save end_time if present
     if (_endTime != null) {
-      await prefs.setString('end_time', _endTime!.toIso8601String());
+      await prefs.setString(
+          _getPrefKey('end_time'), _endTime!.toIso8601String());
     } else {
-      await prefs.remove('end_time');
+      await prefs.remove(_getPrefKey('end_time'));
     }
 
-    // Save pause_time if present
     if (_pauseTime != null) {
-      await prefs.setString('pause_time', _pauseTime!.toIso8601String());
+      await prefs.setString(
+          _getPrefKey('pause_time'), _pauseTime!.toIso8601String());
     } else {
-      await prefs.remove('pause_time');
+      await prefs.remove(_getPrefKey('pause_time'));
     }
 
-    // Save current elapsed seconds for accurate restoration
-    await prefs.setInt('seconds_elapsed', _secondsElapsed);
+    await prefs.setInt(_getPrefKey('seconds_elapsed'), _secondsElapsed);
   }
 
   Future<void> _loadTimerState() async {
-    // Use SharedPreferences as the single source of truth for persistence
     final prefs = await SharedPreferences.getInstance();
-    final isRunning = prefs.getBool('is_running') ?? false;
-    final startTimeStr = prefs.getString('start_time');
-    final endTimeStr = prefs.getString('end_time');
-    final pauseTimeStr = prefs.getString('pause_time');
-    final totalPausedDuration = prefs.getInt('total_paused_duration') ?? 0;
-    final savedSecondsElapsed = prefs.getInt('seconds_elapsed') ?? 0;
+    final isRunning = prefs.getBool(_getPrefKey('is_running')) ?? false;
+    final startTimeStr = prefs.getString(_getPrefKey('start_time'));
+    final endTimeStr = prefs.getString(_getPrefKey('end_time'));
+    final pauseTimeStr = prefs.getString(_getPrefKey('pause_time'));
+    final totalPausedDuration =
+        prefs.getInt(_getPrefKey('total_paused_duration')) ?? 0;
+    final savedSecondsElapsed =
+        prefs.getInt(_getPrefKey('seconds_elapsed')) ?? 0;
 
     final start = startTimeStr != null ? DateTime.tryParse(startTimeStr) : null;
     final end = endTimeStr != null ? DateTime.tryParse(endTimeStr) : null;
@@ -232,25 +249,19 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
       _pauseTime = pause;
       _totalPausedDuration = totalPausedDuration;
       _isRunning = isRunning;
-      _secondsElapsed = _computeElapsedSeconds();
 
       if (_startTime != null) {
         if (_isRunning) {
-          // Timer is currently running - calculate from now minus paused time
           final totalElapsed = DateTime.now().difference(_startTime!).inSeconds;
           _secondsElapsed = totalElapsed - _totalPausedDuration;
         } else {
-          // Timer is stopped/paused
           if (_endTime != null) {
-            // Timer was stopped - show final duration
             final totalElapsed = _endTime!.difference(_startTime!).inSeconds;
             _secondsElapsed = totalElapsed - _totalPausedDuration;
           } else if (_pauseTime != null) {
-            // Timer is paused - show duration up to pause time
             final totalElapsed = _pauseTime!.difference(_startTime!).inSeconds;
             _secondsElapsed = totalElapsed - _totalPausedDuration;
           } else {
-            // Use saved elapsed time
             _secondsElapsed = savedSecondsElapsed;
           }
         }
@@ -261,27 +272,20 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
 
     if (_isRunning) {
       _startTicker();
-      // Resume notification if timer was running
       await NotificationService.showTimerNotification(
           _formatTime(_secondsElapsed));
     }
   }
 
-  // Helper method to update notification during timer ticks
-  void _updateNotificationTimer() {
-    if (_isRunning) {
-      NotificationService.updateTimerNotification(_secondsElapsed, true);
-    }
-  }
-
   Future<void> _clearTimerState() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove('is_running');
-    prefs.remove('start_time');
-    prefs.remove('end_time');
-    prefs.remove('pause_time');
-    prefs.remove('total_paused_duration');
-    prefs.remove('seconds_elapsed');
+    await prefs.remove(_getPrefKey('is_running'));
+    await prefs.remove(_getPrefKey('start_time'));
+    await prefs.remove(_getPrefKey('end_time'));
+    await prefs.remove(_getPrefKey('pause_time'));
+    await prefs.remove(_getPrefKey('total_paused_duration'));
+    await prefs.remove(_getPrefKey('seconds_elapsed'));
+    _timer?.cancel();
   }
 
   String _formatTime(int seconds) {
@@ -306,7 +310,9 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
     } else if (_endTime != null) {
       return _endTime!.difference(_startTime!).inSeconds - _totalPausedDuration;
     }
-    return 0;
+    // Fallback to the saved elapsed time if the state is loaded but not running.
+    final elapsed = _secondsElapsed;
+    return elapsed >= 0 ? elapsed : 0;
   }
 
   bool _isSubmitEnabled() {
@@ -339,9 +345,10 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
       appBar: AppBar(
         centerTitle: false,
         leading: IconButton(
-            onPressed: () async {
-              await _clearTimerState();
-              await NotificationService.hideTimerNotification();
+            onPressed: () {
+              // *** MODIFICATION: Do NOT clear state when going back. ***
+              // This allows the timer to persist.
+              // await _clearTimerState();
               Navigator.pop(context);
             },
             icon: const Icon(CupertinoIcons.chevron_left)),
@@ -575,7 +582,7 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
                     ),
                     SizedBox(height: screenHeight * 0.03),
                     GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           if (_isRunning) {
                             Fluttertoast.showToast(
                                 msg: "Please end the event first");
@@ -595,8 +602,14 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
                               } else {
                                 widget.eventModel.eventParticipatedDuration =
                                     "$startUTC::$endUTC";
-                                timerProvider.submitLogging(context,
+                                await timerProvider.submitLogging(context,
                                     widget.eventModel, widget.eventInstance);
+                                // You should probably clear the state after a successful submission
+                                // Also clear the global key on successful submission
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.remove(activeTimerKey);
+                                await _clearTimerState();
                               }
                             }
                           }
