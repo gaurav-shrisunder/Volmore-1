@@ -81,10 +81,14 @@ class EventsServices {
 
   Future<CreateEventResponse> createEventData(
       CreateEventRequestModel requestPayload) async {
-    print('Payload::: ${jsonEncode(requestPayload)}');
+    if(kDebugMode) {
+      print('Payload::: ${jsonEncode(requestPayload)}');
+    }
     Response? response = await apiHandler.post(createEventApi, requestPayload);
     if (response != null && response.statusCode == 201) {
-      print('Event Created:::${response.data}');
+      if(kDebugMode) {
+        print('Event Created:::${response.data}');
+      }
       final CreateEventResponse eventCategory = CreateEventResponse.fromJson(response.data);
       return eventCategory;
     } else {
@@ -101,8 +105,9 @@ class EventsServices {
 
     Response? response = await apiHandler.delete("$deleteEventApi/$eventId", null);
     if (response != null && response.statusCode == 200) {
-
-      print('Event Created:::${response.data}');
+      if(kDebugMode) {
+        print('Event Created:::${response.data}');
+      }
       final EventCategoryResponseModel eventCategory =
       EventCategoryResponseModel.fromJson(response.data);
       return eventCategory;
@@ -120,8 +125,9 @@ class EventsServices {
 
     Response? response = await apiHandler.delete("$deleteEventInstanceApi/$eventInstanceId", null);
     if (response != null && response.statusCode == 200) {
-
-      print('Event Created:::${response.data}');
+      if(kDebugMode) {
+        print('Event Created:::${response.data}');
+      }
       final EventCategoryResponseModel eventCategory =
       EventCategoryResponseModel.fromJson(response.data);
       return eventCategory;
@@ -137,11 +143,14 @@ class EventsServices {
 
   Future<UpdateEventResponseModel> updateEventData(
       CreateEventRequestModel requestPayload, String eventInstanceId) async {
-
-    print('Payload::: ${jsonEncode(requestPayload)} :: ');
+    if(kDebugMode) {
+      print('Payload::: ${jsonEncode(requestPayload)} :: ');
+    }
     Response? response = await apiHandler.put("$createEventApi/$eventInstanceId", requestPayload);
     if (response != null && response.statusCode == 200) {
-      print('Event Updated:::${response.data}');
+      if(kDebugMode) {
+        print('Event Updated:::${response.data}');
+      }
       final UpdateEventResponseModel eventCategory =
       UpdateEventResponseModel.fromJson(response.data);
       return eventCategory;
@@ -155,11 +164,15 @@ class EventsServices {
   }
 
   Future<bool> logPastEventData(LogPastEventRequestModel requestPayload) async {
-    print('Payload::: ${jsonEncode(requestPayload)}');
+    if(kDebugMode) {
+      print('Payload::: ${jsonEncode(requestPayload)}');
+    }
     Response? response = await apiHandler.post(logPastHours, requestPayload);
     if (response != null &&
         (response.statusCode == 200 || response.statusCode == 201)) {
-      print('Event Created:::${response.data}');
+      if(kDebugMode) {
+        print('Event Created:::${response.data}');
+      }
       final EventCategoryResponseModel eventCategory =
           EventCategoryResponseModel.fromJson(response.data);
       return true;
@@ -173,11 +186,15 @@ class EventsServices {
 
   Future<EventCategoryResponseModel> logEventData(
       LogEventRequestModel requestPayload) async {
-    print('Payload::: ${jsonEncode(requestPayload)}');
+    if(kDebugMode) {
+      print('Payload::: ${jsonEncode(requestPayload)}');
+    }
     Response? response =
         await apiHandler.post(eventParticipantsApi, requestPayload);
     if (response != null && (response.statusCode == 200)) {
-      print('Event Created:::${response.data}');
+      if(kDebugMode) {
+        print('Event Created:::${response.data}');
+      }
       final EventCategoryResponseModel eventCategory = EventCategoryResponseModel.fromJson(response.data);
       return eventCategory;
     } else {

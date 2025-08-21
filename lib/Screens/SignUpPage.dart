@@ -6,9 +6,6 @@ import 'package:lendavolunterring/Screens/VerifyEmailSignUpScreen.dart';
 import '../../Models/request_models/sign_up_request_model.dart';
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../Screens/HomePage.dart';
-import '../../Screens/LoginPage.dart';
-import '../../Screens/dashboard.dart';
-import '../../Services/authentication.dart';
 import '../../Services/signUp_login_services.dart';
 import '../../Utils/Colors.dart';
 import '../../widgets/FormFeild.dart';
@@ -514,7 +511,6 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                       MyButtons(
                           onTap: () async {
                             if (isTermsAgreed) {
-                              print('State: $selectedState');
 
                               if (nameController.text.isEmpty) {
                                 Fluttertoast.showToast(msg: "Name cannot be empty");

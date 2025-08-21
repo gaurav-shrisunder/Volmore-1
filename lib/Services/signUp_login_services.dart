@@ -43,7 +43,7 @@ class SignupLoginServices {
     if (response != null && response.statusCode == 200) {
       SignUpLoginResponseModel? userModel =
           SignUpLoginResponseModel.fromJson(response.data);
-      print('UserModel::: ${jsonEncode(userModel)}');
+
       await setBearerToken(userModel.userDetails!.accessToken!);
       await setRefreshToken(userModel.userDetails!.refreshToken!);
       await setUserId(userModel.userDetails!.user!.userId!);

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Screens/HomePage.dart';
@@ -84,7 +85,9 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
       //  showEventPopup(eventId);
       }
     }).onError((error) {
-      print('Dynamic Link Failed: $error');
+      if(kDebugMode) {
+        print('Dynamic Link Failed: $error');
+      }
     });
 
   }

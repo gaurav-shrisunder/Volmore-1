@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -22,9 +23,11 @@ void showEventPopup(String eventId) async {
   GetEventResponseModel eventData = await EventsServices().getEventDetails(eventId);
 
 
-  print('Show Dialog:: ');
+
   if (eventData.events.isNotEmpty) {
-    print('Show Dialog:: ${jsonEncode(eventData.events)}');
+    if(kDebugMode) {
+      print('Show Dialog:: ${jsonEncode(eventData.events)}');
+    }
     showDialog(
       context: Get.context!,
       builder: (BuildContext context) {
@@ -33,6 +36,7 @@ void showEventPopup(String eventId) async {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              backgroundColor: Colors.white,
               title: Text(events.event.eventTitle ?? "Event Details"),
               content: SizedBox(
                 width: Get.width * 0.9,
@@ -231,7 +235,9 @@ Future<void> acceptInvite(String eventId, BuildContext context) async {
   requestBody.userEndDateTime = null;
   requestBody.userStartDateTime = null;
   requestBody.userMinutes = null;
-  print('request for accepting shared event: ${jsonEncode(requestBody)}');
+  if(kDebugMode) {
+    print('request for accepting shared event: ${jsonEncode(requestBody)}');
+  }
   EventCategoryResponseModel res = await EventsServices().logEventData(requestBody);
   if (res.message.toString().contains("successfully")) {
     Fluttertoast.showToast(msg: "Event Accepted Successfully");

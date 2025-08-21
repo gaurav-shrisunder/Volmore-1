@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -72,11 +73,12 @@ class _VolunteerConfirmationScreenState
     super.initState();
     // _eventsFuture = _logMethod.fetchAllEventsWithLogs();
     getPreviousEventApiCalling();
+    if(kDebugMode){
     print(
         'Start Time UTC : ${widget.event.eventParticipatedDuration!.split("::").first}');
     print(
         'End Time UTC : ${widget.event.eventParticipatedDuration!.split("::").last}');
-  }
+  }}
 
   getPreviousEventApiCalling() async {
     nonVerifiedEvents = await _eventsServices
@@ -301,7 +303,7 @@ class _VolunteerConfirmationScreenState
               ),
               Text(
                 DateFormat.yMMMMEEEEd().format(
-                    DateTime.parse(widget.eventInstance.eventStartDateTime!)),
+                    DateTime.parse(widget.eventInstance.eventStartDateTime!).toLocal()),
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(
@@ -360,7 +362,7 @@ class _VolunteerConfirmationScreenState
                           await _signatureController.toPngBytes();
                       String? signBase64Value =
                           await convertSignatureToBase64(pngBytes);
-                      print('Siggnnnnn: $signBase64Value');
+
                     },
                     child: const Text(
                       "Verifier's Signature",

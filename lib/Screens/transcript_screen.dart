@@ -57,7 +57,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
 
     pw.Document pdf = await generatePdf(events, user!, lifetimeHours);
 
-     String filename = "${user.userName}-${getFormatedDate()}";
+    String filename = "${user.userName}-${getFormatedDate()}";
     await saveAndSharePdf(pdf, filename);
   }
 
@@ -87,7 +87,9 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                 _showShareWithTeacherModal(context);
               },
             ),
-            SizedBox(height: 40,)
+            SizedBox(
+              height: 40,
+            )
           ],
         );
       },
@@ -176,17 +178,10 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
       }
     }
 
-    if (temp != null) {
-      setState(() {
-        transcript = temp;
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isError = true;
-        isLoading = false;
-      });
-    }
+    setState(() {
+      transcript = temp;
+      isLoading = false;
+    });
   }
 
   @override
@@ -223,12 +218,13 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
             margin: const pw.EdgeInsets.all(margin),
             footer: (pw.Context context) {
               if (context.pageNumber == context.pagesCount) {
-                final timeStamp = formatDateTime(DateTime.now().toLocal().toIso8601String());
+                final timeStamp =
+                    formatDateTime(DateTime.now().toLocal().toIso8601String());
                 return pw.Center(
                     child: pw.Padding(
                   padding: const pw.EdgeInsets.only(top: 40),
                   child: pw.Text(
-                    'Lenda is a product of the Maize Lab.\nFor any questions, please email collaborate@maize-lab.com \n Generated on $timeStamp',
+                    'Lenda is a product of the MaizeLab.\nFor any questions, please email collaborate@maize-lab.com \n Generated on $timeStamp',
                     style: const pw.TextStyle(fontSize: 9),
                     textAlign: pw.TextAlign.center,
                   ),
@@ -302,7 +298,7 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                                         style: pw.TextStyle(
                                             fontSize: 14,
                                             color: PdfColors.green)),
-                                    pw.Text("${totalHours}",
+                                    pw.Text(totalHours,
                                         style: pw.TextStyle(
                                             fontSize: 16,
                                             fontWeight: pw.FontWeight.bold,
@@ -331,17 +327,17 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                     0: const pw.FlexColumnWidth(2), // Title
                     1: const pw.FlexColumnWidth(2), // Host
                     2: const pw.FlexColumnWidth(2), // Address
-                    3: const pw.FlexColumnWidth(3), // Time Elapsed
-                    4: const pw.FlexColumnWidth(1), // Sign
+                    3: const pw.FlexColumnWidth(2), // Time Elapsed
+                    4: const pw.FlexColumnWidth(2), // Sign
                     5: const pw.FlexColumnWidth(2), // User Location
                   },
                   headers: [
-                    'Title',
-                    'Host',
-                    'Event Address',
-                    'Time Elapsed',
-                    'Sign',
-                    'User Location'
+                    'Volunteer',
+                    'Event',
+                    'Event Location',
+                    'Start and End Time',
+                    'Signed by Organizer',
+                    'Location Verified'
                   ],
                   data: chunk.map((record) {
                     final userTimeParts = record.userDateTime!.split('|');
@@ -350,16 +346,18 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
                     final endDate = DateFormat('MM/dd/yyyy  hh:mm a')
                         .format(DateTime.parse(userTimeParts.last).toLocal());
                     return [
-                      record.eventTitle ?? '',
                       record.hostName ?? '',
+                      record.eventTitle ?? '',
                       record.eventLocation ?? '',
                       '$startDate to $endDate',
                       (record.verifierSignatureHash?.isNotEmpty ?? false)
                           ? 'Yes'
                           : 'No',
                       record.isLoggedAsPast == true
-                          ? 'NA'
-                          : (record.userLocation ?? '---'),
+                          ? 'N/A'
+                          : (record.userLocation != ""
+                              ? record.userLocation
+                              : 'N/A'),
                     ];
                   }).toList(),
                 ),
@@ -504,142 +502,181 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
     );
   }
 
-  buildGroupedContainer(Transcript transcripts) {
+  Widget buildGroupedContainer(Transcript transcripts) {
+    final eventColor = HexColor(transcripts.eventColorCode!).withOpacity(0.1);
+    final borderColor = HexColor(transcripts.eventColorCode!).withOpacity(0.5);
+    final titleColor = HexColor(transcripts.eventColorCode!);
+
     return Column(
       children: [
-        ExpansionTile(
-          title: Text(
-            transcripts.eventCategoryName ?? "Trash",
-            style: const TextStyle(fontSize: 16),
-          ),
-          subtitle: Text(
-              "Total  ${transcripts.totalHours! ~/ 60} Hours ${transcripts.totalHours! % 60} min"),
-          collapsedBackgroundColor:
-              HexColor(transcripts.eventColorCode!).withOpacity(0.2),
-          // backgroundColor:
-          //     HexColor(transcripts.eventColorCode!).withOpacity(0.1),
-          collapsedShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-              side: const BorderSide()),
+        Card(
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-              side: const BorderSide()),
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: borderColor, width: 1),
+          ),
+          elevation: 3,
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Theme(
+            data: ThemeData().copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              initiallyExpanded: true,
+              backgroundColor: eventColor,
+              collapsedBackgroundColor: eventColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(
+                transcripts.eventCategoryName ?? "Unknown Category",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: titleColor,
+                ),
+              ),
+              subtitle: Text(
+                "Total: ${transcripts.totalHours! ~/ 60}h ${transcripts.totalHours! % 60}m",
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: transcripts.event?.length ?? 0,
-                  shrinkWrap: true,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    Event? event = transcripts.event?[index];
+                    final event = transcripts.event![index];
 
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 15),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          side: BorderSide(
-                              width: 2,
-                              color: HexColor(transcripts.eventColorCode!)
-                                  .withOpacity(0.2))),
-                      color: Colors.white,
-                      elevation: 5,
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: borderColor, width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          )
+                        ],
+                      ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              event?.eventTitle.toString().capitalize ?? "",
+                              event.eventTitle?.capitalize ?? "Untitled Event",
                               style: TextStyle(
-                                  color: HexColor(transcripts.eventColorCode!),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: titleColor,
+                              ),
                             ),
-                            const SizedBox(height: 5),
-                            Text(
-                              DateFormat.yMMMMEEEEd().format(DateTime.parse(
-                                  event!.eventDateTime!.split("|")[0])),
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 14),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              "Host: ${event.hostName}",
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 14),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              "Duration : ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[0]).toLocal())} - ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[1]).toLocal())}",
-                              maxLines: 3,
-                              softWrap: true,
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 14),
-                            ),
-                            const SizedBox(height: 5),
-
-                            Text(
-                              "Location : ${event.eventLocation ?? "---"}",
-                              maxLines: 4,
-                              softWrap: true,
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 14),
-                            ),
-                            const SizedBox(height: 5),
-
+                            const SizedBox(height: 6),
                             Row(
                               children: [
-                                Expanded(child: SizedBox()),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_outlined,
-                                      color: event.isLoggedAsPast!
-                                          ? Colors.grey.shade400
-                                          : event.userLocation!.isNotEmpty
-                                              ? HexColor(
-                                                  transcripts.eventColorCode!)
-                                              : Colors.grey.shade400,
-                                      size: 30,
-                                    ),
-                                    const SizedBox(width: 5),
-                                    SvgPicture.asset(
-                                      "assets/icons/signature_icon.svg",
-                                      color: event.verifierSignatureHash!.isNotEmpty
-                                          ? HexColor(transcripts.eventColorCode!)
-                                          : Colors.grey.shade400,
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Icon(
-                                      Icons.timer,
-                                      color: event.isLoggedAsPast!
-                                          ? Colors.grey.shade400
-                                          : event.userLocation!.isNotEmpty
-                                              ? HexColor(
-                                                  transcripts.eventColorCode!)
-                                              : Colors.grey.shade400,
-                                      size: 30,
-                                    ),
-                                  ],
+                                const Icon(Icons.calendar_today_outlined,
+                                    size: 16),
+                                const SizedBox(width: 6),
+                                Text(
+                                  DateFormat.yMMMMEEEEd().format(
+                                    DateTime.parse(
+                                        event.eventDateTime!.split("|")[0]),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.person_outline, size: 16),
+                                const SizedBox(width: 6),
+                                Text("Host: ${event.hostName ?? "---"}",
+                                    style: const TextStyle(fontSize: 14)),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.access_time_outlined,
+                                    size: 16),
+                                const SizedBox(width: 6),
+                                Text(
+                                  "Duration: ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[0]).toLocal())} - ${DateFormat('h:mm a').format(DateTime.parse(event.userDateTime!.split("|")[1]).toLocal())}",
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(Icons.location_on_outlined,
+                                    size: 16),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    event.eventLocation ?? "---",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  color: event.isLoggedAsPast!
+                                      ? Colors.grey.shade400
+                                      : (event.userLocation!.isNotEmpty
+                                          ? titleColor
+                                          : Colors.grey.shade400),
+                                  size: 24,
+                                ),
+
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.timer,
+                                  color: event.isLoggedAsPast!
+                                      ? Colors.grey.shade400
+                                      : (event.userLocation!.isNotEmpty
+                                          ? titleColor
+                                          : Colors.grey.shade400),
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                SvgPicture.asset(
+                                  "assets/icons/signature_icon.svg",
+                                  color: event.verifierSignatureHash!.isNotEmpty
+                                      ? titleColor
+                                      : Colors.grey.shade400,
+                                  width: 24,
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
                     );
-                  }),
+                  },
+                ),
+                const SizedBox(height: 12),
+              ],
             ),
-          ],
+          ),
         ),
-        const SizedBox(
-          height: 10,
-        )
       ],
     );
   }

@@ -203,6 +203,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  textCapitalization: TextCapitalization.sentences,
                   onChanged: (value) => newGroupName = value,
                   decoration: const InputDecoration(labelText: 'Group Name'),
                 ),
@@ -522,6 +523,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                       children: [
                         const SizedBox(height: 5),
                         TextField(
+
                           controller: dateControllers[index],
                           decoration: InputDecoration(
                             filled: true,

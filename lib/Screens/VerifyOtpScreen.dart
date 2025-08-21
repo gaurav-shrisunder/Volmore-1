@@ -1,5 +1,6 @@
 
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pinput.dart';
@@ -98,7 +99,9 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                     ),
                     // Automatically move focus to next input field
                     onCompleted: (pin) {
-                      print('Entered PIN: $pin');
+                      if(kDebugMode) {
+                        print('Entered PIN: $pin');
+                      }
                       setState(() {
                         otpController.text = pin;
                       });

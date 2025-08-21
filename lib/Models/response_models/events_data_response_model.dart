@@ -219,6 +219,7 @@ class EventParticipant {
   String? userLocationName;
   String? userNotes;
   int? userHours;
+  int? userMinutes;
   int? userEarnPoints;
   String? verifierSignatureHash;
   String? verifierInformation;
@@ -231,6 +232,7 @@ class EventParticipant {
       this.userLocationName,
       this.userNotes,
       this.userHours,
+      this.userMinutes,
       this.userEarnPoints,
       this.verifierSignatureHash,
       this.verifierInformation,
@@ -245,7 +247,7 @@ class EventParticipant {
     userEndDateTime = json['userEndDateTime'];
     userLocationName = json['userLocationName'];
     userNotes = json['userNotes'];
-    userHours = json['userMinutes'];
+    userMinutes = json['userMinutes'];
     userEarnPoints = json['userEarnPoints'];
     verifierSignatureHash = json['verifierSignatureHash'];
     verifierInformation = json['verifierInformation'];
@@ -259,7 +261,7 @@ class EventParticipant {
     data['userEndDateTime'] = userEndDateTime;
     data['userLocationName'] = userLocationName;
     data['userNotes'] = userNotes;
-    data['userHours'] = userHours;
+    data['userMinutes'] = userMinutes;
     data['userEarnPoints'] = userEarnPoints;
     data['verifierSignatureHash'] = verifierSignatureHash;
     data['verifierInformation'] = verifierInformation;

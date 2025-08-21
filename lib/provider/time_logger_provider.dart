@@ -112,7 +112,7 @@ class TimerProvider with ChangeNotifier {
     if (_isLogging) {
       // Set end time and stop the timer
       _endTime = DateTime.now();
-      print('Elapsed:::$elapsedTime');
+
       if ((_startTime != null &&
           _startTime!.difference(_endTime!).inMinutes.abs() >= 1 ) ) {
         _isLogging = false; // Stop logging
@@ -136,7 +136,7 @@ class TimerProvider with ChangeNotifier {
         event.eventLocationName = "Not enabled!";
       }
 
-      print('Addresss::: $_address');
+
 
      // resetTimer();
 

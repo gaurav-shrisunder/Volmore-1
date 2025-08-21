@@ -16,6 +16,7 @@ import '../../Services/events_services.dart';
 import '../../Services/logService.dart';
 
 import '../../Utils/Colors.dart';
+import '../../Utils/common_utils.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../widgets/button.dart';
 
@@ -149,7 +150,7 @@ class _PastEventVerificationState extends State<PastEventVerification> {
               //   height: screenHeight * 0.01,
               // ),
               Text(
-                "Duration : ${((widget.event.eventParticipant?.userHours ?? 0) ~/ 60)} Hrs",
+                "Duration : ${formatDuration(widget.event.eventParticipant?.userMinutes ?? 0)}",
                 style: const TextStyle(fontSize: 16, color: greyColor),
               ),
               SizedBox(

@@ -19,7 +19,9 @@ class ProfileServices {
     DateTime todayAtMidnightOne = DateTime(now.year, now.month, now.day, 0, 1);
     String isoString = todayAtMidnightOne.toLocal().toIso8601String();
     String tzName = await getTimezoneName();
-    print('Timezone: $tzName'); //
+    if(kDebugMode) {
+      print('Timezone: $tzName'); //
+    }
     var query = {
       "now": isoString,
       "timezone": tzName

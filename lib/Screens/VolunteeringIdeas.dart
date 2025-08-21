@@ -22,7 +22,7 @@ class VolunterringIdeasScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Volunterring Ideas",
+                    "Volunteering Ideas",
                     style: TextStyle(
                         decorationColor: headingBlue,
                         color: headingBlue,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lendavolunterring/widgets/customSnackbar.dart';
 
@@ -67,7 +68,9 @@ class _LoginPageState extends State<LoginPage>  with SingleTickerProviderStateMi
 
   apiCalling ()async{
     String tzName = await getTimezoneName();
-    print('Timezone: $tzName');
+    if(kDebugMode) {
+      print('Timezone: $tzName');
+    }
   }
 
   @override
@@ -200,7 +203,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                         position: _emailSlideAnimation,
                         child: TextField(
                           controller: emailController,
-                          // textCapitalization: TextCapitalization.sentences,
+                           textCapitalization: TextCapitalization.sentences,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             labelText: 'Email',
@@ -223,7 +226,7 @@ var sessionId  = "app-${emailController.text.split("@").first}";
                           textCapitalization: TextCapitalization.sentences,
                           controller: passwordController,
                           obscureText: isObsecure,
-                          keyboardType: TextInputType.name,
+                          keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             hintText: "Enter Your Password",
