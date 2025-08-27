@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:lendavolunterring/Screens/HomePage.dart';
 import '../../Models/request_models/update_Profile_request_model.dart';
 import '../../Screens/BottomSheet/user_profile_page.dart';
 import '../../Services/authentication.dart';
@@ -147,7 +148,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         child: ElevatedButton(
                             style: const ButtonStyle(
                                 backgroundColor:
-                                    MaterialStatePropertyAll(headingBlue)),
+                                    WidgetStatePropertyAll(headingBlue)),
                             onPressed: () async {
                               showDialog(
                                   context: context,
@@ -187,6 +188,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                   Fluttertoast.showToast(
                                       msg: "Profile Updated Successfully");
                                   setVariables();
+                                  Get.to(const HomePage());
 
                                   setState(() {});
                                 } else {
@@ -259,7 +261,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         child: ElevatedButton(
                             style: const ButtonStyle(
                                 backgroundColor:
-                                    MaterialStatePropertyAll(headingBlue)),
+                                    WidgetStatePropertyAll(headingBlue)),
                             onPressed: () async {
                               if (newPasswordController.text !=
                                   confirmPasswordController.text) {
@@ -352,7 +354,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 padding: const EdgeInsets.only(left: 18.0),
                 child: ElevatedButton(
                     style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.red)),
+                        backgroundColor: WidgetStatePropertyAll(Colors.red)),
                     onPressed: () {
                       //  Get.to(const EditAccountScreen());
 
@@ -361,9 +363,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           builder: (_) {
                             return SimpleDialog(
                               title: const Text(
-                                  "Are you sure you want to delete your account? \nDeleting your account is permanent and will result in the loss of access to your account, along with all associated data, including user details and events. This action cannot be undone.", style: TextStyle(fontSize: 14),),
+                                "Are you sure you want to delete your account? \nDeleting your account is permanent and will result in the loss of access to your account, along with all associated data, including user details and events. This action cannot be undone.",
+                                style: TextStyle(fontSize: 14),
+                              ),
                               children: [
-
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -379,19 +382,27 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                 }, child: Text("No")),*/
                                     ActionChip(
                                         onPressed: () async {
-                                         await UserServices().deleteUser().then((onValue){
-                                           if(onValue.toString().contains("permanently deleted successfully")){
-                                             Fluttertoast.showToast(msg: onValue.toString(),toastLength: Toast.LENGTH_LONG);
-                                             clearPreferences();
-                                             AuthMethod().signOut();
-                                             Navigator.pushAndRemoveUntil(
-                                               context,
-                                               MaterialPageRoute(builder: (context) => const LoginPage()),
-                                                   (Route<dynamic> route) =>
-                                               false, // This condition makes sure all the routes are removed.
-                                             );
-                                           }
-                                         });
+                                          await UserServices()
+                                              .deleteUser()
+                                              .then((onValue) {
+                                            if (onValue.toString().contains(
+                                                "permanently deleted successfully")) {
+                                              Fluttertoast.showToast(
+                                                  msg: onValue.toString(),
+                                                  toastLength:
+                                                      Toast.LENGTH_LONG);
+                                              clearPreferences();
+                                              AuthMethod().signOut();
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LoginPage()),
+                                                (Route<dynamic> route) =>
+                                                    false, // This condition makes sure all the routes are removed.
+                                              );
+                                            }
+                                          });
                                         },
                                         label: const Text("Yes"))
                                   ],

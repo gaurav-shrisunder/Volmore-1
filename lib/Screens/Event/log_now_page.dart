@@ -332,306 +332,241 @@ class _LogNowPageState extends State<LogNowPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
+        title: Text(widget.eventModel.eventTitle ?? "Log Event",
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         leading: IconButton(
-            onPressed: () async {
-              await _clearTimerState();
-              await NotificationService.hideTimerNotification();
-              Navigator.pop(context);
-            },
-            icon: const Icon(CupertinoIcons.chevron_left)),
-        //  backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: screenWidth,
-          decoration: const BoxDecoration(
-              //  color: Colors.white
-              // gradient: backgroundGradient,
-              ),
-          child: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Consumer<TimerProvider>(
-              builder: (context, timerProvider, child) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          widget.eventModel.eventTitle!,
-                          style: TextStyle(
-                              fontSize: screenWidth * 0.09,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Text(
-                          _formatTime(_secondsElapsed),
-                          style: TextStyle(
-                              fontSize: 48, fontWeight: FontWeight.bold),
-                        ),
-                        Visibility(
-                            visible: (timerProvider.locationTracking &&
-                                timerProvider.locationData != null),
-                            maintainSize: true,
-                            maintainAnimation: true,
-                            maintainState: true,
-                            child: const Icon(Icons.location_on)),
-                        Visibility(
-                          maintainState: true,
-                          maintainSize: true,
-                          maintainAnimation: true,
-                          visible: (timerProvider.locationTracking &&
-                              timerProvider.locationData != null),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 28.0),
-                            child: Text(
-                              timerProvider.address,
-                              maxLines: 3,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: screenWidth * 0.03),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    SizedBox(height: screenWidth * 0.05),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Column(
-                            children: [
-                              Text('Start Time'),
-                              SizedBox(height: 8),
-                              Text(
-                                _formatTimeOfDay(_startTime),
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Column(
-                            children: [
-                              Text('End Time'),
-                              SizedBox(height: 8),
-                              Text(
-                                _formatTimeOfDay(_endTime),
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: screenHeight * 0.03),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Enable Location Tracking',
-                          style: TextStyle(
-                            fontSize: 18,
-                            //  color: Colors.black,
-                          ),
-                        ),
-                        Switch(
-                          activeColor: Colors.white,
-                          inactiveThumbColor: Colors.grey,
-                          inactiveTrackColor: Colors.white,
-                          activeTrackColor: Colors.black,
-                          value: timerProvider.locationTracking,
-                          onChanged: (value) {
-                            if (!timerProvider.locationTracking) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Lottie.asset(
-                                        "assets/images/loader_lottie.json");
-                                  });
-                            }
-
-                            timerProvider.toggleLocationTracking(context);
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          children: [
-                            GestureDetector(
-                              onTap: _resetTimer,
-                              child: Container(
-                                  padding: const EdgeInsets.all(18),
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue[50],
-                                      shape: BoxShape.circle),
-                                  child: const Icon(
-                                    Icons.restart_alt,
-                                    size: 40,
-                                  )),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              "Restart",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            GestureDetector(
-                              onTap: _toggleStartPause,
-                              child: Container(
-                                  padding: const EdgeInsets.all(18),
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue[50],
-                                      shape: BoxShape.circle),
-                                  child: Icon(
-                                    _isRunning
-                                        ? Icons.pause
-                                        : Icons.play_arrow_rounded,
-                                    size: 40,
-                                  )),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              _isRunning ? "Pause" : "Start",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            GestureDetector(
-                              onTap: _stopTimer,
-                              child: Container(
-                                  padding: const EdgeInsets.all(21),
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue[50],
-                                      shape: BoxShape.circle),
-                                  child: const Icon(
-                                    Icons.square_rounded,
-                                    size: 35,
-                                    color: Colors.red,
-                                  )),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              "End",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: screenHeight * 0.03),
-                    GestureDetector(
-                        onTap: () {
-                          if (_isRunning) {
-                            Fluttertoast.showToast(
-                                msg: "Please end the event first");
-                          } else {
-                            final startUTC = _startTime?.toUtc();
-                            final endUTC = _endTime?.toUtc();
-                            final startUTCiSO =
-                                _startTime?.toUtc().toIso8601String();
-                            final endUTCiSO =
-                                _endTime?.toUtc().toIso8601String();
-                            if (startUTCiSO != null && endUTCiSO != null) {
-                              // Use actual elapsed seconds instead of total duration
-                              if (_secondsElapsed < 60) {
-                                Fluttertoast.showToast(
-                                    msg:
-                                        "Duration cannot be less than 1 minute");
-                              } else {
-                                widget.eventModel.eventParticipatedDuration =
-                                    "$startUTC::$endUTC";
-                                timerProvider.submitLogging(context,
-                                    widget.eventModel, widget.eventInstance);
-                              }
-                            }
-                          }
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                                padding: const EdgeInsets.all(21),
-                                decoration: BoxDecoration(
-                                    color: Colors.blue[50],
-                                    shape: BoxShape.circle),
-                                child: const Icon(
-                                  Icons.chevron_right_sharp,
-                                  size: 35,
-                                  color: Colors.black,
-                                )),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              "Proceed",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        ))
-                  ],
-                );
-              },
-            ),
-          ),
+          onPressed: () async {
+            await _clearTimerState();
+            await NotificationService.hideTimerNotification();
+            Navigator.pop(context);
+          },
+          icon: const Icon(CupertinoIcons.chevron_left),
         ),
       ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Consumer<TimerProvider>(
+          builder: (context, timerProvider, child) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Timer display
+                Container(
+                  padding: const EdgeInsets.all(30),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.blue, Colors.indigo],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4))
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        _formatTime(_secondsElapsed),
+                        style: const TextStyle(
+                          fontSize: 56,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      if (timerProvider.locationTracking &&
+                          timerProvider.locationData != null) ...[
+                        const SizedBox(height: 8),
+                        const Icon(Icons.location_on, color: Colors.white),
+                        Text(
+                          timerProvider.address,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                // Start/End Time cards
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildInfoCard("Start Time", _formatTimeOfDay(_startTime)),
+                    _buildInfoCard("End Time", _formatTimeOfDay(_endTime)),
+                  ],
+                ),
+
+                const SizedBox(height: 25),
+
+                // Location Tracking
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Enable Location Tracking",
+                          style: TextStyle(fontSize: 16)),
+                      Switch(
+                        activeColor: Colors.white,
+                        inactiveThumbColor: Colors.grey,
+                        inactiveTrackColor: Colors.white,
+                        activeTrackColor: Colors.black,
+                        value: timerProvider.locationTracking,
+                        onChanged: (value) {
+                          if (!timerProvider.locationTracking) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => Lottie.asset(
+                                  "assets/images/loader_lottie.json"),
+                            );
+                          }
+                          timerProvider.toggleLocationTracking(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Action buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildActionButton(
+                        Icons.restart_alt, "Restart", _resetTimer),
+                    _buildActionButton(
+                      _isRunning ? Icons.pause : Icons.play_arrow_rounded,
+                      _isRunning ? "Pause" : "Start",
+                      _toggleStartPause,
+                    ),
+                    _buildActionButton(Icons.stop, "End", _stopTimer,
+                        iconColor: Colors.red),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                // Proceed button
+                GestureDetector(
+                  onTap: () {
+                    if (_isRunning) {
+                      Fluttertoast.showToast(msg: "Please end the event first");
+                    } else {
+                      final startUTC = _startTime?.toUtc();
+                      final endUTC = _endTime?.toUtc();
+                      if (startUTC != null &&
+                          endUTC != null &&
+                          _secondsElapsed >= 60) {
+                        widget.eventModel.eventParticipatedDuration =
+                            "$startUTC::$endUTC";
+                        timerProvider.submitLogging(
+                            context, widget.eventModel, widget.eventInstance);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Duration cannot be less than 1 minute");
+                      }
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 14),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.blue, Colors.indigo],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Text(
+                      "Proceed",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(String title, String value) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 4))
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(title, style: const TextStyle(color: Colors.grey)),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(IconData icon, String label, VoidCallback onTap,
+      {Color iconColor = Colors.black}) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3))
+              ],
+            ),
+            child: Icon(icon, size: 32, color: iconColor),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(label,
+            style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black)),
+      ],
     );
   }
 }
