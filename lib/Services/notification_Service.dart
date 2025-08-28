@@ -73,7 +73,7 @@ class NotificationService {
   }
 
   static Future<void> _showRawNotification(String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       _channelId,
       _channelName,
@@ -81,9 +81,11 @@ class NotificationService {
       importance: Importance.low,
       priority: Priority.low,
       ongoing: true,
-      autoCancel: false,
+      category: AndroidNotificationCategory.service, // important
       showWhen: false,
+      onlyAlertOnce: true,
     );
+
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
         DarwinNotificationDetails(

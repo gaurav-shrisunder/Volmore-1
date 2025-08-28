@@ -188,8 +188,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         yearOfStudy: selectedGraduatingClassInfluenced,
       );
       setState(() {
-        print(
-            'Influcence data:: ${influencedLeaderboardData?.leaderBoardDetails?.first.userName}');
+    
         influencedList = influencedLeaderboardData?.leaderBoardDetails ?? [];
       });
     }
