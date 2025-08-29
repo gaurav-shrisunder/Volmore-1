@@ -16,7 +16,7 @@ class BackgroundTaskHandler {
   static Future<void> initialize() async {
     await Workmanager().initialize(
       _onBackgroundTask,
-      isInDebugMode: true,
+      isInDebugMode: false,
     );
     await _loadBackgroundState();
   }

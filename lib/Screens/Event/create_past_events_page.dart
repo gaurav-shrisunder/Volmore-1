@@ -345,9 +345,12 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
       print('Request model: ${jsonEncode(requestModel)}');
 
       // Send API request
-      var res = await EventsServices().logPastEventData(requestModel);
-      if (res) {
-        CustomSnackBar.show(context: context, message: "Past event created successfully", type: SnackBarType.success);
+      EventCategoryResponseModel res = await EventsServices().logPastEventData(requestModel);
+      if (res
+          .message!
+          .contains("Past event logs added")) {
+        CustomSnackBar.show(context: context, message: res
+            .message ?? "Past event created successfully", type: SnackBarType.success);
 
         Navigator.pop(context);
         Navigator.pushReplacement(
@@ -356,7 +359,8 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
         );
       } else {
         Navigator.pop(context);
-        CustomSnackBar.show(context: context, message: "Something went wrong! Try again later", type: SnackBarType.error);
+        CustomSnackBar.show(context: context, message: res
+            .message ?? "Something went wrong! Try again later", type: SnackBarType.error);
         // Fluttertoast.showToast(msg: "Something went wrong! Try again later");
       }
     } catch (e) {

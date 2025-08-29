@@ -254,7 +254,7 @@ class CreateLogScreen extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Get.to(const VolunterringIdeasScreen());
+              Get.to(const VolunteeringIdeasScreen());
             },
             child: Container(
               width: Get.width * 0.92,
