@@ -163,7 +163,7 @@ class EventsServices {
     }
   }
 
-  Future<bool> logPastEventData(LogPastEventRequestModel requestPayload) async {
+  Future<EventCategoryResponseModel> logPastEventData(LogPastEventRequestModel requestPayload) async {
     if(kDebugMode) {
       print('Payload::: ${jsonEncode(requestPayload)}');
     }
@@ -175,12 +175,13 @@ class EventsServices {
       }
       final EventCategoryResponseModel eventCategory =
           EventCategoryResponseModel.fromJson(response.data);
-      return true;
+      return eventCategory;
     } else {
       if (kDebugMode) {
         print('Failed to load create Event data');
       }
-      return false;
+      return EventCategoryResponseModel(
+          message: response?.data["errors"][0].toString());
     }
   }
 

@@ -3,152 +3,148 @@ import 'package:get/get.dart';
 import '../../Utils/Colors.dart';
 import '../../widgets/appbar_widget.dart';
 
-class VolunterringIdeasScreen extends StatelessWidget {
-  const VolunterringIdeasScreen({super.key});
+class VolunteeringIdeasScreen extends StatelessWidget {
+  const VolunteeringIdeasScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ideas = [
+      {
+        "title": "Collect and Deliver for Charities",
+        "description":
+        "Charities often need volunteers to help collect, sort, and deliver donations. You might pick up bags from local neighborhoods, organize them for resale in charity shops, or make deliveries to people without transportation. It’s a simple but powerful way to directly support families and individuals in your community."
+      },
+      {
+        "title": "Tutoring Younger Students",
+        "description":
+        "Offer homework help in subjects like reading, math, or science. You’ll build confidence in younger kids while reinforcing your own knowledge. Best of all, you become a role model who makes learning fun and less intimidating."
+      },
+      {
+        "title": "Park and River Clean-Ups",
+        "description":
+        "Join a cleanup crew and spend a few hours outdoors making parks, rivers, or trails more beautiful. With gloves and a trash bag in hand, you’ll see the results of your effort instantly while helping protect wildlife and the environment."
+      },
+      {
+        "title": "Senior Center Visitor",
+        "description":
+        "Bring joy to older adults by playing games, reading aloud, or simply sharing conversation. Your time and energy brighten their days and often lead to heartwarming friendships across generations."
+      },
+      {
+        "title": "Library Assistant",
+        "description":
+        "Help keep the library running smoothly by shelving books, assisting with events, or reading to children during story hours. Libraries are vibrant community spaces, and your support helps them thrive for everyone."
+      },
+    ];
+
     return Scaffold(
-      appBar: simpleAppBar(context, ""),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: Get.height * 0.02,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Volunteering Ideas",
-                    style: TextStyle(
-                        decorationColor: headingBlue,
-                        color: headingBlue,
-                        fontSize: Get.height * 0.04,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: Get.height * 0.04,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "1. Volunteer at your local shelters.",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Get.height * 0.022),
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.01,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "Visit your local homeless and animal shelters to see if there are openings for any potential volunteering efforts. ",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    decorationColor: bodyBlue,
-                    color: headingBlue,
-                    fontSize: Get.height * 0.018,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.04,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "2. Volunteer at your local food bank",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Get.height * 0.022),
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.01,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "As a food bank volunteer, you make up food parcels for registered service users and meet members of the public. You keep the food bank stocked and organise and handle administration. Volunteers also collect food donations from people and businesses.",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    decorationColor: bodyBlue,
-                    color: headingBlue,
-                    fontSize: Get.height * 0.018,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.04,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "3. Collect and deliver for charities",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: Get.height * 0.022),
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.01,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "Charities seek volunteers to collect and coordinate donations. This involves acting as a driver to collect donation bags from a local area. Volunteers also process donations for onward sale in charity shops. Make deliveries to registered service users who don't have their own transport.",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      decorationColor: bodyBlue,
-                      color: headingBlue,
-                      fontSize: Get.height * 0.018),
-                ),
-              ),
-              SizedBox(
-                height: Get.height * 0.04,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.back();
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: Get.width * 0.3,
-                      height: Get.height * 0.05,
-                      decoration: BoxDecoration(
-                          color: lightBlue,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Center(
-                          child: Text(
+      appBar: simpleAppBar(context, "Volunteering Ideas"),
+
+      body: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        itemCount: ideas.length + 1, // +1 for Exit button
+        itemBuilder: (context, index) {
+          if (index < ideas.length) {
+            final idea = ideas[index];
+            return VolunteeringIdeaTile(
+              index: index + 1,
+              title: idea["title"]!,
+              description: idea["description"]!,
+            );
+          } else {
+            // Exit button as the last item
+            return SizedBox();
+
+              /*Padding(
+              padding: const EdgeInsets.only(top: 20, bottom: 40),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    width: Get.width * 0.3,
+                    height: Get.height * 0.05,
+                    decoration: BoxDecoration(
+                      color: lightBlue,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.9),
+                          blurRadius: 6,
+                          offset: const Offset(2, 4),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
                         "Exit",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: Get.height * 0.022),
-                      )),
+                          fontWeight: FontWeight.bold,
+                          fontSize: Get.height * 0.022,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                    const SizedBox(
-                      width: 20,
-                    )
-                  ],
+                  ),
                 ),
               ),
-              SizedBox(
-                height: Get.height * 0.04,
+            )*/
+          }
+        },
+      ),
+    );
+  }
+}
+
+/// Common Reusable Widget as a Card
+class VolunteeringIdeaTile extends StatelessWidget {
+  final int index;
+  final String title;
+  final String description;
+
+  const VolunteeringIdeaTile({
+    super.key,
+    required this.index,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      elevation: 6,
+      color: Colors.lightGreen.shade50,
+      shadowColor: Colors.black.withOpacity(0.15),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Title
+            Text(
+              "$index. $title",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: Get.height * 0.022,
+                color: headingBlue,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+
+            /// Description
+            Text(
+              description,
+              style: TextStyle(
+                fontSize: Get.height * 0.018,
+                color: headingBlue.withOpacity(0.9),
+                height: 1.4,
+              ),
+            ),
+          ],
         ),
       ),
     );
