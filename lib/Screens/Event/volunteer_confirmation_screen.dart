@@ -1,36 +1,28 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
+
 import '../../Models/event_data_model.dart';
 import '../../Models/request_models/log_current_event_request_model.dart';
-import '../../Screens/Event/events_widget.dart';
-import '../../Screens/HomePage.dart';
-import '../../Services/authentication.dart';
-import '../../Services/events_services.dart';
-import '../../Utils/Colormap.dart';
-import '../../Utils/Colors.dart';
-import '../../Utils/shared_prefs.dart';
-import '../../provider/time_logger_provider.dart';
-import '../../widgets/InputFormFeild.dart';
-import '../../widgets/button.dart';
-
 import '../../Models/response_models/events_data_response_model.dart';
 import '../../Models/response_models/nonverified_events_response.dart';
-import '../../Services/logService.dart';
+import '../../Screens/dashboard_screen.dart';
+import '../../Services/events_services.dart';
+import '../../Utils/app_colors.dart';
 import '../../Utils/common_utils.dart';
-import '../../widgets/customSnackbar.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../provider/time_logger_provider.dart';
+import '../../widgets/text_input_form_field_widget.dart';
+import '../../widgets/button.dart';
+import '../../widgets/custom_snackbar_widget.dart';
 
 class VolunteerConfirmationScreen extends StatefulWidget {
   // final EventDataModel event;
@@ -48,11 +40,10 @@ class VolunteerConfirmationScreen extends StatefulWidget {
 
 class _VolunteerConfirmationScreenState
     extends State<VolunteerConfirmationScreen> {
-  final _authMethod = AuthMethod();
+
   late Future<List<EventDataModel>> _eventsFuture;
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  final LogServices _logMethod = LogServices();
   final EventsServices _eventsServices = EventsServices();
   bool isSelectedAllPreviousCheckbox = false;
   NonVerifiedEventsResponseModel nonVerifiedEvents =
@@ -178,15 +169,7 @@ class _VolunteerConfirmationScreenState
               Navigator.pop(context);
             },
             icon: const Icon(CupertinoIcons.chevron_left)),
-        //  automaticallyImplyLeading: true,
-        // elevation: 4,
-        /*   bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3.0),
-          child: Container(
-            color: Colors.grey[200],
-            height: 3.0,
-          ),
-        ),*/
+
         actions: [
           GestureDetector(
             onTap: () async {
@@ -264,7 +247,7 @@ class _VolunteerConfirmationScreenState
                     // Fluttertoast.showToast(msg: onValue.message!);
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => const DashboardScreen()),
                       (Route<dynamic> route) =>
                           false, // This condition makes sure all the routes are removed.
                     );
@@ -478,35 +461,6 @@ class _VolunteerConfirmationScreenState
                 // validator: phoneValidator,
               ),
               const SizedBox(width: 10),
-              const Row(
-                children: [
-                  /*  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(9),
-                        border: Border.all(color: Colors.grey[300]!)),
-                    child: DropdownButton<String>(
-                      underline: Container(),
-                      borderRadius: BorderRadius.circular(9),
-                      style: const TextStyle(fontSize: 20, color: Colors.black),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 7),
-                      value: selectedCountryCode,
-                      items: countryCodes.map((String code) {
-                        return DropdownMenuItem<String>(
-                          value: code,
-                          child: Text(code),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedCountryCode = newValue!;
-                        });
-                      },
-                    ),
-                  ),*/
-                  /*     const SizedBox(width: 10),*/
-                ],
-              ),
               SizedBox(
                 height: screenHeight * 0.03,
               ),
@@ -518,20 +472,6 @@ class _VolunteerConfirmationScreenState
                           "Sign for all previous events",
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
-                        // Checkbox(
-                        //     value: isSelectedAllPreviousCheckbox,
-                        //     onChanged: (value) {
-                        //       setState(() {
-                        //         !isSelectedAllPreviousCheckbox ?   checkboxItems.forEach((action) => action.isChecked =true) : checkboxItems.forEach((action) => action.isChecked =false);
-                        //
-                        //         isSelectedAllPreviousCheckbox =
-                        //             !isSelectedAllPreviousCheckbox;
-                        //
-                        //         if(checkboxItems.any((test) => test.isChecked !=true)){
-                        //           isSelectedAllPreviousCheckbox = false;
-                        //         }
-                        //       });
-                        //     })
                       ],
                     )
                   : const SizedBox(),
@@ -691,7 +631,7 @@ class _VolunteerConfirmationScreenState
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const HomePage()),
+                            builder: (context) => const DashboardScreen()),
                         (Route<dynamic> route) =>
                             false, // This condition makes sure all the routes are removed.
                       );
@@ -710,179 +650,6 @@ class _VolunteerConfirmationScreenState
     );
   }
 
-  /*Widget buildEventList(String title, List<NonVerifiedEvents> events) {
-
-    return Column(
-      children: [
-        const SizedBox(height: 15),
-        events.isEmpty
-            ? const SizedBox(
-                height: 250,
-                child: Center(
-                  child: Text("No Events Found",
-                      style: TextStyle(
-                        color: Colors.black,
-                      )),
-                ),
-              )
-            : Expanded(
-                child: ListView.builder(
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    NonVerifiedEvents event = events[index];
-                    // Color color =
-                    //     colorMap[event.event!.groupColor] ?? Colors.pink;
-                    // LogModel? log = fetchLog(event.event!, event.date);
-                    // if (log == null) {
-                    //   return const SizedBox();
-                    // }
-
-                    if (events.isEmpty) {
-                      return const Text("No Events Found",
-                          style: TextStyle(
-                            color: Colors.black,
-                          ));
-                    }
-
-                    bool isSelected = selectedEvents.any((selectedEvent) =>
-                        selectedEvent['eventId'] == event.event!.id &&
-                        selectedEvent['logId'] == log.logId);
-
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: isSelected,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    if (value == true) {
-                                      selectedEvents.add({
-                                        'eventId': event.event!.id!,
-                                        'logId': log.logId!,
-                                      });
-                                    } else {
-                                      selectedEvents.removeWhere(
-                                          (selectedEvent) =>
-                                              selectedEvent['eventId'] ==
-                                                  event.event!.id &&
-                                              selectedEvent['logId'] ==
-                                                  log.logId);
-                                    }
-                                  });
-                                },
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                      event.event!.title
-                                              .toString()
-                                              .capitalize ??
-                                          "",
-                                      style: TextStyle(
-                                          color: color, fontSize: 18)),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_month,
-                                        color: greyColor,
-                                      ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        'Date: ${DateFormat.yMMMd().format(event.date)}' ??
-                                            "",
-                                        style: const TextStyle(
-                                            fontSize: 16, color: greyColor),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                color: log.isLocationVerified!
-                                    ? Colors.blue
-                                    : greyColor,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.document_scanner_outlined,
-                                color: log.isSignatureVerified!
-                                    ? Colors.blue
-                                    : greyColor,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.timer,
-                                color: log.isTimeVerified!
-                                    ? Colors.blue
-                                    : greyColor,
-                                size: 30,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-        GestureDetector(
-          onTap: () {
-            if (_errorMessage != null) {
-              Fluttertoast.showToast(
-                  msg: "Enter valid phone number",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            } else {
-              submitEvent(context, _phoneNumberController.text);
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: Colors.lightBlue[500],
-                borderRadius: BorderRadius.circular(10)),
-            child: const Center(
-                child: Text(
-              "Submit Event",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            )),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        )
-      ],
-    );
-  }*/
 
   Future<String?> convertSignatureToBase64(Uint8List? pngBytes) async {
     if (pngBytes == null) return null; // Check if bytes are null

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -10,7 +8,6 @@ String formatDuration(int totalMinutes) {
   int minutes = totalMinutes % 60;
   return "$hours Hrs $minutes Mins";
 }
-
 
 String formatDateTime(String isoDate) {
   DateTime dateTime = DateTime.parse(isoDate);
@@ -47,13 +44,9 @@ Duration calculateElapsedTime(DateTime startTime) {
   return now.difference(startTime);
 }
 
-
-
 Future<String> getTimezoneName() async {
   final String timeZoneName = await FlutterTimezone.getLocalTimezone();
   tz.initializeTimeZones();
   final location = tz.getLocation(timeZoneName); // optional
   return timeZoneName;
 }
-
-

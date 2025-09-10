@@ -1,6 +1,8 @@
 /// Base URL            https://development.d2l5864qp4uooq.amplifyapp.com/login
 // const String baseUrl = "https://dev.volmore.maizelab-cloud.com/";
-const String baseUrl = "https://volmore.maizelab-cloud.com/";         ///PROD
+const String baseUrl = "https://volmore.maizelab-cloud.com/";
+
+///PROD
 
 /// Api endpoints
 const String signUpApi = "api/v1/users/signup";
@@ -34,5 +36,6 @@ const String getWeeklyStat = "api/v1/eventStatistics/";
 
 //Transcript
 const String getTranscripts = "api/v1/events/users/transcripts/";
-const String sharedTranscriptEmails = "api/v1/events/users/recipientsTranscripts/";
+const String sharedTranscriptEmails =
+    "api/v1/events/users/recipientsTranscripts/";
 const String shareWithTeacherApi = "api/v1/events/users/transcripts/share";

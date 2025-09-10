@@ -4,12 +4,12 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Screens/HomePage.dart';
-import '../../Screens/LoginPage.dart';
-import '../../Utils/shared_prefs.dart';
 
+import '../../Screens/dashboard_screen.dart';
+import '../../Screens/login_screen.dart';
+import '../../Utils/shared_prefs.dart';
+import '../Utils/fluid_background.dart';
 import '../widgets/event_popup.dart';
-import 'FluidBackground.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -105,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-          const HomePage(),
+          const DashboardScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             animation = CurvedAnimation(
               parent: animation,
@@ -133,7 +133,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-          const LoginPage(),
+          const LoginScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             animation = CurvedAnimation(
               parent: animation,

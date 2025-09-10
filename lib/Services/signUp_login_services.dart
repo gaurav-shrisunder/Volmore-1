@@ -1,15 +1,12 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../Models/request_models/sign_up_request_model.dart';
 import '../../Models/response_models/referesh_token_response_model.dart';
 import '../../Models/response_models/user_role_response_model.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../api_constants.dart';
 import '../../api_handler.dart';
-import '../../dio_instance.dart';
-
 import '../Models/response_models/sign_up_response_model.dart';
 
 class SignupLoginServices {

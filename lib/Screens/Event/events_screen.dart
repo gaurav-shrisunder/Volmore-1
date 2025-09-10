@@ -1,32 +1,26 @@
 // ignore_for_file: prefer_is_empty
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Models/response_models/update_event_response_model.dart';
-import '../../Screens/Event/past_event_verification_page.dart';
-import '../../Screens/Event/timer_screen.dart';
-import '../../main.dart';
 
-import '../../Models/event_data_model.dart';
 import '../../Models/request_models/create_event_request_model.dart';
 import '../../Models/response_models/event_category_response_model.dart';
 import '../../Models/response_models/events_data_response_model.dart';
-import '../../Services/deep_links.dart';
+import '../../Models/response_models/update_event_response_model.dart';
+import '../../Screens/Event/past_event_verification_screen.dart';
+import '../../Services/deep_links_service.dart';
 import '../../Services/events_services.dart';
-import '../../Utils/Colors.dart';
+import '../../Utils/app_colors.dart';
 import '../../Utils/shared_prefs.dart';
-import '../../widgets/InputFormFeild.dart';
-import '../CreateLogScreen.dart';
-import '../HomePage.dart';
-import 'events_widget.dart';
-import 'log_now_page.dart';
+import '../../widgets/text_input_form_field_widget.dart';
+import '../event_hub_screen.dart';
+import '../dashboard_screen.dart';
+import 'log_now_timer_screen.dart';
 
 //enum SortOption { def, az, za, dateAsc, dateDesc }
 const String activeTimerKey = 'active_timer_event_instance_id';
@@ -306,7 +300,7 @@ class _EventsScreenState extends State<EventsScreen>
                                     fontSize: 18, color: Colors.white),
                               ),
                               onPressed: () {
-                                Get.to(const CreateLogScreen());
+                                Get.to(const EventHubScreen());
                               },
                               child: const Text(
                                 'Create Event',
@@ -770,7 +764,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                         context,
                                                                         MaterialPageRoute(
                                                                             builder: (context) =>
-                                                                                const HomePage()),
+                                                                                const DashboardScreen()),
                                                                         (Route<dynamic>
                                                                                 route) =>
                                                                             false,
@@ -838,7 +832,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                         context,
                                                                         MaterialPageRoute(
                                                                             builder: (context) =>
-                                                                                const HomePage()),
+                                                                                const DashboardScreen()),
                                                                         (Route<dynamic>
                                                                                 route) =>
                                                                             false,
@@ -960,7 +954,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                           20),
 
                                                                   /// Event Name
-                                                                  InputFeildWidget(
+                                                                  TextInputFieldWidget(
                                                                     title:
                                                                         'Event Name',
                                                                     controller:
@@ -975,7 +969,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                           16),
 
                                                                   /// Event Description
-                                                                  InputFeildWidget(
+                                                                  TextInputFieldWidget(
                                                                     title:
                                                                         'Event Description',
                                                                     controller:
@@ -990,7 +984,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                           16),
 
                                                                   /// Event Location
-                                                                  InputFeildWidget(
+                                                                  TextInputFieldWidget(
                                                                     title:
                                                                         'Event Location',
                                                                     controller:
@@ -1130,7 +1124,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                                           Navigator
                                                                               .pushAndRemoveUntil(
                                                                             context,
-                                                                            MaterialPageRoute(builder: (context) => const HomePage()),
+                                                                            MaterialPageRoute(builder: (context) => const DashboardScreen()),
                                                                             (Route<dynamic> route) =>
                                                                                 false,
                                                                           );
@@ -1242,7 +1236,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                          builder: (context) => LogNowPage(
+                                                          builder: (context) => LogNowTimerScreen(
                                                             snapshot.data!.eventDetails!.events![index].event!,
                                                             snapshot.data!.eventDetails!.events![index].eventInstance!,
                                                           ),
@@ -1252,7 +1246,7 @@ class _EventsScreenState extends State<EventsScreen>
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                          builder: (context) => PastEventVerification(
+                                                          builder: (context) => PastEventVerificationScreen(
                                                             date: snapshot.data!.eventDetails!.events![index].event!
                                                                 .reccurencePattern!.eventStartDateTime!,
                                                             event: snapshot.data!.eventDetails!.events![index],

@@ -1,14 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../Screens/LoginPage.dart';
+
+import '../../Screens/login_screen.dart';
 import '../../Services/signUp_login_services.dart';
 import '../../api_constants.dart';
-import '../../main.dart';
-
 import 'Models/response_models/referesh_token_response_model.dart';
 import 'Utils/shared_prefs.dart';
 
@@ -21,7 +18,7 @@ class DioInstance {
     if (_instance == null) {
       _instance = Dio(
         BaseOptions(
-          baseUrl: baseUrl, // Replace with your base URL
+          baseUrl: baseUrl,
           responseType: ResponseType.json,
           contentType: 'application/json',
           headers: {"Accept-Language": "en"},
@@ -158,7 +155,7 @@ class DioInstance {
 
   static void _handleTokenExpiration() {
     clearPreferences();
-    Get.to(const LoginPage());
+    Get.to(const LoginScreen());
     // logoutAndNavigateToLogin();
   }
 

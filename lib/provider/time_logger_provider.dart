@@ -14,10 +14,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Models/UserModel.dart';
+import '../../Models/user_model.dart';
 import '../../Models/event_data_model.dart';
 import '../../Screens/Event/volunteer_confirmation_screen.dart';
-import '../../Screens/HomePage.dart';
+import '../../Screens/dashboard_screen.dart';
 import '../../Utils/common_utils.dart';
 
 import '../Models/response_models/events_data_response_model.dart';
@@ -161,88 +161,6 @@ class TimerProvider with ChangeNotifier {
     _isLogging = false;
     notifyListeners();
   }
-
-
-
-/*  Future<void> toggleLogging() async {
-    if (_isLogging) {
-      _isLogging = false;
-      /// added the below to reset the elapsed time when going to next page
-      _elapsedTime = 0;
-    } else {
-      if (elapsedTime == 0) {
-        _startTime = DateTime.now();
-      }
-      _isLogging = true;
-
-      _startTimer();
-    }
-    notifyListeners();
-  }
-
-  Future<void> endLogging(
-      BuildContext context, Event event, EventInstance eventInstance,) async {
-    _endTime = DateTime.now();
-    if( startTime.minute < endTime.minute) {
-      toggleLogging();
-      notifyListeners();
-      event.eventParticipatedDuration =
-      "${startTime.toIso8601String() + "::" + endTime.toIso8601String()}";
-      log('time is: ${startTime.toIso8601String()} :: ${endTime
-          .toIso8601String()}');
-
-      ///Navigating to Confirmation form screen with the Event data
-
-     *//* Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  VolunteerConfirmationScreen(
-                      event, eventInstance
-
-                  )));*//*
-    }else{
-      Fluttertoast.showToast(msg: "Should complete atleast 1 minute");
-    }
-  }
-
-  Future<void> submitLogging(
-      BuildContext context, Event event, EventInstance eventInstance,) async {
-    _endTime = DateTime.now();
-    if( startTime.minute < endTime.minute) {
-      toggleLogging();
-      notifyListeners();
-      event.eventParticipatedDuration =
-      "${startTime.toIso8601String() + "::" + endTime.toIso8601String()}";
-      log('time is: ${startTime.toIso8601String()} :: ${endTime
-          .toIso8601String()}');
-
-      ///Navigating to Confirmation form screen with the Event data
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  VolunteerConfirmationScreen(
-                      event, eventInstance
-
-                  )));
-    }else{
-      Fluttertoast.showToast(msg: "Should complete atleast 1 minute");
-    }
-  }
-
-
-  void _startTimer() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (_isLogging) {
-        _elapsedTime++;
-        duration++;
-        notifyListeners();
-        _startTimer();
-      }
-    });
-  }*/
 
   void toggleLocationTracking(BuildContext context) async {
     if (_locationTracking) {

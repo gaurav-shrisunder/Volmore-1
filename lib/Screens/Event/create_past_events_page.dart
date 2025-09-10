@@ -1,32 +1,28 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:lendavolunterring/widgets/customSnackbar.dart';
+import 'package:lendavolunterring/widgets/custom_snackbar_widget.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../Models/request_models/log_past_event_request_model.dart';
 import '../../Models/response_models/event_category_response_model.dart';
-import '../../Screens/HomePage.dart';
-
+import '../../Screens/dashboard_screen.dart';
 import '../../Services/events_services.dart';
-import '../../Services/logService.dart';
-
 import '../../Utils/shared_prefs.dart';
-import '../../widgets/InputFormFeild.dart';
+import '../../widgets/text_input_form_field_widget.dart';
 import '../../widgets/appbar_widget.dart';
-import 'package:http/http.dart' as http;
 
-class CreatePastEventsPage extends StatefulWidget {
-  const CreatePastEventsPage({super.key});
+class CreatePastEventsScreen extends StatefulWidget {
+  const CreatePastEventsScreen({super.key});
 
   @override
-  State<CreatePastEventsPage> createState() => _CreatePastEventsPageState();
+  State<CreatePastEventsScreen> createState() => _CreatePastEventsScreenState();
 }
 
-class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
+class _CreatePastEventsScreenState extends State<CreatePastEventsScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController locationController = TextEditingController();
@@ -355,7 +351,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
         Navigator.pop(context);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
         );
       } else {
         Navigator.pop(context);
@@ -468,7 +464,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                InputFeildWidget(
+                TextInputFieldWidget(
                   title: 'Title',
                   keyboardType: TextInputType.name,
                   controller: titleController,
@@ -476,7 +472,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                   hintText: "Trash Clean Up",
                 ),
                 const SizedBox(height: 20),
-                InputFeildWidget(
+                TextInputFieldWidget(
                   title: 'Job Description',
                   keyboardType: TextInputType.name,
                   controller: descriptionController,
@@ -484,7 +480,7 @@ class _CreatePastEventsPageState extends State<CreatePastEventsPage> {
                   hintText: 'Job Description',
                 ),
                 const SizedBox(height: 20),
-                InputFeildWidget(
+                TextInputFieldWidget(
                   title: 'Location',
                   controller: locationController,
                   maxlines: 1,

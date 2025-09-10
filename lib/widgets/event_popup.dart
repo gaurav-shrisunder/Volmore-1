@@ -11,10 +11,10 @@ import '../../Models/request_models/log_current_event_request_model.dart';
 import '../../Models/response_models/event_category_response_model.dart';
 import '../../Models/response_models/get_event_response_model.dart';
 
-import '../../Screens/HomePage.dart';
+import '../../Screens/dashboard_screen.dart';
 
 import '../../Services/events_services.dart';
-import '../../Utils/Colors.dart';
+import '../../Utils/app_colors.dart';
 import '../../Utils/shared_prefs.dart';
 // Assuming this is the file where fetchEventById is defined
 
@@ -244,13 +244,13 @@ Future<void> acceptInvite(String eventId, BuildContext context) async {
     Navigator.pop(context);
 
     // Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
-     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
     // Get.to(() => const HomePage());
   } else {
     Fluttertoast.showToast(msg: "Some error occurred");
     Navigator.pop(context);
     // Get.back();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
 
   }
 }

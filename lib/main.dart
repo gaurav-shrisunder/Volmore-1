@@ -1,7 +1,8 @@
 import 'dart:async';
+
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lendavolunterring/Services/background_task_handler.dart';
@@ -9,15 +10,12 @@ import 'package:lendavolunterring/Services/background_timer_service.dart';
 import 'package:lendavolunterring/Services/notification_Service.dart';
 import 'package:lendavolunterring/provider/timer_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../Controllers/event_controller.dart';
 import '../../Screens/splash_screen.dart';
 import '../../Utils/app_themes.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../provider/theme_manager_provider.dart';
 import '../../provider/time_logger_provider.dart';
 import '../../widgets/event_popup.dart';
-import 'Utils/common_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +24,6 @@ void main() async {
   await BackgroundTimerService.initialize();
   await NotificationService.initialize();
   await BackgroundTaskHandler.initialize();
-  Get.put(EventController());
   Get.put(TimerController());
 
   runApp(
@@ -50,7 +47,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool isLoggedIn = false;
-  final eventController = Get.find<EventController>();
+
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
 
@@ -148,7 +145,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         isLoggedIn = true;
       });
     } else {
-      print("No user ID found in local storage");
+      if (kDebugMode) {
+        print("No user ID found in local storage");
+      }
     }
   }
 

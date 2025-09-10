@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,17 +9,16 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../Models/request_models/share_transcript_request_model.dart';
 import '../../Models/response_models/shared_transcript_response.dart';
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../Models/response_models/transcript_response.dart';
 import '../../Services/profile_services.dart';
 import '../../Utils/shared_prefs.dart';
-
-import '../Models/UserModel.dart';
 import '../Models/event_data_model.dart';
-import '../Services/logService.dart';
-import '../Utils/Colors.dart';
+import '../Models/user_model.dart';
+import '../Utils/app_colors.dart';
 import '../Utils/common_utils.dart';
 
 class TranscriptScreen extends StatefulWidget {
@@ -682,24 +677,3 @@ class _TranscriptScreenState extends State<TranscriptScreen> {
   }
 }
 
-class Record {
-  final String group;
-  final String title;
-  final String host;
-  final String address;
-  final String timeElapsed;
-  final String signature;
-  final String location;
-  final String timer;
-
-  Record({
-    required this.group,
-    required this.title,
-    required this.host,
-    required this.address,
-    required this.timeElapsed,
-    required this.signature,
-    required this.location,
-    required this.timer,
-  });
-}

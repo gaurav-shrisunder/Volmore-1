@@ -10,7 +10,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../Models/response_models/sign_up_response_model.dart';
 import '../../Models/response_models/update_user_response_model.dart';
-import '../../Screens/HomePage.dart';
+import '../../Screens/dashboard_screen.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../api_constants.dart';
 
@@ -145,7 +145,7 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
           msg: "Profile Updated Successfully",
           backgroundColor: Colors.green,
         );
-        Get.to(const HomePage());
+        Get.to(const DashboardScreen());
         // Refresh user data
       } else {
         String errorMessage = 'Failed to update profile';
@@ -208,37 +208,6 @@ class _ProfileImageWidgetState extends State<ProfileImageWidget> {
               : ClipOval(
                   child: Builder(
                     builder: (context) {
-                    /*  if (_imageFile != null) {
-                        return Image.file(
-                          _imageFile!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _buildFallbackImage(),
-                        );
-                      } else if (user!.profilePicture != null &&
-                          user!.profilePicture!.isNotEmpty) {
-                        try {
-                          String formattedString = user!.profilePicture!;
-                          if (!user!.profilePicture!.startsWith("data:image")) {
-                            formattedString =
-                                "data:image/png;base64,${user!.profilePicture!}";
-                          }
-
-                          // Decode the base64 string
-                          Uint8List bytes =
-                              base64Decode(formattedString.split(",").last);
-                          return Image.network(
-                            user!.profilePicture!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                _buildFallbackImage(),
-                          );
-                        } catch (e) {
-                          return _buildFallbackImage();
-                        }
-                      }*/
-
-
                       if(user?.profilePicture == null){
                         return  Image.network(
                             'https://ui-avatars.com/api/?name=${user?.userName ?? "User"}',

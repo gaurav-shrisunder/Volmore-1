@@ -7,6 +7,7 @@ import '../../api_handler.dart';
 
 class LeaderboardServices {
   final ApiBaseHelper apiHandler = ApiBaseHelper();
+
   Future<LeaderboardInfluencedResponseModel?> getLeaderboardData(
       String endpoint,
       {String? locationState,
@@ -15,11 +16,12 @@ class LeaderboardServices {
     if (locationState != null) queryParams['locationState'] = locationState;
     if (yearOfStudy != null) queryParams['yearOfStudy'] = yearOfStudy;
 
-     String queryString = queryParams.isEmpty
+    String queryString = queryParams.isEmpty
         ? ''
-        : '?' + queryParams.entries.map((e) => '${e.key}=${e.value}').join('&');
+        : '?${queryParams.entries.map((e) => '${e.key}=${e.value}').join('&')}';
 
-    Response? response = await apiHandler.get("$leaderboardApi/$endpoint$queryString");
+    Response? response =
+        await apiHandler.get("$leaderboardApi/$endpoint$queryString");
     if (response != null && response.statusCode == 200) {
       final LeaderboardInfluencedResponseModel topInfluencedUser =
           LeaderboardInfluencedResponseModel.fromJson(response.data);

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+
 import '../../Models/request_models/create_event_request_model.dart';
 import '../../Models/request_models/log_current_event_request_model.dart';
 import '../../Models/request_models/log_past_event_request_model.dart';
@@ -10,11 +11,9 @@ import '../../Models/response_models/event_category_response_model.dart';
 import '../../Models/response_models/events_data_response_model.dart';
 import '../../Models/response_models/get_event_response_model.dart';
 import '../../Models/response_models/nonverified_events_response.dart';
-import '../../Models/response_models/sign_up_response_model.dart';
 import '../../Models/response_models/update_event_response_model.dart';
 import '../../Utils/shared_prefs.dart';
 import '../../api_constants.dart';
-
 import '../Utils/common_utils.dart';
 import '../api_handler.dart';
 

@@ -1,12 +1,11 @@
-
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get_connect/http/src/exceptions/exceptions.dart';
-import 'dio_instance.dart';
 import 'package:http/http.dart' as http;
+
+import 'dio_instance.dart';
 
 class ApiBaseHelper {
   Future<http.StreamedResponse> sendMultipartRequest(
@@ -20,18 +19,23 @@ class ApiBaseHelper {
   }
 
   Future<dynamic> get(String url) async {
-    print('Api Get, url $url');
+    if (kDebugMode) {
+      print('Api Get, url $url');
+    }
     var responseJson;
     try {
       Dio instance = await DioInstance.createInstance();
       final response = await instance.get(url);
       responseJson = _returnResponse(response);
     } on DioException catch (e) {
-      print('DioError caught: ${e.response}');
-      throw e.response ??
-          Exception('Error sending request: ${e.message}');
+      if (kDebugMode) {
+        print('DioError caught: ${e.response}');
+      }
+      throw e.response ?? Exception('Error sending request: ${e.message}');
     } on SocketException {
-      print('No net');
+      if (kDebugMode) {
+        print('No net');
+      }
       throw Exception('No Internet connection');
     }
     print('api get received!');
@@ -47,76 +51,102 @@ class ApiBaseHelper {
       final response = await instance.get(url, queryParameters: json);
       responseJson = _returnResponse(response);
     } on DioException catch (e) {
-      print('DioError caught: ${e.response}');
-      throw e.response ??
-          Exception('Error sending request: ${e.message}');
+      if (kDebugMode) {
+        print('DioError caught: ${e.response}');
+      }
+      throw e.response ?? Exception('Error sending request: ${e.message}');
     } on SocketException {
-      print('No net');
+      if (kDebugMode) {
+        print('No net');
+      }
       throw Exception('No Internet connection');
     }
-    print('api get received!');
+    if (kDebugMode) {
+      print('api get received!');
+    }
     return responseJson;
   }
 
   Future<dynamic> post(String url, dynamic body) async {
-    print('Api Post, url $url');
+    if (kDebugMode) {
+      print('Api Post, url $url');
+    }
     var responseJson;
     try {
       Dio instance = await DioInstance.createInstance();
       final response = await instance.post(url, data: body);
       responseJson = _returnResponse(response);
     } on DioException catch (e) {
-      print("In Dio exception - ApiHandler");
+      if (kDebugMode) {
+        print("In Dio exception - ApiHandler");
+      }
       return handleError(e.response);
     } on SocketException {
-      print('No net');
+      if (kDebugMode) {
+        print('No net');
+      }
       throw Exception('No Internet connection');
     }
-    print('api post received!');
+    if (kDebugMode) {
+      print('api post received!');
+    }
     return responseJson;
   }
 
   Future<dynamic> put(String url, dynamic body) async {
-    print('Api Put, url $url');
+    if (kDebugMode) {
+      print('Api Put, url $url');
+    }
     var responseJson;
     try {
       Dio instance = await DioInstance.createInstance();
       final response = await instance.put(url, data: body);
       responseJson = _returnResponse(response);
     } on DioException catch (e) {
-      print('DioError caught: ${e.response}');
-      throw e.response ??
-          Exception('Error sending request: ${e.message}');
+      if (kDebugMode) {
+        print('DioError caught: ${e.response}');
+      }
+      throw e.response ?? Exception('Error sending request: ${e.message}');
     } on SocketException {
-      print('No net');
+      if (kDebugMode) {
+        print('No net');
+      }
       throw Exception('No Internet connection');
     }
-    print('api put received!');
+    if (kDebugMode) {
+      print('api put received!');
+    }
     return responseJson;
   }
 
   Future<dynamic> delete(String url, dynamic body) async {
-    print('Api delete, url $url');
+    if (kDebugMode) {
+      print('Api delete, url $url');
+    }
     var apiResponse;
     try {
       Dio instance = await DioInstance.createInstance();
-      if(body == null){
+      if (body == null) {
         final response = await instance.delete(url);
         apiResponse = _returnResponse(response);
-      }else{
+      } else {
         final response = await instance.delete(url, data: body);
         apiResponse = _returnResponse(response);
       }
-
     } on DioException catch (e) {
-      print('DioError caught: ${e.response}');
-      throw e.response ??
-          Exception('Error sending request: ${e.message}');
+      if (kDebugMode) {
+        print('DioError caught: ${e.response}');
+      }
+      throw e.response ?? Exception('Error sending request: ${e.message}');
     } on SocketException {
-      print('No net');
+      if (kDebugMode) {
+        print('No net');
+      }
       throw Exception('No Internet connection');
     }
-    print('api delete received!');
+    if (kDebugMode) {
+      print('api delete received!');
+    }
     return apiResponse;
   }
 
@@ -148,25 +178,34 @@ class ApiBaseHelper {
       // Handle the response
       responseJson = _returnResponse(response);
     } on DioException catch (e) {
-      print('DioError caught during face ID upload: ${e.response}');
-      throw e.response ??
-          Exception('Error sending request: ${e.message}');
+      if (kDebugMode) {
+        print('DioError caught during face ID upload: ${e.response}');
+      }
+      throw e.response ?? Exception('Error sending request: ${e.message}');
     } on SocketException {
-      print('No internet connection');
+      if (kDebugMode) {
+        print('No internet connection');
+      }
       throw Exception('No Internet connection');
     }
 
-    print('Face ID upload response received!');
+    if (kDebugMode) {
+      print('Face ID upload response received!');
+    }
     return responseJson;
   }
 
   dynamic _returnResponse(Response<dynamic> response) {
-    print("Inside return response");
+    if (kDebugMode) {
+      print("Inside return response");
+    }
     switch (response.statusCode) {
       case 200:
         return response;
       case 201:
-        print('response >>>> ${response.statusCode} ${response.data}');
+        if (kDebugMode) {
+          print('response >>>> ${response.statusCode} ${response.data}');
+        }
         return response;
       case 400:
         return response;
@@ -205,7 +244,9 @@ class ApiBaseHelper {
         case 403:
           if (response.data['detail']
               .contains('User is already logged in on another device.')) {
-            print("$response");
+            if (kDebugMode) {
+              print("$response");
+            }
             return response; // Disable toast
           }
           break;

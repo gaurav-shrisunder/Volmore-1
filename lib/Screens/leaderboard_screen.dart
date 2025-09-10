@@ -4,7 +4,7 @@ import '../../Models/response_models/leaderboard_influenced_response_model.dart'
 import '../../Services/leaderboard_service.dart';
 import '../../Services/user_services.dart';
 
-import '../Models/UserModel.dart';
+import '../Models/user_model.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});

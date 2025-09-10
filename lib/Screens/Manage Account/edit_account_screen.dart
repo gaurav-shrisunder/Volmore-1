@@ -1,28 +1,25 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:lendavolunterring/Screens/HomePage.dart';
-import '../../Models/request_models/update_Profile_request_model.dart';
-import '../../Screens/BottomSheet/user_profile_page.dart';
-import '../../Services/authentication.dart';
-import '../../Services/user_services.dart';
-import '../../Utils/Colors.dart';
-import '../../Utils/shared_prefs.dart';
-import '../../widgets/FormFeild.dart';
-import '../../widgets/appbar_widget.dart';
-import '../../widgets/button.dart';
-import '../../widgets/profile_image_widget.dart';
+import 'package:lendavolunterring/Screens/dashboard_screen.dart';
 
+import '../../Models/request_models/update_profile_request_model.dart';
 import '../../Models/response_models/sign_up_response_model.dart';
-import '../../widgets/InputFormFeild.dart';
-import '../LoginPage.dart';
-import '../WebviewScreen.dart';
+
+import '../../Services/user_services.dart';
+import '../../Utils/app_colors.dart';
+import '../../Utils/shared_prefs.dart';
+import '../../widgets/text_input_form_field_widget.dart';
+import '../../widgets/appbar_widget.dart';
+import '../../widgets/profile_image_widget.dart';
+import '../login_screen.dart';
 
 class EditAccountScreen extends StatefulWidget {
   final User userData;
+
   const EditAccountScreen(this.userData, {super.key});
 
   @override
@@ -96,7 +93,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'Name',
                     controller: nameController,
                     hintText: 'Enter your name',
@@ -105,7 +102,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'Email',
                     isEnabled: false,
                     controller: emailController,
@@ -115,7 +112,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'Phone',
                     controller: phoneController,
                     hintText: 'Enter your phone number',
@@ -124,7 +121,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'School',
                     controller: schoolController,
                     hintText: 'Enter your School name',
@@ -132,7 +129,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'University',
                     controller: universityController,
                     hintText: 'Enter your University name',
@@ -178,7 +175,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                       ? null
                                       : phoneController.text;
 
-                              print('Payload:::: ${jsonEncode(updateProfile)}');
+                              if (kDebugMode) {
+                                print('Payload:::: ${jsonEncode(updateProfile)}');
+                              }
 
                               await UserServices()
                                   .updateUserApi(updateProfile)
@@ -188,7 +187,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                   Fluttertoast.showToast(
                                       msg: "Profile Updated Successfully");
                                   setVariables();
-                                  Get.to(const HomePage());
+                                  Get.to(const DashboardScreen());
 
                                   setState(() {});
                                 } else {
@@ -229,7 +228,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'Old Password',
                     controller: oldPasswordController,
                     hintText: 'Enter your old password',
@@ -237,7 +236,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'New Password',
                     controller: newPasswordController,
                     hintText: 'Enter new password here',
@@ -245,7 +244,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  InputFeildWidget(
+                  TextInputFieldWidget(
                     title: 'Confirm Password',
                     controller: confirmPasswordController,
                     hintText: 'Re-enter new password',
@@ -313,40 +312,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   ),
                 ],
               ),
-
-              /* Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.to(EditPassword());
-                        },
-                        child: Container(
-                          height: height * 0.05,
-                          width: Get.width * 0.6,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 210, 217, 243),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.edit),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                'Change Password',
-                                style: TextStyle(
-                                  fontSize: height * 0.019,
-                                  color: headingBlue,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),*/
               const SizedBox(
                 height: 10,
               ),
@@ -392,12 +357,11 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                                   toastLength:
                                                       Toast.LENGTH_LONG);
                                               clearPreferences();
-                                              AuthMethod().signOut();
                                               Navigator.pushAndRemoveUntil(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const LoginPage()),
+                                                        const LoginScreen()),
                                                 (Route<dynamic> route) =>
                                                     false, // This condition makes sure all the routes are removed.
                                               );
@@ -416,14 +380,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       style: TextStyle(color: Colors.white),
                     )),
               ),
-              /*   MyButtons(
-              onTap: () {
-                AuthMethod().changePassword(
-                    oldPassword: oldPasscontroller.text,
-                    newPassword: newPasscontroller.text,
-                    confirmNewPassword: ConfirmPasscontroller.text);
-              },
-              text: "Save Changes")*/
             ],
           ),
         ),
